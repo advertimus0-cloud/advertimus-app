@@ -5,13 +5,14 @@ export default function Footer() {
     <footer className="adv-footer">
       <div className="adv-footer-shell">
         <div className="adv-footer-col">
-         <Image
-  src="/advertimus-logo.png"
+        <Image
+  src="/Advertimus-logo.png"
   alt="Advertimus Logo"
   width={160}
   height={52}
   className="adv-footer-logo"
 />
+
 
         </div>
 
