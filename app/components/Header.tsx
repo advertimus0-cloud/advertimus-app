@@ -162,13 +162,13 @@ export default function Header() {
         <div className="adv-m-overlay">
           <div className="adv-m-panel">
             <div className="adv-m-head">
-              <Image
-                src="/Advertimus-logo.png"
-                alt="Advertimus Logo"
-                width={140}
-                height={44}
-                className="adv-m-logo"
-              />
+             <Image
+  src="/Advertimus-logo.PNG"
+  alt="Advertimus Logo"
+  width={140}
+  height={44}
+  className="adv-m-logo"
+/>
 
               <button className="adv-m-close" onClick={() => setOpenMobile(false)} type="button">
                 <i className={IconBox.close} />
