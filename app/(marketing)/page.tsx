@@ -1,24 +1,12 @@
 "use client";
 
-// ===============================
-// ✅ Home Page (تصميم فقط)
-// - كلشي JSX + CSS بنفس الملف
-// - نوتس بالعربي داخل الكود
-// ===============================
-
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { IconBox } from "../components/IconBox";
 
 export default function HomePage() {
-  // ===============================
-  // ✅ FAQ: فتح/إغلاق سؤال واحد (بالكبس)
-  // ===============================
   const [openIndex, setOpenIndex] = useState<number | null>(2);
 
-  // ===============================
-  // ✅ FAQ content (عدّل من هون إذا بدك)
-  // ===============================
   const faqItems = useMemo(
     () => [
       {
@@ -51,36 +39,15 @@ export default function HomePage() {
 
   return (
     <>
-      {/* ===============================
-        ✅ Shooting Stars Layer (على كل الصفحة)
-        - زدنا العدد
-        - في شهب بتمر من النص (المناطق الوسط)
-      =============================== */}
-      <div className="shooting-stars" aria-hidden="true">
-        <span className="star s1" />
-        <span className="star s2" />
-        <span className="star s3" />
-        <span className="star s4" />
-        <span className="star s5" />
-        <span className="star s6" />
-        <span className="star s7" />
-        <span className="star s8" />
-        <span className="star s9" />
-        <span className="star s10" />
-        <span className="star s11" />
-        <span className="star s12" />
-      </div>
+      {/* 
+        ✅ DARK OVERLAY REMOVED (shooting-stars div removed)
+      */}
 
-      {/* ===============================
-        ✅ HERO SECTION
-      =============================== */}
+      {/* ✅ HERO SECTION */}
       <section className="hero-section">
         <div className="container">
           <div className="hero-grid">
-            {/* ===== Hero Text ===== */}
             <div className="hero-text">
-              {/* ✅ Badge (Solid Red) */}
-              {/* نوتس: عدّل النص من span، وعدّل الأيقونة من IconBox.xxx */}
               <div className="hero-badge">
                 <i className={IconBox.iq} aria-hidden="true" />
                 <span>Built for real performance — not guesses.</span>
@@ -94,7 +61,6 @@ export default function HomePage() {
                 performance.
               </p>
 
-              {/* ✅ CTA Buttons — linked to dashboard */}
               <div className="hero-actions">
                 <Link href="/dashboard" className="cta-btn">
                   Create a Market-Ready Ad
@@ -105,8 +71,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* ===== Hero Image ===== */}
-            {/* نوتس: الصورة من public */}
             <div className="hero-image">
               <div className="image-frame">
                 <img src="/Adver-Header-Img.jpg" alt="Advertimus" />
@@ -115,13 +79,10 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* ✅ Glow تحت الهيرو */}
         <div className="section-bottom-glow hero-glow" aria-hidden="true" />
       </section>
 
-      {/* ===============================
-        ✅ FEATURES SECTION
-      =============================== */}
+      {/* ✅ FEATURES SECTION */}
       <section className="features-section">
         <div className="container">
           <div className="section-head">
@@ -165,9 +126,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ===============================
-        ✅ FAQ SECTION
-      =============================== */}
+      {/* ✅ FAQ SECTION */}
       <section className="faq-section">
         <div className="container faq-container">
           <div className="faq-head">
@@ -202,28 +161,19 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* ✅ Glow تحت FAQ */}
         <div className="section-bottom-glow faq-glow" aria-hidden="true" />
       </section>
 
-      {/* ===============================
-        ✅ CSS
-      =============================== */}
       <style jsx global>{`
         :root {
           --brand-red: #5d1a1b;
           --brand-blue: #161142;
-
           --bg: #000;
           --text: #fff;
-
           --muted: rgba(255, 255, 255, 0.75);
           --muted2: rgba(255, 255, 255, 0.60);
-
-          /* نوتس: إذا بدك خط EXACT ابعث ملف الخط */
           --font-head: "Inter", "Manrope", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
           --font-body: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-
           --card: rgba(255, 255, 255, 0.02);
           --radius: 18px;
         }
@@ -245,57 +195,10 @@ export default function HomePage() {
           z-index: 2;
         }
 
-        /* ===============================
-          ✅ Shooting Stars (زدنا العدد + يمر من الوسط)
-        =============================== */
-        .shooting-stars {
-          position: fixed;
-          inset: 0;
-          pointer-events: none;
-          z-index: 0;
-          overflow: hidden;
-        }
+        /* 
+          ✅ SHOOTING STARS CSS REMOVED TO PREVENT DARK OVERLAY
+        */
 
-        .star {
-          position: absolute;
-          width: 170px;
-          height: 2px;
-          background: linear-gradient(
-            90deg,
-            rgba(255, 255, 255, 0),
-            rgba(255, 255, 255, 0.38),
-            rgba(255, 255, 255, 0)
-          );
-          border-radius: 999px;
-          opacity: 0;
-          filter: blur(0.5px);
-          animation: shoot 12s linear infinite;
-        }
-
-        /* أماكن متنوعة (فيها الوسط بشكل واضح) */
-        .s1  { top: 10%; left: -25%; transform: rotate(12deg);  animation-delay: 0.8s; }
-        .s2  { top: 20%; left: -30%; transform: rotate(18deg);  animation-delay: 2.4s; }
-        .s3  { top: 32%; left: -35%; transform: rotate(10deg);  animation-delay: 4.2s; } /* وسط */
-        .s4  { top: 44%; left: -40%; transform: rotate(16deg);  animation-delay: 6.0s; } /* وسط */
-        .s5  { top: 55%; left: -28%; transform: rotate(-10deg); animation-delay: 7.8s; } /* وسط */
-        .s6  { top: 66%; left: -45%; transform: rotate(-14deg); animation-delay: 9.6s; }
-        .s7  { top: 74%; left: -32%; transform: rotate(-8deg);  animation-delay: 11.4s; }
-        .s8  { top: 28%; left: -50%; transform: rotate(22deg);  animation-delay: 13.2s; } /* وسط */
-        .s9  { top: 48%; left: -55%; transform: rotate(14deg);  animation-delay: 15.0s; } /* وسط */
-        .s10 { top: 62%; left: -60%; transform: rotate(-12deg); animation-delay: 16.8s; }
-        .s11 { top: 38%; left: -65%; transform: rotate(20deg);  animation-delay: 18.6s; } /* وسط */
-        .s12 { top: 52%; left: -70%; transform: rotate(-9deg);  animation-delay: 20.4s; } /* وسط */
-
-        @keyframes shoot {
-          0%   { opacity: 0; transform: translateX(0) translateY(0) rotate(14deg); }
-          6%   { opacity: 0.9; }
-          12%  { opacity: 0; }
-          100% { opacity: 0; transform: translateX(190vw) translateY(-18vh) rotate(14deg); }
-        }
-
-        /* ===============================
-          ✅ HERO
-        =============================== */
         .hero-section {
           position: relative;
           padding: 84px 0 68px;
@@ -388,35 +291,6 @@ export default function HomePage() {
           box-shadow: 0 0 40px rgba(93, 26, 27, 0.15), 0 0 55px rgba(22, 17, 66, 0.15);
         }
 
-        .cta-btn::after {
-          content: "";
-          position: absolute;
-          inset: -2px;
-          border-radius: 14px;
-          background: conic-gradient(
-            from 180deg,
-            transparent 0deg,
-            rgba(255, 255, 255, 0.18) 26deg,
-            transparent 60deg,
-            transparent 360deg
-          );
-          filter: blur(7px);
-          opacity: 0.65;
-          animation: edgeShine 4s linear infinite;
-          pointer-events: none;
-
-          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-          -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-          -webkit-mask-composite: xor;
-          mask-composite: exclude;
-          padding: 2px;
-        }
-
-        @keyframes edgeShine {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
         .image-frame {
           border-radius: var(--radius);
           overflow: hidden;
@@ -453,9 +327,6 @@ export default function HomePage() {
           );
         }
 
-        /* ===============================
-          ✅ FEATURES
-        =============================== */
         .features-section {
           position: relative;
           padding: 92px 0;
@@ -520,9 +391,6 @@ export default function HomePage() {
           font-size: 15.5px;
         }
 
-        /* ===============================
-          ✅ FAQ
-        =============================== */
         .faq-section {
           position: relative;
           padding: 92px 0 120px;
@@ -624,40 +492,20 @@ export default function HomePage() {
           );
         }
 
-        /* ===============================
-          ✅ Responsive
-        =============================== */
         @media (max-width: 1024px) {
           .hero-grid {
             grid-template-columns: 1fr;
             gap: 32px;
           }
-
           .hero-text h1 { font-size: 46px; }
-
-          .section-head h2,
-          .faq-head h2 { font-size: 36px; }
-
+          .section-head h2, .faq-head h2 { font-size: 36px; }
           .features-grid { grid-template-columns: 1fr; }
         }
 
-        /* ✅ تعديلات الموبايل المطلوبة */
         @media (max-width: 600px) {
-          /* 1) العنوان والوصف بالنص */
-          .hero-text {
-            text-align: center;
-            padding-top: 0;
-          }
-
+          .hero-text { text-align: center; padding-top: 0; }
           .hero-text h1 { font-size: 36px; text-align: center; }
-
-          .hero-text p {
-            text-align: center;
-            margin-left: auto;
-            margin-right: auto;
-          }
-
-          /* 2) تصغير البادج بالموبايل فقط */
+          .hero-text p { text-align: center; margin-left: auto; margin-right: auto; }
           .hero-badge {
             font-size: 12px;
             padding: 8px 10px;
@@ -667,24 +515,11 @@ export default function HomePage() {
             max-width: 92%;
             justify-content: center;
           }
-
           .hero-badge i { font-size: 16px; }
-
-          /* 3) الأزرار مرتبة */
-          .hero-actions {
-            justify-content: center;
-            gap: 12px;
-          }
-
-          .cta-btn {
-            width: 100%;
-            max-width: 360px;
-          }
-
+          .hero-actions { justify-content: center; gap: 12px; }
+          .cta-btn { width: 100%; max-width: 360px; }
           .container { padding: 0 16px; }
-
-          .section-head h2,
-          .faq-head h2 { font-size: 30px; }
+          .section-head h2, .faq-head h2 { font-size: 30px; }
         }
       `}</style>
     </>
