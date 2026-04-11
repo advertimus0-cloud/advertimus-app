@@ -206,11 +206,12 @@ export default function ChatArea({ isSidebarOpen, onToggleSidebar, isResultsOpen
           overflowY: "auto",
           padding: "28px 24px",
           flexDirection: "column",
-          gap: 24,
+          alignItems: "center",
         }}
       >
-        {messages.map((msg) =>
-          msg.role === "ai" ? (
+        <div style={{ width: "100%", maxWidth: 800, display: "flex", flexDirection: "column", gap: 24 }}>
+          {messages.map((msg) =>
+            msg.role === "ai" ? (
             /* ── AI message: no box, just text ── */
             <div key={msg.id} style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
               {/* Bot icon pill */}
@@ -344,6 +345,7 @@ export default function ChatArea({ isSidebarOpen, onToggleSidebar, isResultsOpen
           </div>
         )}
         <div ref={bottomRef} />
+        </div>
       </div>
 
       {/* ── Input area (Manus Style) ────────────────────────────────── */}
