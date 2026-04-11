@@ -61,15 +61,7 @@ export default function Header() {
         >
           {/* Logo */}
           <div className="adv-logo">
-           <Image
-  src="/advertimus-logo.PNG"
-  alt="Advertimus Logo"
-  width={160}
-  height={52}
-  priority
-  className="adv-logo-img border-2 border-red-500"
-  style={{ height: 48, width: "auto", border: "2px solid red", zIndex: 999 }}
-/>
+<img src="/advertimus-logo.PNG" alt="Logo" style={{ width: '150px', height: 'auto', display: 'block' }} />
           </div>
 
           {/* Desktop Nav */}
@@ -163,14 +155,7 @@ export default function Header() {
         <div className="adv-m-overlay">
           <div className="adv-m-panel">
             <div className="adv-m-head">
-             <Image
-  src="/advertimus-logo.PNG"
-  alt="Advertimus Logo"
-  width={140}
-  height={44}
-  className="adv-m-logo border-2 border-red-500"
-  style={{ border: "2px solid red", zIndex: 999 }}
-/>
+<img src="/advertimus-logo.PNG" alt="Logo" style={{ width: '150px', height: 'auto', display: 'block' }} />
 
               <button className="adv-m-close" onClick={() => setOpenMobile(false)} type="button">
                 <i className={IconBox.close} />
