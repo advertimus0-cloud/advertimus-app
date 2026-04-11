@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="adv-footer-shell">
         <div className="adv-footer-col">
         <Image
-  src="/Advertimus-logo.png"
+  src="/advertimus-logo.PNG"
   alt="Advertimus Logo"
   width={160}
   height={52}

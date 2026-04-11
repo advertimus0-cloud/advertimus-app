@@ -62,12 +62,13 @@ export default function Header() {
           {/* Logo */}
           <div className="adv-logo">
            <Image
-  src="/Advertimus-logo.PNG"
+  src="/advertimus-logo.PNG"
   alt="Advertimus Logo"
   width={160}
   height={52}
   priority
   className="adv-logo-img"
+  style={{ height: 48, width: "auto" }}
 />
           </div>
 
@@ -163,7 +164,7 @@ export default function Header() {
           <div className="adv-m-panel">
             <div className="adv-m-head">
              <Image
-  src="/Advertimus-logo.PNG"
+  src="/advertimus-logo.PNG"
   alt="Advertimus Logo"
   width={140}
   height={44}
