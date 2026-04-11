@@ -7,7 +7,8 @@
 // ===============================
 
 import React, { useMemo, useState } from "react";
-import { IconBox } from "./components/IconBox";
+import Link from "next/link";
+import { IconBox } from "../components/IconBox";
 
 export default function HomePage() {
   // ===============================
@@ -93,14 +94,14 @@ export default function HomePage() {
                 performance.
               </p>
 
-              {/* ✅ CTA Buttons (تصميم فقط - الروابط لاحقًا) */}
+              {/* ✅ CTA Buttons — linked to dashboard */}
               <div className="hero-actions">
-                <button className="cta-btn" type="button">
+                <Link href="/dashboard" className="cta-btn">
                   Create a Market-Ready Ad
-                </button>
-                <button className="cta-btn" type="button">
+                </Link>
+                <Link href="/dashboard" className="cta-btn">
                   Talk to Advertimus
-                </button>
+                </Link>
               </div>
             </div>
 
@@ -360,6 +361,13 @@ export default function HomePage() {
 
         .cta-btn {
           position: relative;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          text-decoration: none;
+          font-size: inherit;
+          font-family: inherit;
+          font-weight: 500;
           padding: 14px 22px;
           border-radius: 12px;
           background: transparent;
