@@ -12,35 +12,8 @@ interface Message {
 }
 
 // ─── Mock initial messages ────────────────────────────────────────────────────
-const INITIAL_MESSAGES: Message[] = [
-  {
-    id: "m1",
-    role: "ai",
-    content:
-      "Hi Sarah! I'm **Advertimus**, your AI marketing expert. Tell me about your product and I'll create high-converting ads, videos and designs tailored to your audience.\n\nTo get started — what are you selling, and who's your target customer?",
-    timestamp: "Just now",
-  },
-  {
-    id: "m2",
-    role: "user",
-    content:
-      "I sell premium leather wallets. Hand-crafted, slim design. Targeting men 25–45 who care about quality and style. Budget around $200.",
-    timestamp: "2 min ago",
-  },
-  {
-    id: "m3",
-    role: "ai",
-    content:
-      "Great niche — **premium leather** has strong purchase intent on Instagram and YouTube. A few quick questions:\n\n1. Do you have product reference photos?\n2. Which platforms — Instagram, TikTok, YouTube, Meta?\n3. Brand vibe — rugged masculine, minimal luxury, or artisan craft?",
-    timestamp: "1 min ago",
-  },
-  {
-    id: "m4",
-    role: "user",
-    content: "Minimal luxury. Instagram and YouTube Shorts. I'll attach some product photos now.",
-    timestamp: "Just now",
-  },
-];
+// ─── Initial empty messages ─────────────────────────────────────────────────────
+const INITIAL_MESSAGES: Message[] = [];
 
 // ─── Quick chip suggestions ───────────────────────────────────────────────────
 const CHIPS = ["Create Instagram ad", "Write ad copy", "YouTube Shorts script", "Predict performance"];
@@ -67,7 +40,8 @@ export default function ChatArea({ isSidebarOpen, onToggleSidebar }: { isSidebar
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const t = setTimeout(() => setIsTyping(false), 1200);
+    // setIsTyping(false); 
+    const t = setTimeout(() => setIsTyping(false), 500);
     return () => clearTimeout(t);
   }, []);
 
@@ -379,16 +353,32 @@ export default function ChatArea({ isSidebarOpen, onToggleSidebar }: { isSidebar
       {/* ── Input area (Manus Style) ────────────────────────────────── */}
       <div
         style={{
-          padding: "0 24px 24px",
+          padding: messages.length === 0 ? "0 24px" : "0 24px 24px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          justifyContent: messages.length === 0 ? "center" : "flex-end",
           width: "100%",
-          flexShrink: 0,
+          flex: messages.length === 0 ? 1 : "0 0 auto",
           background: "#000",
         }}
       >
         <div style={{ maxWidth: 800, width: "100%", display: "flex", flexDirection: "column", gap: 20 }}>
+          {messages.length === 0 && (
+            <h1 
+              style={{ 
+                color: "#e2e2f4", 
+                fontSize: 32, 
+                fontWeight: 500, 
+                fontFamily: "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif", 
+                textAlign: "center", 
+                marginBottom: "16px",
+                letterSpacing: "0.01em"
+              }}
+            >
+              lets make the best marketing campaign
+            </h1>
+          )}
           {/* Main Input Box */}
           <div
             style={{
