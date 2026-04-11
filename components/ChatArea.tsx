@@ -11,9 +11,7 @@ interface Message {
   typing?: boolean;
 }
 
-// ─── Mock initial messages ────────────────────────────────────────────────────
-// ─── Initial empty messages ─────────────────────────────────────────────────────
-const INITIAL_MESSAGES: Message[] = [];
+import { useChat } from "../context/ChatContext";
 
 // ─── Quick chip suggestions ───────────────────────────────────────────────────
 const CHIPS = ["Create Instagram ad", "Write ad copy", "YouTube Shorts script", "Predict performance"];
@@ -34,16 +32,16 @@ function renderText(text: string) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function ChatArea({ isSidebarOpen, onToggleSidebar, isResultsOpen, onToggleResults }: { isSidebarOpen?: boolean; onToggleSidebar?: () => void; isResultsOpen?: boolean; onToggleResults?: () => void }) {
-  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
+  const { activeChat, sendMessage } = useChat();
+  const messages = activeChat?.messages || [];
+
   const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(true);
+  const [isTyping, setIsTyping] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // setIsTyping(false); 
-    const t = setTimeout(() => setIsTyping(false), 500);
-    return () => clearTimeout(t);
-  }, []);
+    setIsTyping(false); 
+  }, [activeChat?.id]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -51,26 +49,11 @@ export default function ChatArea({ isSidebarOpen, onToggleSidebar, isResultsOpen
 
   const handleSend = () => {
     if (!input.trim()) return;
-    const userMsg: Message = {
-      id: `u-${Date.now()}`,
-      role: "user",
-      content: input,
-      timestamp: "Just now",
-    };
-    setMessages((prev) => [...prev, userMsg]);
+    sendMessage(input);
     setInput("");
     setIsTyping(true);
     setTimeout(() => {
       setIsTyping(false);
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `a-${Date.now()}`,
-          role: "ai",
-          content: "Got it! Let me analyse that and prepare the best ad strategy for you.",
-          timestamp: "Just now",
-        },
-      ]);
     }, 1800);
   };
 
@@ -142,7 +125,7 @@ export default function ChatArea({ isSidebarOpen, onToggleSidebar, isResultsOpen
             <img src="/adverboticon.jpg" alt="Advertimus" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
           </div>
           <div>
-            <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#fff" }}>New conversation</p>
+            <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#fff" }}>{activeChat?.title || "New conversation"}</p>
             <p style={{ margin: 0, fontSize: 11, color: "#5a5a72" }}>AI marketing assistant · ready to generate</p>
           </div>
         </div>

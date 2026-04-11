@@ -2,6 +2,8 @@
 
 import React from "react";
 
+import { useChat } from "../context/ChatContext";
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface HistoryItem {
   id: string;
@@ -10,28 +12,16 @@ interface HistoryItem {
   active?: boolean;
 }
 
-// ─── Static mock data ─────────────────────────────────────────────────────────
-const todayItems: HistoryItem[] = [
-  { id: "t1", title: "New conversation", subtitle: "Just started", active: true },
-];
-const yesterdayItems: HistoryItem[] = [
-  { id: "y1", title: "Leather wallet ads", subtitle: "5 videos generated" },
-  { id: "y2", title: "Seasonal posts design", subtitle: "3 designs · 2 copy sets" },
-];
-const earlierItems: HistoryItem[] = [
-  { id: "e1", title: "Product photography", subtitle: "Mar 10 · 4 images" },
-  { id: "e2", title: "Summer campaign", subtitle: "Mar 7 · 8 assets" },
-];
-
 const navItems = [
-  { icon: "bx bx-grid-alt", label: "Projects" },
-  { icon: "bx bx-folder-open", label: "Assets" },
-  { icon: "bx bx-chat", label: "Chat", active: true },
-  { icon: "bx bx-time-five", label: "History" },
+  { id: "projects", icon: "bx bx-grid-alt", label: "Projects" },
+  { id: "assets", icon: "bx bx-folder-open", label: "Assets" },
+  { id: "chat", icon: "bx bx-chat", label: "Chat", active: true },
+  { id: "history", icon: "bx bx-time-five", label: "History" },
 ];
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
-function HistoryGroup({ label, items }: { label: string; items: HistoryItem[] }) {
+function HistoryGroup({ label, items, onSelect }: { label: string; items: HistoryItem[]; onSelect: (id: string) => void }) {
+  if (items.length === 0) return null;
   return (
     <div style={{ marginBottom: 20 }}>
       <p style={{ margin: "0 0 6px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.09em", color: "#5a5a72", textTransform: "uppercase" }}>
@@ -40,6 +30,7 @@ function HistoryGroup({ label, items }: { label: string; items: HistoryItem[] })
       {items.map((item) => (
         <button
           key={item.id}
+          onClick={() => onSelect(item.id)}
           style={{
             display: "block",
             width: "100%",
@@ -56,10 +47,10 @@ function HistoryGroup({ label, items }: { label: string; items: HistoryItem[] })
           onMouseEnter={(e) => { if (!item.active) (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.04)"; }}
           onMouseLeave={(e) => { if (!item.active) (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
         >
-          <p style={{ margin: 0, fontSize: 13, fontWeight: item.active ? 600 : 400, color: item.active ? "#fff" : "#c0c0d0", lineHeight: 1.3 }}>
+          <p style={{ margin: 0, fontSize: 13, fontWeight: item.active ? 600 : 400, color: item.active ? "#fff" : "#c0c0d0", lineHeight: 1.3, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
             {item.title}
           </p>
-          <p style={{ margin: "2px 0 0", fontSize: 11, color: "#5a5a72" }}>{item.subtitle}</p>
+          <p style={{ margin: "2px 0 0", fontSize: 11, color: "#5a5a72", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{item.subtitle}</p>
         </button>
       ))}
     </div>
@@ -68,9 +59,19 @@ function HistoryGroup({ label, items }: { label: string; items: HistoryItem[] })
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function Sidebar() {
+  const { chats, activeChatId, switchChat, createNewChat } = useChat();
+
   const tokenUsed = 200;
   const tokenTotal = 400;
   const pct = Math.round((tokenUsed / tokenTotal) * 100);
+
+  // Group chats naively based on active vs inactive for demonstration
+  const recentItems: HistoryItem[] = chats.map(c => ({
+    id: c.id,
+    title: c.title,
+    subtitle: `${c.messages.length} messages`,
+    active: c.id === activeChatId,
+  }));
 
   return (
     <div
@@ -122,7 +123,8 @@ export default function Sidebar() {
       <nav style={{ padding: "12px 8px" }}>
         {navItems.map((n) => (
           <button
-            key={n.label}
+            key={n.id}
+            onClick={() => { if (n.id === "chat") createNewChat(); }}
             style={{
               display: "flex",
               alignItems: "center",
@@ -144,16 +146,14 @@ export default function Sidebar() {
             onMouseLeave={(e) => { if (!n.active) { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.color = "#7a7a90"; }}}
           >
             <i className={n.icon} style={{ fontSize: 17 }} />
-            {n.label}
+            {n.id === "chat" ? "New Chat" : n.label}
           </button>
         ))}
       </nav>
 
       <div style={{ flex: 1, overflowY: "auto", padding: "0 8px" }}>
         <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 14 }}>
-          <HistoryGroup label="Today" items={todayItems} />
-          <HistoryGroup label="Yesterday" items={yesterdayItems} />
-          <HistoryGroup label="Earlier" items={earlierItems} />
+          <HistoryGroup label="Conversations" items={recentItems} onSelect={switchChat} />
         </div>
       </div>
 

@@ -15,6 +15,8 @@ import ResultsPanel from "./ResultsPanel";
  *
  * The right panel collapses below 1100px.
  */
+import { ChatProvider } from "../context/ChatContext";
+
 export default function MainLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
   const [isResultsOpen, setIsResultsOpen] = React.useState(true);
@@ -38,7 +40,7 @@ export default function MainLayout() {
   }, []);
 
   return (
-    <>
+    <ChatProvider>
       <div
         style={{
           display: "flex",
@@ -98,6 +100,6 @@ export default function MainLayout() {
           </div>
         </div>
       </div>
-    </>
+    </ChatProvider>
   );
 }
