@@ -186,84 +186,87 @@ export default function ChatArea() {
             }}
           >
             {/* Avatar */}
-            {msg.role === "ai" ? (
+                <div
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 8,
+                    overflow: "hidden",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    background: "rgba(255,255,255,0.03)",
+                    flexShrink: 0,
+                    marginTop: 2,
+                  }}
+                >
+                  <img src="/advertimus-bot.png" alt="BotIcon" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </div>
+              ) : (
+                <div
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: "50%",
+                    background: "linear-gradient(135deg,#5b21b6,#7c3aed)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 10,
+                    fontWeight: 700,
+                    color: "#fff",
+                    flexShrink: 0,
+                    marginTop: 2,
+                  }}
+                >
+                  SK
+                </div>
+              )}
+  
+              {/* Bubble */}
+              <div style={{ maxWidth: "72%" }}>
+                <div
+                  style={{
+                    padding: "12px 15px",
+                    borderRadius: msg.role === "ai" ? "4px 14px 14px 14px" : "14px 4px 14px 14px",
+                    background: msg.role === "ai" ? "#1c1c28" : "#1f2a4a",
+                    border: `1px solid ${msg.role === "ai" ? "rgba(255,255,255,0.06)" : "rgba(79,107,185,0.3)"}`,
+                    fontSize: 13.5,
+                    lineHeight: 1.65,
+                    color: "#d4d4e8",
+                    whiteSpace: "pre-line",
+                  }}
+                >
+                  {renderText(msg.content)}
+                </div>
+                <p
+                  style={{
+                    margin: "4px 0 0",
+                    fontSize: 10,
+                    color: "#4a4a5a",
+                    textAlign: msg.role === "user" ? "right" : "left",
+                  }}
+                >
+                  {msg.timestamp}
+                </p>
+              </div>
+            </div>
+          ))}
+  
+          {/* Typing indicator */}
+          {isTyping && (
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
               <div
                 style={{
                   width: 30,
                   height: 30,
                   borderRadius: 8,
                   overflow: "hidden",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  background: "rgba(255,255,255,0.03)",
                   flexShrink: 0,
-                  marginTop: 2,
                 }}
               >
-                <img src="/advertimus-bot.png" alt="Advertimus" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img src="/advertimus-bot.png" alt="BotIcon" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               </div>
-            ) : (
-              <div
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: "50%",
-                  background: "linear-gradient(135deg,#5b21b6,#7c3aed)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 10,
-                  fontWeight: 700,
-                  color: "#fff",
-                  flexShrink: 0,
-                  marginTop: 2,
-                }}
-              >
-                SK
-              </div>
-            )}
-
-            {/* Bubble */}
-            <div style={{ maxWidth: "72%" }}>
-              <div
-                style={{
-                  padding: "12px 15px",
-                  borderRadius: msg.role === "ai" ? "4px 14px 14px 14px" : "14px 4px 14px 14px",
-                  background: msg.role === "ai" ? "#1c1c28" : "#1f2a4a",
-                  border: `1px solid ${msg.role === "ai" ? "rgba(255,255,255,0.06)" : "rgba(79,107,185,0.3)"}`,
-                  fontSize: 13.5,
-                  lineHeight: 1.65,
-                  color: "#d4d4e8",
-                  whiteSpace: "pre-line",
-                }}
-              >
-                {renderText(msg.content)}
-              </div>
-              <p
-                style={{
-                  margin: "4px 0 0",
-                  fontSize: 10,
-                  color: "#4a4a5a",
-                  textAlign: msg.role === "user" ? "right" : "left",
-                }}
-              >
-                {msg.timestamp}
-              </p>
-            </div>
-          </div>
-        ))}
-
-        {/* Typing indicator */}
-        {isTyping && (
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-            <div
-              style={{
-                width: 30,
-                height: 30,
-                borderRadius: 8,
-                overflow: "hidden",
-                flexShrink: 0,
-              }}
-            >
-              <img src="/advertimus-bot.png" alt="Advertimus" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            </div>
             <div
               style={{
                 padding: "12px 16px",
