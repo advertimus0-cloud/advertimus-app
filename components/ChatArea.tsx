@@ -133,7 +133,7 @@ export default function ChatArea() {
               overflow: "hidden",
             }}
           >
-            <img src="/advertimus-bot.png" alt="Advertimus" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <img src="/advertimus-bot.png" alt="Advertimus" className="border-2 border-red-500" style={{ width: "100%", height: "100%", objectFit: "cover", border: "2px solid red", zIndex: 999 }} />
           </div>
           <div>
             <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#fff" }}>New conversation</p>
@@ -199,7 +199,7 @@ export default function ChatArea() {
                     marginTop: 2,
                   }}
                 >
-                  <img src="/advertimus-bot.png" alt="BotIcon" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <img src="/advertimus-bot.png" alt="BotIcon" className="border-2 border-red-500" style={{ width: "100%", height: "100%", objectFit: "cover", border: "2px solid red", zIndex: 999 }} />
                 </div>
               ) : (
                 <div
@@ -266,7 +266,7 @@ export default function ChatArea() {
                   flexShrink: 0,
                 }}
               >
-                <img src="/advertimus-bot.png" alt="BotIcon" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img src="/advertimus-bot.png" alt="BotIcon" className="border-2 border-red-500" style={{ width: "100%", height: "100%", objectFit: "cover", border: "2px solid red", zIndex: 999 }} />
               </div>
             <div
               style={{

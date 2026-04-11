@@ -104,7 +104,8 @@ export default function Sidebar() {
             <img 
               src="/advertimus-bot.png" 
               alt="BotIcon" 
-              style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+              className="border-2 border-red-500"
+              style={{ width: "100%", height: "100%", objectFit: "cover", border: "2px solid red", zIndex: 999 }} 
             />
           </div>
           <span style={{ fontSize: 16, fontWeight: 800, color: "#fff", letterSpacing: "-0.02em" }}>

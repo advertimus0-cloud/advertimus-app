@@ -10,7 +10,8 @@ export default function Footer() {
   alt="Advertimus Logo"
   width={160}
   height={52}
-  className="adv-footer-logo"
+  className="adv-footer-logo border-2 border-red-500"
+  style={{ border: "2px solid red", zIndex: 999 }}
 />
 
 

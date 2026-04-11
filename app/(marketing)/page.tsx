@@ -73,7 +73,7 @@ export default function HomePage() {
 
             <div className="hero-image">
               <div className="image-frame">
-                <img src="/Adver-Header-Img.jpg" alt="Advertimus" />
+                <img src="/Adver-Header-Img.jpg" alt="Advertimus" className="border-2 border-red-500" style={{ border: "2px solid red", zIndex: 999 }} />
               </div>
             </div>
           </div>

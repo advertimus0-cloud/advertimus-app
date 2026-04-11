@@ -67,8 +67,8 @@ export default function Header() {
   width={160}
   height={52}
   priority
-  className="adv-logo-img"
-  style={{ height: 48, width: "auto" }}
+  className="adv-logo-img border-2 border-red-500"
+  style={{ height: 48, width: "auto", border: "2px solid red", zIndex: 999 }}
 />
           </div>
 
@@ -168,7 +168,8 @@ export default function Header() {
   alt="Advertimus Logo"
   width={140}
   height={44}
-  className="adv-m-logo"
+  className="adv-m-logo border-2 border-red-500"
+  style={{ border: "2px solid red", zIndex: 999 }}
 />
 
               <button className="adv-m-close" onClick={() => setOpenMobile(false)} type="button">
