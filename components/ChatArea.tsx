@@ -124,18 +124,16 @@ export default function ChatArea() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {/* Bot Avatar */}
           <div
             style={{
               width: 28,
               height: 28,
               borderRadius: 7,
-              background: "linear-gradient(135deg,#cc2936,#8b1520)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              overflow: "hidden",
             }}
           >
-            <i className="bx bx-broadcast" style={{ color: "#fff", fontSize: 15 }} />
+            <img src="/advertimus-bot.png" alt="Advertimus" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
           <div>
             <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#fff" }}>New conversation</p>
@@ -194,15 +192,12 @@ export default function ChatArea() {
                   width: 30,
                   height: 30,
                   borderRadius: 8,
-                  background: "linear-gradient(135deg,#cc2936,#8b1520)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  overflow: "hidden",
                   flexShrink: 0,
                   marginTop: 2,
                 }}
               >
-                <i className="bx bx-broadcast" style={{ color: "#fff", fontSize: 14 }} />
+                <img src="/advertimus-bot.png" alt="Advertimus" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               </div>
             ) : (
               <div
@@ -263,14 +258,11 @@ export default function ChatArea() {
                 width: 30,
                 height: 30,
                 borderRadius: 8,
-                background: "linear-gradient(135deg,#cc2936,#8b1520)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                overflow: "hidden",
                 flexShrink: 0,
               }}
             >
-              <i className="bx bx-broadcast" style={{ color: "#fff", fontSize: 14 }} />
+              <img src="/advertimus-bot.png" alt="Advertimus" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
             <div
               style={{

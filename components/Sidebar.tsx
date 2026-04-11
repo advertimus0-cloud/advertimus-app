@@ -88,18 +88,22 @@ export default function Sidebar() {
       {/* ── Logo ──────────────────────────────────────────────────── */}
       <div style={{ padding: "20px 16px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {/* Bot Avatar Photo */}
           <div
             style={{
               width: 34,
               height: 34,
               borderRadius: 9,
-              background: "linear-gradient(135deg,#cc2936,#8b1520)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              overflow: "hidden",
+              border: "1px solid rgba(255,255,255,0.1)",
+              flexShrink: 0,
             }}
           >
-            <i className="bx bx-broadcast" style={{ color: "#fff", fontSize: 18 }} />
+            <img 
+              src="/advertimus-bot.png" 
+              alt="Advertimus Bot" 
+              style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+            />
           </div>
           <span style={{ fontSize: 16, fontWeight: 800, color: "#fff", letterSpacing: "-0.02em" }}>
             Advertimus
