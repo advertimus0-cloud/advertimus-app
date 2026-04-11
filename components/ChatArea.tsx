@@ -45,7 +45,7 @@ const INITIAL_MESSAGES: Message[] = [
 // ─── Quick chip suggestions ───────────────────────────────────────────────────
 const CHIPS = ["Create Instagram ad", "Write ad copy", "YouTube Shorts script", "Predict performance"];
 
-// ─── Bold text renderer (very simple) ────────────────────────────────────────
+// ─── Bold text renderer ───────────────────────────────────────────────────────
 function renderText(text: string) {
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
   return parts.map((part, i) =>
@@ -107,7 +107,7 @@ export default function ChatArea() {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        background: "#111118",
+        background: "#000",
         fontFamily: "Inter, system-ui, sans-serif",
         overflow: "hidden",
       }}
@@ -118,26 +118,34 @@ export default function ChatArea() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "14px 20px",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          padding: "14px 24px",
+          borderBottom: "1px solid transparent",
+          backgroundImage: "linear-gradient(#000,#000), linear-gradient(90deg,#161142,#5d1a1b)",
+          backgroundOrigin: "border-box",
+          backgroundClip: "padding-box, border-box",
+          borderBottomWidth: 1,
           flexShrink: 0,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          {/* Bot Avatar */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          {/* Bot avatar — small icon only, no image */}
           <div
             style={{
-              width: 28,
-              height: 28,
-              borderRadius: 7,
-              overflow: "hidden",
+              width: 32,
+              height: 32,
+              borderRadius: 9,
+              background: "linear-gradient(135deg,#161142,#5d1a1b)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
             }}
           >
-            <img src="/advertimus-bot.png" alt="Advertimus" className="border-2 border-red-500" style={{ width: "100%", height: "100%", objectFit: "cover", border: "2px solid red", zIndex: 999 }} />
+            <i className="bx bx-bot" style={{ fontSize: 18, color: "#fff" }} />
           </div>
           <div>
             <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#fff" }}>New conversation</p>
-            <p style={{ margin: 0, fontSize: 11, color: "#6b6b80" }}>AI marketing assistant · ready to generate</p>
+            <p style={{ margin: 0, fontSize: 11, color: "#5a5a72" }}>AI marketing assistant · ready to generate</p>
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
@@ -147,16 +155,18 @@ export default function ChatArea() {
               style={{
                 padding: "6px 14px",
                 borderRadius: 8,
-                border: "1px solid rgba(255,255,255,0.1)",
-                background: "rgba(255,255,255,0.04)",
-                color: "#c0c0d0",
+                border: "1px solid transparent",
+                backgroundImage: "linear-gradient(#0a0a0a,#0a0a0a), linear-gradient(135deg,#161142,#5d1a1b)",
+                backgroundOrigin: "border-box",
+                backgroundClip: "padding-box, border-box",
+                color: "#9090a8",
                 fontSize: 12,
                 fontWeight: 500,
                 cursor: "pointer",
-                transition: "border-color 0.15s, background 0.15s",
+                transition: "color 0.2s",
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.22)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.1)"; }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#fff"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#9090a8"; }}
             >
               {label}
             </button>
@@ -169,110 +179,150 @@ export default function ChatArea() {
         style={{
           flex: 1,
           overflowY: "auto",
-          padding: "24px 20px",
+          padding: "28px 24px",
           display: "flex",
           flexDirection: "column",
-          gap: 20,
+          gap: 24,
         }}
       >
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            style={{
-              display: "flex",
-              flexDirection: msg.role === "user" ? "row-reverse" : "row",
-              alignItems: "flex-start",
-              gap: 10,
-            }}
-          >
-            {/* Avatar */}
-            {msg.role === "ai" ? (
-                <div
+        {messages.map((msg) =>
+          msg.role === "ai" ? (
+            /* ── AI message: no box, just text ── */
+            <div key={msg.id} style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+              {/* Bot icon pill */}
+              <div
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 8,
+                  background: "linear-gradient(135deg,#161142,#5d1a1b)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  marginTop: 1,
+                }}
+              >
+                <i className="bx bx-bot" style={{ fontSize: 15, color: "#fff" }} />
+              </div>
+
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p
                   style={{
-                    width: 30,
-                    height: 30,
-                    borderRadius: 8,
-                    overflow: "hidden",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    background: "rgba(255,255,255,0.03)",
-                    flexShrink: 0,
-                    marginTop: 2,
-                  }}
-                >
-                  <img src="/advertimus-bot.png" alt="BotIcon" className="border-2 border-red-500" style={{ width: "100%", height: "100%", objectFit: "cover", border: "2px solid red", zIndex: 999 }} />
-                </div>
-              ) : (
-                <div
-                  style={{
-                    width: 30,
-                    height: 30,
-                    borderRadius: "50%",
-                    background: "linear-gradient(135deg,#5b21b6,#7c3aed)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 10,
-                    fontWeight: 700,
-                    color: "#fff",
-                    flexShrink: 0,
-                    marginTop: 2,
-                  }}
-                >
-                  SK
-                </div>
-              )}
-  
-              {/* Bubble */}
-              <div style={{ maxWidth: "72%" }}>
-                <div
-                  style={{
-                    padding: "12px 15px",
-                    borderRadius: msg.role === "ai" ? "4px 14px 14px 14px" : "14px 4px 14px 14px",
-                    background: msg.role === "ai" ? "#1c1c28" : "#1f2a4a",
-                    border: `1px solid ${msg.role === "ai" ? "rgba(255,255,255,0.06)" : "rgba(79,107,185,0.3)"}`,
+                    margin: 0,
                     fontSize: 13.5,
-                    lineHeight: 1.65,
-                    color: "#d4d4e8",
+                    lineHeight: 1.75,
+                    color: "#c8c8e0",
                     whiteSpace: "pre-line",
                   }}
                 >
                   {renderText(msg.content)}
-                </div>
-                <p
-                  style={{
-                    margin: "4px 0 0",
-                    fontSize: 10,
-                    color: "#4a4a5a",
-                    textAlign: msg.role === "user" ? "right" : "left",
-                  }}
-                >
-                  {msg.timestamp}
                 </p>
+                <p style={{ margin: "6px 0 0", fontSize: 10, color: "#3a3a50" }}>{msg.timestamp}</p>
               </div>
             </div>
-          ))}
-  
-          {/* Typing indicator */}
-          {isTyping && (
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-              <div
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 8,
-                  overflow: "hidden",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  background: "rgba(255,255,255,0.03)",
-                  flexShrink: 0,
-                }}
-              >
-                <img src="/advertimus-bot.png" alt="BotIcon" className="border-2 border-red-500" style={{ width: "100%", height: "100%", objectFit: "cover", border: "2px solid red", zIndex: 999 }} />
+          ) : (
+            /* ── User message: premium tech bubble ── */
+            <div key={msg.id} style={{ display: "flex", justifyContent: "flex-end" }}>
+              <div style={{ maxWidth: "72%", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
+                {/* Gradient-border tech bubble */}
+                <div
+                  style={{
+                    position: "relative",
+                    padding: "1px",
+                    borderRadius: 16,
+                    background: "linear-gradient(135deg,#161142,#5d1a1b)",
+                    boxShadow: "0 0 22px rgba(93,26,27,0.25), 0 0 40px rgba(22,17,66,0.2)",
+                  }}
+                >
+                  <div
+                    style={{
+                      background: "linear-gradient(135deg, rgba(22,17,66,0.85) 0%, rgba(8,6,20,0.95) 100%)",
+                      borderRadius: 15,
+                      padding: "12px 16px",
+                    }}
+                  >
+                    {/* Decorative top bar */}
+                    <div
+                      style={{
+                        height: 1,
+                        background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)",
+                        marginBottom: 9,
+                        borderRadius: 1,
+                      }}
+                    />
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: 13.5,
+                        lineHeight: 1.65,
+                        color: "#e2e2f4",
+                        whiteSpace: "pre-line",
+                        fontWeight: 450,
+                        letterSpacing: "0.01em",
+                      }}
+                    >
+                      {msg.content}
+                    </p>
+                    {/* Decorative bottom bar */}
+                    <div
+                      style={{
+                        height: 1,
+                        background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)",
+                        marginTop: 9,
+                        borderRadius: 1,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Timestamp + user badge */}
+                <div style={{ display: "flex", alignItems: "center", gap: 6, paddingRight: 2 }}>
+                  <p style={{ margin: 0, fontSize: 10, color: "#3a3a50" }}>{msg.timestamp}</p>
+                  <div
+                    style={{
+                      width: 18,
+                      height: 18,
+                      borderRadius: "50%",
+                      background: "linear-gradient(135deg,#5b21b6,#7c3aed)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 8,
+                      fontWeight: 800,
+                      color: "#fff",
+                    }}
+                  >
+                    SK
+                  </div>
+                </div>
               </div>
+            </div>
+          )
+        )}
+
+        {/* Typing indicator */}
+        {isTyping && (
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+            <div
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: 8,
+                background: "linear-gradient(135deg,#161142,#5d1a1b)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <i className="bx bx-bot" style={{ fontSize: 15, color: "#fff" }} />
+            </div>
             <div
               style={{
                 padding: "12px 16px",
                 borderRadius: "4px 14px 14px 14px",
-                background: "#1c1c28",
+                background: "rgba(255,255,255,0.03)",
                 border: "1px solid rgba(255,255,255,0.06)",
                 display: "flex",
                 gap: 5,
@@ -286,7 +336,7 @@ export default function ChatArea() {
                     width: 6,
                     height: 6,
                     borderRadius: "50%",
-                    background: "#cc2936",
+                    background: "linear-gradient(135deg,#5d1a1b,#161142)",
                     display: "inline-block",
                     animation: `dot-bounce 1.2s ease-in-out ${i * 0.2}s infinite`,
                   }}
@@ -301,10 +351,14 @@ export default function ChatArea() {
       {/* ── Input area ────────────────────────────────────────────── */}
       <div
         style={{
-          padding: "12px 20px 16px",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
+          padding: "12px 24px 18px",
+          borderTop: "1px solid transparent",
+          backgroundImage: "linear-gradient(#000,#000), linear-gradient(90deg,#161142,#5d1a1b)",
+          backgroundOrigin: "border-box",
+          backgroundClip: "padding-box, border-box",
+          borderTopWidth: 1,
           flexShrink: 0,
-          background: "#111118",
+          background: "#000",
         }}
       >
         {/* Chips */}
@@ -314,97 +368,118 @@ export default function ChatArea() {
               key={chip}
               onClick={() => setInput(chip)}
               style={{
-                padding: "5px 12px",
+                padding: "5px 13px",
                 borderRadius: 20,
-                border: "1px solid rgba(255,255,255,0.1)",
-                background: "transparent",
-                color: "#7a7a90",
+                border: "1px solid transparent",
+                backgroundImage: "linear-gradient(#060608,#060608), linear-gradient(135deg,#161142,#5d1a1b)",
+                backgroundOrigin: "border-box",
+                backgroundClip: "padding-box, border-box",
+                color: "#6060a0",
                 fontSize: 11,
                 cursor: "pointer",
-                transition: "border-color 0.15s, color 0.15s",
+                transition: "color 0.2s",
+                fontFamily: "Inter, system-ui, sans-serif",
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(204,41,54,0.5)"; (e.currentTarget as HTMLButtonElement).style.color = "#cc2936"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.1)"; (e.currentTarget as HTMLButtonElement).style.color = "#7a7a90"; }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#c0c0e8"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6060a0"; }}
             >
               {chip}
             </button>
           ))}
         </div>
 
-        {/* Input row */}
+        {/* Input row — gradient border */}
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            background: "#1c1c28",
-            border: "1px solid rgba(255,255,255,0.1)",
-            borderRadius: 14,
-            padding: "10px 14px",
-            transition: "border-color 0.2s",
+            padding: "1px",
+            borderRadius: 16,
+            background: "linear-gradient(135deg,#161142,#5d1a1b)",
+            boxShadow: "0 0 28px rgba(22,17,66,0.3), 0 0 18px rgba(93,26,27,0.15)",
           }}
         >
-          <button
+          <div
             style={{
-              background: "transparent",
-              border: "none",
-              padding: 0,
-              cursor: "pointer",
-              color: "#5a5a72",
-              flexShrink: 0,
               display: "flex",
               alignItems: "center",
+              gap: 10,
+              background: "#080810",
+              borderRadius: 15,
+              padding: "10px 14px",
             }}
           >
-            <i className="bx bx-plus-circle" style={{ fontSize: 20 }} />
-          </button>
+            <button
+              style={{
+                background: "transparent",
+                border: "none",
+                padding: 0,
+                cursor: "pointer",
+                color: "#3a3a60",
+                flexShrink: 0,
+                display: "flex",
+                alignItems: "center",
+                transition: "color 0.2s",
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#8888c0"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#3a3a60"; }}
+            >
+              <i className="bx bx-plus-circle" style={{ fontSize: 20 }} />
+            </button>
 
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-            placeholder="Describe your product, campaign goal, or ask anything..."
-            style={{
-              flex: 1,
-              background: "transparent",
-              border: "none",
-              outline: "none",
-              color: "#d4d4e8",
-              fontSize: 13.5,
-              fontFamily: "inherit",
-            }}
-          />
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+              placeholder="Describe your product, campaign goal, or ask anything..."
+              style={{
+                flex: 1,
+                background: "transparent",
+                border: "none",
+                outline: "none",
+                color: "#d4d4e8",
+                fontSize: 13.5,
+                fontFamily: "inherit",
+              }}
+            />
 
-          <button
-            onClick={handleSend}
-            disabled={!input.trim()}
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: 9,
-              border: "none",
-              background: input.trim() ? "linear-gradient(135deg,#cc2936,#8b1520)" : "rgba(255,255,255,0.06)",
-              color: "#fff",
-              cursor: input.trim() ? "pointer" : "default",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-              transition: "background 0.2s",
-            }}
-          >
-            <i className="bx bx-send" style={{ fontSize: 16 }} />
-          </button>
+            <button
+              onClick={handleSend}
+              disabled={!input.trim()}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 9,
+                border: "none",
+                background: input.trim()
+                  ? "linear-gradient(135deg,#5d1a1b,#161142)"
+                  : "rgba(255,255,255,0.04)",
+                color: "#fff",
+                cursor: input.trim() ? "pointer" : "default",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                transition: "background 0.2s, box-shadow 0.2s",
+                boxShadow: input.trim() ? "0 0 14px rgba(93,26,27,0.45)" : "none",
+              }}
+            >
+              <i className="bx bx-send" style={{ fontSize: 16 }} />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* dot-bounce animation */}
+      {/* Animations */}
       <style>{`
         @keyframes dot-bounce {
           0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; }
           40% { transform: scale(1); opacity: 1; }
         }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(93,26,27,0.35); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(93,26,27,0.6); }
       `}</style>
     </div>
   );

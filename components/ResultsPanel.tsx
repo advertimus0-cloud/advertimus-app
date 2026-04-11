@@ -52,9 +52,12 @@ function VideoCard({ asset }: { asset: VideoAsset }) {
   return (
     <div
       style={{
-        background: "#1c1c28",
+        background: "#000",
         borderRadius: 12,
-        border: "1px solid rgba(255,255,255,0.06)",
+        border: "1px solid transparent",
+        backgroundImage: "linear-gradient(#000,#000), linear-gradient(135deg,#161142,#5d1a1b)",
+        backgroundOrigin: "border-box",
+        backgroundClip: "padding-box, border-box",
         overflow: "hidden",
         marginBottom: 10,
       }}
@@ -170,8 +173,11 @@ export default function ResultsPanel() {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        background: "#0d0d12",
-        borderLeft: "1px solid rgba(255,255,255,0.06)",
+        background: "#000",
+        borderLeft: "1px solid transparent",
+        backgroundImage: "linear-gradient(#000,#000), linear-gradient(180deg,#161142,#5d1a1b)",
+        backgroundOrigin: "border-box",
+        backgroundClip: "padding-box, border-box",
         fontFamily: "Inter, system-ui, sans-serif",
         overflow: "hidden",
       }}
@@ -211,12 +217,16 @@ export default function ResultsPanel() {
                 padding: "6px 12px",
                 borderRadius: "8px 8px 0 0",
                 border: "none",
-                background: activeTab === tab ? "#1c1c28" : "transparent",
+                background: activeTab === tab ? "rgba(22,17,66,0.45)" : "transparent",
                 color: activeTab === tab ? "#fff" : "#5a5a72",
                 fontSize: 12,
                 fontWeight: activeTab === tab ? 600 : 400,
                 cursor: "pointer",
-                borderBottom: activeTab === tab ? "2px solid #cc2936" : "2px solid transparent",
+                borderBottom: activeTab === tab ? "2px solid transparent" : "2px solid transparent",
+                backgroundImage: activeTab === tab
+                  ? "none"
+                  : "none",
+                boxShadow: activeTab === tab ? "inset 0 -2px 0 0 rgba(93,26,27,0.9)" : "none",
                 transition: "all 0.15s",
               }}
             >
@@ -256,18 +266,21 @@ export default function ResultsPanel() {
                   style={{
                     aspectRatio: "1",
                     borderRadius: 10,
-                    background: "#1c1c28",
-                    border: "1px solid rgba(255,255,255,0.06)",
+                    background: "#000",
+                    border: "1px solid transparent",
+                    backgroundImage: "linear-gradient(#000,#000), linear-gradient(135deg,#161142,#5d1a1b)",
+                    backgroundOrigin: "border-box",
+                    backgroundClip: "padding-box, border-box",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     cursor: "pointer",
-                    transition: "border-color 0.15s",
+                    transition: "box-shadow 0.15s",
                   }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(204,41,54,0.4)"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.06)"; }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = "0 0 18px rgba(93,26,27,0.35)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = "none"; }}
                 >
-                  <i className={img.placeholder} style={{ fontSize: 28, color: "#3a3a50" }} />
+                  <i className={img.placeholder} style={{ fontSize: 28, color: "#2a2a40" }} />
                 </div>
               ))}
             </div>
@@ -304,9 +317,12 @@ export default function ResultsPanel() {
             )}
             <div
               style={{
-                background: "#1c1c28",
+                background: "#000",
                 borderRadius: 12,
-                border: "1px solid rgba(255,255,255,0.06)",
+                border: "1px solid transparent",
+                backgroundImage: "linear-gradient(#000,#000), linear-gradient(135deg,#161142,#5d1a1b)",
+                backgroundOrigin: "border-box",
+                backgroundClip: "padding-box, border-box",
                 padding: "14px",
               }}
             >

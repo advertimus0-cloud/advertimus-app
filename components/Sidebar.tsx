@@ -79,34 +79,33 @@ export default function Sidebar() {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        background: "#0d0d12",
-        borderRight: "1px solid rgba(255,255,255,0.06)",
+        background: "#000",
+        borderRight: "1px solid transparent",
+        backgroundImage: "linear-gradient(#000,#000), linear-gradient(180deg,#161142,#5d1a1b)",
+        backgroundOrigin: "border-box",
+        backgroundClip: "padding-box, border-box",
         fontFamily: "Inter, system-ui, sans-serif",
         overflow: "hidden",
       }}
     >
       {/* ── Logo ──────────────────────────────────────────────────── */}
-      <div style={{ padding: "20px 16px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+      <div style={{ padding: "20px 16px 16px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          {/* Bot Avatar Photo */}
+          {/* Bot Avatar — gradient icon */}
           <div
             style={{
               width: 28,
               height: 28,
               borderRadius: 7,
-              overflow: "hidden",
-              border: "1px solid rgba(255,255,255,0.1)",
-              background: "rgba(255,255,255,0.03)",
+              background: "linear-gradient(135deg,#161142,#5d1a1b)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               flexShrink: 0,
-              boxShadow: "0 0 15px rgba(255,255,255,0.05)",
+              boxShadow: "0 0 12px rgba(93,26,27,0.35)",
             }}
           >
-            <img 
-              src="/advertimus-bot.png" 
-              alt="BotIcon" 
-              className="border-2 border-red-500"
-              style={{ width: "100%", height: "100%", objectFit: "cover", border: "2px solid red", zIndex: 999 }} 
-            />
+            <i className="bx bx-bot" style={{ fontSize: 16, color: "#fff" }} />
           </div>
           <span style={{ fontSize: 16, fontWeight: 800, color: "#fff", letterSpacing: "-0.02em" }}>
             Advertimus
