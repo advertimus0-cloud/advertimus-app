@@ -33,7 +33,7 @@ function renderText(text: string) {
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function ChatArea({ isSidebarOpen, onToggleSidebar }: { isSidebarOpen?: boolean; onToggleSidebar?: () => void }) {
+export default function ChatArea({ isSidebarOpen, onToggleSidebar, isResultsOpen, onToggleResults }: { isSidebarOpen?: boolean; onToggleSidebar?: () => void; isResultsOpen?: boolean; onToggleResults?: () => void }) {
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(true);
@@ -169,16 +169,42 @@ export default function ChatArea({ isSidebarOpen, onToggleSidebar }: { isSidebar
               {label}
             </button>
           ))}
+          {onToggleResults && (
+            <button
+              onClick={onToggleResults}
+              style={{
+                padding: "6px 14px",
+                borderRadius: 8,
+                border: "1px solid transparent",
+                backgroundImage: "linear-gradient(#0a0a0a,#0a0a0a), linear-gradient(135deg,#161142,#5d1a1b)",
+                backgroundOrigin: "border-box",
+                backgroundClip: "padding-box, border-box",
+                color: isResultsOpen ? "#fff" : "#9090a8",
+                fontSize: 12,
+                fontWeight: 500,
+                cursor: "pointer",
+                transition: "color 0.2s",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#fff"; }}
+              onMouseLeave={(e) => { if (!isResultsOpen) (e.currentTarget as HTMLButtonElement).style.color = "#9090a8"; }}
+            >
+              <i className="bx bx-sidebar" style={{ fontSize: 16, transform: "scaleX(-1)" }} />
+              Panel
+            </button>
+          )}
         </div>
       </div>
 
       {/* ── Messages ──────────────────────────────────────────────── */}
       <div
         style={{
+          display: messages.length === 0 ? "none" : "flex",
           flex: 1,
           overflowY: "auto",
           padding: "28px 24px",
-          display: "flex",
           flexDirection: "column",
           gap: 24,
         }}
@@ -222,58 +248,28 @@ export default function ChatArea({ isSidebarOpen, onToggleSidebar }: { isSidebar
               </div>
             </div>
           ) : (
-            /* ── User message: premium tech bubble ── */
+            /* ── User message: simple bubble ── */
             <div key={msg.id} style={{ display: "flex", justifyContent: "flex-end" }}>
-              <div style={{ maxWidth: "72%", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
-                {/* Gradient-border tech bubble */}
+              <div style={{ maxWidth: "72%", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
                 <div
                   style={{
-                    position: "relative",
-                    padding: "1px",
-                    borderRadius: 16,
-                    background: "linear-gradient(135deg,#161142,#5d1a1b)",
-                    boxShadow: "0 0 22px rgba(93,26,27,0.25), 0 0 40px rgba(22,17,66,0.2)",
+                    background: "rgba(255,255,255,0.08)",
+                    borderRadius: "16px 16px 4px 16px",
+                    padding: "12px 16px",
                   }}
                 >
-                  <div
+                  <p
                     style={{
-                      background: "linear-gradient(135deg, rgba(22,17,66,0.85) 0%, rgba(8,6,20,0.95) 100%)",
-                      borderRadius: 15,
-                      padding: "12px 16px",
+                      margin: 0,
+                      fontSize: 14,
+                      lineHeight: 1.6,
+                      color: "#e2e2f4",
+                      whiteSpace: "pre-line",
+                      fontWeight: 400,
                     }}
                   >
-                    {/* Decorative top bar */}
-                    <div
-                      style={{
-                        height: 1,
-                        background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)",
-                        marginBottom: 9,
-                        borderRadius: 1,
-                      }}
-                    />
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: 13.5,
-                        lineHeight: 1.65,
-                        color: "#e2e2f4",
-                        whiteSpace: "pre-line",
-                        fontWeight: 450,
-                        letterSpacing: "0.01em",
-                      }}
-                    >
-                      {msg.content}
-                    </p>
-                    {/* Decorative bottom bar */}
-                    <div
-                      style={{
-                        height: 1,
-                        background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)",
-                        marginTop: 9,
-                        borderRadius: 1,
-                      }}
-                    />
-                  </div>
+                    {msg.content}
+                  </p>
                 </div>
 
                 {/* Timestamp + user badge */}

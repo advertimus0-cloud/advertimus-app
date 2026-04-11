@@ -17,6 +17,25 @@ import ResultsPanel from "./ResultsPanel";
  */
 export default function MainLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
+  const [isResultsOpen, setIsResultsOpen] = React.useState(true);
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsMobile(true);
+        setIsSidebarOpen(false); // default closed on mobile
+        setIsResultsOpen(false);
+      } else {
+        setIsMobile(false);
+        setIsSidebarOpen(true);
+        setIsResultsOpen(true);
+      }
+    };
+    handleResize(); // Initialize
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <>
@@ -26,19 +45,25 @@ export default function MainLayout() {
           width: "100%",
           height: "100%",
           overflow: "hidden",
+          position: "relative",
         }}
       >
         {/* ── Left: Sidebar ──────────────────────────────────────── */}
         <div
           style={{
-            width: isSidebarOpen ? 220 : 0,
-            transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+            width: isSidebarOpen ? (isMobile ? "100%" : 220) : 0,
+            transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s",
             flexShrink: 0,
             height: "100%",
             overflow: "hidden",
+            position: isMobile ? "absolute" : "relative",
+            zIndex: isMobile ? 50 : 1,
+            left: 0,
+            background: "#000",
+            transform: isMobile && !isSidebarOpen ? "translateX(-100%)" : "translateX(0)",
           }}
         >
-          <div style={{ width: 220, height: "100%" }}>
+          <div style={{ width: isMobile ? "100%" : 220, height: "100%" }}>
             <Sidebar />
           </div>
         </div>
@@ -48,32 +73,31 @@ export default function MainLayout() {
           <ChatArea 
             isSidebarOpen={isSidebarOpen} 
             onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
+            isResultsOpen={isResultsOpen}
+            onToggleResults={() => setIsResultsOpen(!isResultsOpen)}
           />
         </div>
 
         {/* ── Right: Results ──────────────────────────────────────── */}
         <div
-          className="results-col"
           style={{
-            width: 320,
+            width: isResultsOpen ? (isMobile ? "100%" : 320) : 0,
+            transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s",
             flexShrink: 0,
             height: "100%",
             overflow: "hidden",
+            position: isMobile ? "absolute" : "relative",
+            zIndex: isMobile ? 40 : 1,
+            right: 0,
+            background: "#0a0a0a",
+            transform: isMobile && !isResultsOpen ? "translateX(100%)" : "translateX(0)",
           }}
         >
-          <ResultsPanel />
+          <div style={{ width: isMobile ? "100%" : 320, height: "100%" }}>
+            <ResultsPanel />
+          </div>
         </div>
       </div>
-
-      {/* Responsive: hide results panel on narrow screens */}
-      <style>{`
-        @media (max-width: 1100px) {
-          .results-col { display: none; }
-        }
-        @media (max-width: 700px) {
-          /* On mobile, sidebar overlays — handled later */
-        }
-      `}</style>
     </>
   );
 }
