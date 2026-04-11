@@ -97,15 +97,20 @@ export default function Sidebar() {
               width: 28,
               height: 28,
               borderRadius: 7,
-              background: "linear-gradient(135deg,#161142,#5d1a1b)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              overflow: "hidden",
               flexShrink: 0,
               boxShadow: "0 0 12px rgba(93,26,27,0.35)",
+              border: "1px solid transparent",
+              backgroundImage: "linear-gradient(#000,#000), linear-gradient(135deg,#161142,#5d1a1b)",
+              backgroundOrigin: "border-box",
+              backgroundClip: "padding-box, border-box",
             }}
           >
-            <i className="bx bx-bot" style={{ fontSize: 16, color: "#fff" }} />
+            <img
+              src="/adverboticon.jpg"
+              alt="Advertimus Bot"
+              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+            />
           </div>
           <span style={{ fontSize: 16, fontWeight: 800, color: "#fff", letterSpacing: "-0.02em" }}>
             Advertimus

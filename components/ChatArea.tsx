@@ -128,20 +128,22 @@ export default function ChatArea() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          {/* Bot avatar — small icon only, no image */}
+          {/* Bot avatar */}
           <div
             style={{
               width: 32,
               height: 32,
               borderRadius: 9,
-              background: "linear-gradient(135deg,#161142,#5d1a1b)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              overflow: "hidden",
               flexShrink: 0,
+              border: "1px solid transparent",
+              backgroundImage: "linear-gradient(#000,#000), linear-gradient(135deg,#161142,#5d1a1b)",
+              backgroundOrigin: "border-box",
+              backgroundClip: "padding-box, border-box",
+              boxShadow: "0 0 14px rgba(93,26,27,0.35)",
             }}
           >
-            <i className="bx bx-bot" style={{ fontSize: 18, color: "#fff" }} />
+            <img src="/adverboticon.jpg" alt="Advertimus" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
           </div>
           <div>
             <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#fff" }}>New conversation</p>
@@ -195,15 +197,17 @@ export default function ChatArea() {
                   width: 28,
                   height: 28,
                   borderRadius: 8,
-                  background: "linear-gradient(135deg,#161142,#5d1a1b)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  overflow: "hidden",
                   flexShrink: 0,
                   marginTop: 1,
+                  border: "1px solid transparent",
+                  backgroundImage: "linear-gradient(#000,#000), linear-gradient(135deg,#161142,#5d1a1b)",
+                  backgroundOrigin: "border-box",
+                  backgroundClip: "padding-box, border-box",
+                  boxShadow: "0 0 10px rgba(93,26,27,0.25)",
                 }}
               >
-                <i className="bx bx-bot" style={{ fontSize: 15, color: "#fff" }} />
+                <img src="/adverboticon.jpg" alt="Advertimus" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
               </div>
 
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -309,14 +313,16 @@ export default function ChatArea() {
                 width: 28,
                 height: 28,
                 borderRadius: 8,
-                background: "linear-gradient(135deg,#161142,#5d1a1b)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                overflow: "hidden",
                 flexShrink: 0,
+                border: "1px solid transparent",
+                backgroundImage: "linear-gradient(#000,#000), linear-gradient(135deg,#161142,#5d1a1b)",
+                backgroundOrigin: "border-box",
+                backgroundClip: "padding-box, border-box",
+                boxShadow: "0 0 10px rgba(93,26,27,0.25)",
               }}
             >
-              <i className="bx bx-bot" style={{ fontSize: 15, color: "#fff" }} />
+              <img src="/adverboticon.jpg" alt="Advertimus" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
             </div>
             <div
               style={{
