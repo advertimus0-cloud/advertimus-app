@@ -60,7 +60,7 @@ function renderText(text: string) {
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function ChatArea() {
+export default function ChatArea({ isSidebarOpen, onToggleSidebar }: { isSidebarOpen?: boolean; onToggleSidebar?: () => void }) {
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(true);
@@ -128,6 +128,28 @@ export default function ChatArea() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          {onToggleSidebar && (
+            <button
+              onClick={onToggleSidebar}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "#9090a8",
+                cursor: "pointer",
+                padding: "6px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: "8px",
+                transition: "background 0.2s, color 0.2s",
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.05)"; (e.currentTarget as HTMLButtonElement).style.color = "#fff"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.color = "#9090a8"; }}
+            >
+              <i className={isSidebarOpen ? "bx bx-menu-alt-left" : "bx bx-menu"} style={{ fontSize: 22 }} />
+            </button>
+          )}
+
           {/* Bot avatar */}
           <div
             style={{
@@ -354,123 +376,142 @@ export default function ChatArea() {
         <div ref={bottomRef} />
       </div>
 
-      {/* ── Input area ────────────────────────────────────────────── */}
+      {/* ── Input area (Manus Style) ────────────────────────────────── */}
       <div
         style={{
-          padding: "12px 24px 18px",
-          borderTop: "1px solid transparent",
-          backgroundImage: "linear-gradient(#000,#000), linear-gradient(90deg,#161142,#5d1a1b)",
-          backgroundOrigin: "border-box",
-          backgroundClip: "padding-box, border-box",
-          borderTopWidth: 1,
+          padding: "0 24px 24px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "100%",
           flexShrink: 0,
           background: "#000",
         }}
       >
-        {/* Chips */}
-        <div style={{ display: "flex", gap: 7, marginBottom: 10, flexWrap: "wrap" }}>
-          {CHIPS.map((chip) => (
-            <button
-              key={chip}
-              onClick={() => setInput(chip)}
-              style={{
-                padding: "5px 13px",
-                borderRadius: 20,
-                border: "1px solid transparent",
-                backgroundImage: "linear-gradient(#060608,#060608), linear-gradient(135deg,#161142,#5d1a1b)",
-                backgroundOrigin: "border-box",
-                backgroundClip: "padding-box, border-box",
-                color: "#6060a0",
-                fontSize: 11,
-                cursor: "pointer",
-                transition: "color 0.2s",
-                fontFamily: "Inter, system-ui, sans-serif",
-              }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#c0c0e8"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6060a0"; }}
-            >
-              {chip}
-            </button>
-          ))}
-        </div>
-
-        {/* Input row — gradient border */}
-        <div
-          style={{
-            padding: "1px",
-            borderRadius: 16,
-            background: "linear-gradient(135deg,#161142,#5d1a1b)",
-            boxShadow: "0 0 28px rgba(22,17,66,0.3), 0 0 18px rgba(93,26,27,0.15)",
-          }}
-        >
+        <div style={{ maxWidth: 800, width: "100%", display: "flex", flexDirection: "column", gap: 20 }}>
+          {/* Main Input Box */}
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              background: "#080810",
-              borderRadius: 15,
-              padding: "10px 14px",
+              padding: "1px",
+              borderRadius: 24,
+              background: "linear-gradient(135deg,#161142,#5d1a1b)",
+              boxShadow: "0 0 40px rgba(22,17,66,0.5), 0 0 20px rgba(93,26,27,0.2)",
             }}
           >
-            <button
+            <div
               style={{
-                background: "transparent",
-                border: "none",
-                padding: 0,
-                cursor: "pointer",
-                color: "#3a3a60",
-                flexShrink: 0,
+                background: "#0a0a12", // slightly lighter than black for depth
+                borderRadius: 23,
+                padding: "16px 20px 12px",
                 display: "flex",
-                alignItems: "center",
-                transition: "color 0.2s",
-              }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#8888c0"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#3a3a60"; }}
-            >
-              <i className="bx bx-plus-circle" style={{ fontSize: 20 }} />
-            </button>
-
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-              placeholder="Describe your product, campaign goal, or ask anything..."
-              style={{
-                flex: 1,
-                background: "transparent",
-                border: "none",
-                outline: "none",
-                color: "#d4d4e8",
-                fontSize: 13.5,
-                fontFamily: "inherit",
-              }}
-            />
-
-            <button
-              onClick={handleSend}
-              disabled={!input.trim()}
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: 9,
-                border: "none",
-                background: input.trim()
-                  ? "linear-gradient(135deg,#5d1a1b,#161142)"
-                  : "rgba(255,255,255,0.04)",
-                color: "#fff",
-                cursor: input.trim() ? "pointer" : "default",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-                transition: "background 0.2s, box-shadow 0.2s",
-                boxShadow: input.trim() ? "0 0 14px rgba(93,26,27,0.45)" : "none",
+                flexDirection: "column",
+                gap: 12,
               }}
             >
-              <i className="bx bx-send" style={{ fontSize: 16 }} />
-            </button>
+              {/* Textarea */}
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
+                  }
+                }}
+                placeholder="Assign a task or ask anything..."
+                rows={1}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  outline: "none",
+                  color: "#e2e2f4",
+                  fontSize: 15,
+                  fontFamily: "inherit",
+                  resize: "none",
+                  minHeight: "44px",
+                  lineHeight: 1.5,
+                }}
+              />
+              
+              {/* Toolbar */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ display: "flex", gap: 14 }}>
+                  <button style={{ background: "transparent", border: "none", color: "#6a6a80", cursor: "pointer", padding: 0 }} onMouseEnter={(e) => (e.currentTarget.style.color = "#a0a0c0")} onMouseLeave={(e) => (e.currentTarget.style.color = "#6a6a80")}>
+                    <i className="bx bx-plus" style={{ fontSize: 20 }} />
+                  </button>
+                  <button style={{ background: "transparent", border: "none", color: "#6a6a80", cursor: "pointer", padding: 0 }} onMouseEnter={(e) => (e.currentTarget.style.color = "#a0a0c0")} onMouseLeave={(e) => (e.currentTarget.style.color = "#6a6a80")}>
+                    <i className="bx bx-folder" style={{ fontSize: 20 }} />
+                  </button>
+                  <button style={{ background: "transparent", border: "none", color: "#6a6a80", cursor: "pointer", padding: 0 }} onMouseEnter={(e) => (e.currentTarget.style.color = "#a0a0c0")} onMouseLeave={(e) => (e.currentTarget.style.color = "#6a6a80")}>
+                    <i className="bx bx-desktop" style={{ fontSize: 20 }} />
+                  </button>
+                </div>
+                <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+                  <button style={{ background: "transparent", border: "none", color: "#6a6a80", cursor: "pointer", padding: 0 }} onMouseEnter={(e) => (e.currentTarget.style.color = "#a0a0c0")} onMouseLeave={(e) => (e.currentTarget.style.color = "#6a6a80")}>
+                    <i className="bx bx-history" style={{ fontSize: 20 }} />
+                  </button>
+                  <button style={{ background: "transparent", border: "none", color: "#6a6a80", cursor: "pointer", padding: 0 }} onMouseEnter={(e) => (e.currentTarget.style.color = "#a0a0c0")} onMouseLeave={(e) => (e.currentTarget.style.color = "#6a6a80")}>
+                    <i className="bx bx-microphone" style={{ fontSize: 20 }} />
+                  </button>
+                  <button
+                    onClick={handleSend}
+                    disabled={!input.trim()}
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: "50%",
+                      border: "none",
+                      background: input.trim() ? "linear-gradient(135deg,#5d1a1b,#161142)" : "rgba(255,255,255,0.06)",
+                      color: input.trim() ? "#fff" : "#4a4a60",
+                      cursor: input.trim() ? "pointer" : "default",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transition: "background 0.2s, box-shadow 0.2s, color 0.2s",
+                      boxShadow: input.trim() ? "0 0 14px rgba(93,26,27,0.45)" : "none",
+                    }}
+                  >
+                    <i className="bx bx-up-arrow-alt" style={{ fontSize: 22 }} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Chips below input */}
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center" }}>
+            {CHIPS.map((chip) => (
+              <button
+                key={chip}
+                onClick={() => setInput(chip)}
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: 24,
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  background: "transparent",
+                  color: "#9090a8",
+                  fontSize: 12,
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+                  e.currentTarget.style.color = "#fff";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.color = "#9090a8";
+                }}
+              >
+                <i className="bx bx-layer" style={{ fontSize: 14 }} />
+                {chip}
+              </button>
+            ))}
           </div>
         </div>
       </div>

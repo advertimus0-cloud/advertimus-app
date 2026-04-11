@@ -16,6 +16,8 @@ import ResultsPanel from "./ResultsPanel";
  * The right panel collapses below 1100px.
  */
 export default function MainLayout() {
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
+
   return (
     <>
       <div
@@ -29,18 +31,24 @@ export default function MainLayout() {
         {/* ── Left: Sidebar ──────────────────────────────────────── */}
         <div
           style={{
-            width: 220,
+            width: isSidebarOpen ? 220 : 0,
+            transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
             flexShrink: 0,
             height: "100%",
             overflow: "hidden",
           }}
         >
-          <Sidebar />
+          <div style={{ width: 220, height: "100%" }}>
+            <Sidebar />
+          </div>
         </div>
 
         {/* ── Center: Chat ────────────────────────────────────────── */}
         <div style={{ flex: 1, minWidth: 0, height: "100%", overflow: "hidden" }}>
-          <ChatArea />
+          <ChatArea 
+            isSidebarOpen={isSidebarOpen} 
+            onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
+          />
         </div>
 
         {/* ── Right: Results ──────────────────────────────────────── */}
