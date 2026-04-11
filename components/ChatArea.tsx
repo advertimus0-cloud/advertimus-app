@@ -186,6 +186,7 @@ export default function ChatArea() {
             }}
           >
             {/* Avatar */}
+            {msg.role === "ai" ? (
                 <div
                   style={{
                     width: 30,
