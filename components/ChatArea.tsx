@@ -307,23 +307,20 @@ export default function ChatArea({ isSidebarOpen, onToggleSidebar, isResultsOpen
                 background: "rgba(255,255,255,0.03)",
                 border: "1px solid rgba(255,255,255,0.06)",
                 display: "flex",
-                gap: 5,
                 alignItems: "center",
+                height: "auto",
               }}
             >
-              {[0, 1, 2].map((i) => (
-                <span
-                  key={i}
-                  style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: "50%",
-                    background: "linear-gradient(135deg,#5d1a1b,#161142)",
-                    display: "inline-block",
-                    animation: `dot-bounce 1.2s ease-in-out ${i * 0.2}s infinite`,
-                  }}
-                />
-              ))}
+              <div
+                style={{
+                  width: 36,
+                  height: 6,
+                  borderRadius: 999,
+                  background: "linear-gradient(90deg,#5d1a1b,#161142)",
+                  backgroundSize: "200% 200%",
+                  animation: "gradient-pulse 1.5s ease infinite",
+                }}
+              />
             </div>
           </div>
         )}
@@ -489,6 +486,11 @@ export default function ChatArea({ isSidebarOpen, onToggleSidebar, isResultsOpen
 
       {/* Animations */}
       <style>{`
+        @keyframes gradient-pulse {
+          0% { background-position: 0% 50%; opacity: 0.6; width: 24px; }
+          50% { background-position: 100% 50%; opacity: 1; width: 44px; }
+          100% { background-position: 0% 50%; opacity: 0.6; width: 24px; }
+        }
         @keyframes dot-bounce {
           0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; }
           40% { transform: scale(1); opacity: 1; }
