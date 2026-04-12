@@ -119,7 +119,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       const aiMsg: Message = {
         id: `a-${Date.now()}`,
         role: "ai",
-        content: "Got it! Let me analyse that and prepare the best ad strategy for you. (This is a simulated AI response.)",
+        content: "[Backend Pipeline Processing...]",
         timestamp: "Just now",
       };
 

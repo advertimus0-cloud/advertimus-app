@@ -68,7 +68,7 @@ export default function Sidebar({ isCollapsed = false }: { isCollapsed?: boolean
   // Group chats naively based on active vs inactive for demonstration
   const recentItems: HistoryItem[] = chats.map(c => ({
     id: c.id,
-    title: c.title,
+    title: c.title || "[New Chat]",
     subtitle: `${c.messages.length} messages`,
     active: c.id === activeChatId,
   }));
@@ -196,9 +196,9 @@ export default function Sidebar({ isCollapsed = false }: { isCollapsed?: boolean
               flexShrink: 0,
             }}
           >
-            SK
+            [XY]
           </div>
-          {!isCollapsed && <span style={{ fontSize: 13, fontWeight: 500, color: "#c0c0d0" }}>Sarah K.</span>}
+          {!isCollapsed && <span style={{ fontSize: 13, fontWeight: 500, color: "#c0c0d0" }}>[User Name]</span>}
         </button>
 
         {/* Settings */}

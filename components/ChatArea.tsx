@@ -287,7 +287,7 @@ export default function ChatArea({ isSidebarOpen, onToggleSidebar, isResultsOpen
                       color: "#fff",
                     }}
                   >
-                    SK
+                    [XY]
                   </div>
                 </div>
               </div>

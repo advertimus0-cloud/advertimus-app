@@ -57,7 +57,7 @@ export default function SignupPage() {
                 type="email" 
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="sarah@leathergoods.com"
+                placeholder="[email@company.com]"
                 style={{
                   width: "100%", padding: "14px 16px", borderRadius: 12,
                   background: "rgba(0,0,0,0.5)", border: "1px solid rgba(255,255,255,0.1)",
@@ -73,7 +73,7 @@ export default function SignupPage() {
                 type="text" 
                 value={company}
                 onChange={e => setCompany(e.target.value)}
-                placeholder="Sarah's Leather Co."
+                placeholder="[Company Name]"
                 style={{
                   width: "100%", padding: "14px 16px", borderRadius: 12,
                   background: "rgba(0,0,0,0.5)", border: "1px solid rgba(255,255,255,0.1)",

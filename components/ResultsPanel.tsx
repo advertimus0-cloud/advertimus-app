@@ -21,15 +21,11 @@ interface ImageAsset {
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
 const VIDEOS: VideoAsset[] = [
-  { id: "v1", platform: "Instagram Reel · 15s", duration: "0:15", title: "Minimal luxury — reveal", quality: "1920×1080 · MP4", score: 94 },
-  { id: "v2", platform: "YouTube Short · 30s", duration: "0:30", title: "Craftsmanship story", quality: "1920×1080 · MP4", score: 88 },
+  { id: "temp-v1", platform: "[Platform]", duration: "[0:00]", title: "[Ad Title]", quality: "[Resolution/Format]", score: 0 },
 ];
 
 const IMAGES: ImageAsset[] = [
-  { id: "i1", placeholder: "bx bx-image" },
-  { id: "i2", placeholder: "bx bx-shopping-bag" },
-  { id: "i3", placeholder: "bx bx-star" },
-  { id: "i4", placeholder: "bx bx-store" },
+  { id: "temp-i1", placeholder: "bx bx-image" },
 ];
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -223,14 +219,14 @@ export default function ResultsPanel() {
               style={{
                 fontSize: 10,
                 fontWeight: 700,
-                color: isGenerating ? "#f59e0b" : "#22c55e",
-                background: isGenerating ? "rgba(245,158,11,0.1)" : "rgba(34,197,94,0.1)",
-                border: isGenerating ? "1px solid rgba(245,158,11,0.25)" :"1px solid rgba(34,197,94,0.25)",
+                color: isGenerating ? "#f59e0b" : "#9090a8",
+                background: isGenerating ? "rgba(245,158,11,0.1)" : "rgba(255,255,255,0.05)",
+                border: isGenerating ? "1px solid rgba(245,158,11,0.25)" :"1px solid rgba(255,255,255,0.1)",
                 padding: "3px 8px",
                 borderRadius: 9,
               }}
             >
-              {isGenerating ? "Processing" : "6 assets ready"}
+              {isGenerating ? "Processing" : "0 assets"}
             </span>
           </div>
         </div>
@@ -327,10 +323,10 @@ export default function ResultsPanel() {
           <div style={{ marginBottom: 16 }}>
             {activeTab === "All" && (
               <p style={{ margin: "0 0 10px", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", color: "#5a5a72", textTransform: "uppercase" }}>
-                Videos · 2 Generated
+                Videos
               </p>
             )}
-            {VIDEOS.map((v) => <VideoCard key={v.id} asset={v} />)}
+            {VIDEOS.length > 0 ? VIDEOS.map((v) => <VideoCard key={v.id} asset={v} />) : <div style={{ fontSize: 13, color: "#5a5a72", padding: "20px 0", textAlign: "center" }}>No video assets generated yet.</div>}
           </div>
         )}
 
@@ -339,7 +335,7 @@ export default function ResultsPanel() {
           <div style={{ marginBottom: 16 }}>
             {activeTab === "All" && (
               <p style={{ margin: "0 0 10px", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", color: "#5a5a72", textTransform: "uppercase" }}>
-                Images · 4 Generated
+                Images
               </p>
             )}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
@@ -416,20 +412,20 @@ export default function ResultsPanel() {
                     fontSize: 52,
                     fontWeight: 900,
                     lineHeight: 1,
-                    background: "linear-gradient(135deg,#22c55e,#16a34a)",
+                    background: "linear-gradient(135deg,#5a5a72,#9090a8)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     letterSpacing: "-0.04em",
                   }}
                 >
-                  91
+                  0
                 </span>
                 <span style={{ fontSize: 13, color: "#5a5a72", marginBottom: 6 }}>/100</span>
               </div>
-              <ScoreBar label="Visual Appeal" value={94} />
-              <ScoreBar label="Message Clarity" value={89} />
-              <ScoreBar label="Audience Alignment" value={92} />
-              <ScoreBar label="Call to Action" value={87} />
+              <ScoreBar label="[Criteria 1]" value={0} />
+              <ScoreBar label="[Criteria 2]" value={0} />
+              <ScoreBar label="[Criteria 3]" value={0} />
+              <ScoreBar label="[Criteria 4]" value={0} />
             </div>
           </div>
         )}
