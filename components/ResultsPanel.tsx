@@ -164,7 +164,21 @@ function VideoCard({ asset }: { asset: VideoAsset }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function ResultsPanel() {
   const [activeTab, setActiveTab] = useState<Tab>("All");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [genStep, setGenStep] = useState(0);
   const tabs: Tab[] = ["All", "Videos", "Images", "Scores"];
+
+  // Mock progress simulation
+  React.useEffect(() => {
+    if (isGenerating) {
+      if (genStep < 5) {
+        const t = setTimeout(() => {
+          setGenStep(s => s + 1);
+        }, 1200);
+        return () => clearTimeout(t);
+      }
+    }
+  }, [isGenerating, genStep]);
 
   return (
     <div
@@ -191,20 +205,34 @@ export default function ResultsPanel() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-          <h2 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#fff" }}>Generated assets</h2>
-          <span
-            style={{
-              fontSize: 10,
-              fontWeight: 700,
-              color: "#22c55e",
-              background: "rgba(34,197,94,0.1)",
-              border: "1px solid rgba(34,197,94,0.25)",
-              padding: "3px 8px",
-              borderRadius: 9,
-            }}
-          >
-            6 assets ready
-          </span>
+          <h2 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#fff" }}>
+            {isGenerating ? "Workflow active" : "Generated assets"}
+          </h2>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {/* Mock Toggle for Presentation */}
+            <button 
+              onClick={() => { setIsGenerating(!isGenerating); setGenStep(0); }}
+              style={{
+                fontSize: 10, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+                color: "#9090a8", padding: "3px 8px", borderRadius: 9, cursor: "pointer"
+              }}
+            >
+              Toggle Demo
+            </button>
+            <span
+              style={{
+                fontSize: 10,
+                fontWeight: 700,
+                color: isGenerating ? "#f59e0b" : "#22c55e",
+                background: isGenerating ? "rgba(245,158,11,0.1)" : "rgba(34,197,94,0.1)",
+                border: isGenerating ? "1px solid rgba(245,158,11,0.25)" :"1px solid rgba(34,197,94,0.25)",
+                padding: "3px 8px",
+                borderRadius: 9,
+              }}
+            >
+              {isGenerating ? "Processing" : "6 assets ready"}
+            </span>
+          </div>
         </div>
 
         {/* Tabs */}
@@ -239,7 +267,62 @@ export default function ResultsPanel() {
       {/* ── Content ───────────────────────────────────────────────── */}
       <div style={{ flex: 1, overflowY: "auto", padding: 14 }}>
 
-        {/* Videos */}
+        {isGenerating ? (
+          <div style={{ padding: "10px 4px" }}>
+            <div style={{ 
+              background: "rgba(255,255,255,0.02)", 
+              border: "1px solid rgba(255,255,255,0.05)", 
+              borderRadius: 16, 
+              padding: 24,
+              boxShadow: "0 4px 20px rgba(0,0,0,0.5)"
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+                <i className="bx bx-loader-alt bx-spin" style={{ color: "#cc2936", fontSize: 24 }} />
+                <h3 style={{ margin: 0, fontSize: 16, color: "#fff", fontWeight: 600 }}>Generating your content</h3>
+              </div>
+              
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, fontSize: 12, color: "#9090a8" }}>
+                  <span>Status: {genStep === 0 ? "Analyzing" : genStep === 1 ? "Strategy" : genStep === 2 ? "Storyboard" : genStep === 3 ? "Video" : "Finalizing"}</span>
+                  <span>{Math.min(100, Math.round((genStep / 4) * 100))}%</span>
+                </div>
+                <div style={{ height: 6, width: "100%", background: "rgba(255,255,255,0.05)", borderRadius: 999, overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: `${Math.min(100, (genStep / 4) * 100)}%`, background: "linear-gradient(90deg,#5d1a1b,#cc2936)", transition: "width 0.5s ease" }} />
+                </div>
+                <p style={{ margin: "8px 0 0", fontSize: 11, color: "#5a5a72", textAlign: "right" }}>Estimated time: ~3 min</p>
+              </div>
+
+              {/* Steps */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                {[
+                  { title: "Images analyzed", active: genStep >= 1 },
+                  { title: "Understanding brand & strategy", active: genStep >= 2 },
+                  { title: "Creating video storyboard frames", active: genStep >= 3 },
+                  { title: "Generating video via Runway AI", active: genStep >= 4 },
+                  { title: "Creating product images & posters", active: genStep >= 5 },
+                ].map((step, idx) => (
+                  <div key={idx} style={{ display: "flex", alignItems: "center", gap: 10, opacity: genStep >= idx ? 1 : 0.4 }}>
+                    <div style={{
+                      width: 20, height: 20, borderRadius: "50%",
+                      background: step.active ? "#22c55e" : (genStep === idx ? "rgba(204,41,54,0.2)" : "rgba(255,255,255,0.1)"),
+                      border: "1px solid transparent",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      color: "#fff", fontSize: 12
+                    }}>
+                      {step.active ? <i className="bx bx-check" /> : (genStep === idx ? <i className="bx bx-loader-alt bx-spin" style={{ color: "#cc2936" }} /> : null)}
+                    </div>
+                    <span style={{ fontSize: 13, color: step.active ? "#fff" : (genStep === idx ? "#c0c0d0" : "#7a7a90"), fontWeight: genStep === idx ? 600 : 400 }}>
+                      {step.title}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Videos */}
         {(activeTab === "All" || activeTab === "Videos") && (
           <div style={{ marginBottom: 16 }}>
             {activeTab === "All" && (
@@ -349,6 +432,8 @@ export default function ResultsPanel() {
               <ScoreBar label="Call to Action" value={87} />
             </div>
           </div>
+        )}
+        </>
         )}
       </div>
     </div>

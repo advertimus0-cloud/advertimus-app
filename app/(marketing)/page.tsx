@@ -62,11 +62,11 @@ export default function HomePage() {
               </p>
 
               <div className="hero-actions">
-                <Link href="/dashboard" className="cta-btn">
-                  Create a Market-Ready Ad
+                <Link href="/signup" className="cta-btn">
+                  Start Free Trial
                 </Link>
-                <Link href="/dashboard" className="cta-btn">
-                  Talk to Advertimus
+                <Link href="/login" className="cta-btn" style={{ background: "transparent", boxShadow: "none", border: "1px solid rgba(255,255,255,0.1)" }}>
+                  Sign In
                 </Link>
               </div>
             </div>

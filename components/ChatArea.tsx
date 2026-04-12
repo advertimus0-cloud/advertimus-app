@@ -37,7 +37,17 @@ export default function ChatArea({ isSidebarOpen, onToggleSidebar, isResultsOpen
 
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      const newUrls = files.slice(0, 3).map(f => URL.createObjectURL(f)); // handle mock
+      setUploadedImages(prev => [...prev, ...newUrls].slice(0, 3)); // Max 3 for mock
+    }
+  };
 
   useEffect(() => {
     setIsTyping(false); 
@@ -48,9 +58,13 @@ export default function ChatArea({ isSidebarOpen, onToggleSidebar, isResultsOpen
   }, [messages, isTyping]);
 
   const handleSend = () => {
-    if (!input.trim()) return;
-    sendMessage(input);
+    if (!input.trim() && uploadedImages.length === 0) return;
+    
+    // In a real app we'd attach images to the message payload
+    sendMessage(input || "Processing uploaded media...");
+    
     setInput("");
+    setUploadedImages([]);
     setIsTyping(true);
     setTimeout(() => {
       setIsTyping(false);
@@ -376,6 +390,38 @@ export default function ChatArea({ isSidebarOpen, onToggleSidebar, isResultsOpen
                 gap: 12,
               }}
             >
+              {/* Uploaded Images Preview */}
+              {uploadedImages.length > 0 && (
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 4 }}>
+                  {uploadedImages.map((src, idx) => (
+                    <div key={idx} style={{ 
+                      position: "relative", width: 64, height: 64, borderRadius: 12, 
+                      overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)",
+                      background: "rgba(255,255,255,0.05)"
+                    }}>
+                      <div style={{ 
+                        position: "absolute", top: 0, left: 0, width: "100%", height: "100%", 
+                        display: "flex", alignItems: "center", justifyContent: "center" 
+                      }}>
+                        <i className="bx bx-image" style={{ color: "#7a7a90", fontSize: 24 }} />
+                      </div>
+                      <img src={src} style={{ position: "relative", width: "100%", height: "100%", objectFit: "cover", zIndex: 1 }} />
+                      <button 
+                        onClick={() => setUploadedImages(prev => prev.filter((_, i) => i !== idx))}
+                        style={{
+                          position: "absolute", top: 4, right: 4, width: 20, height: 20, 
+                          borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", 
+                          border: "none", display: "flex", alignItems: "center", justifyContent: "center", 
+                          cursor: "pointer", zIndex: 2
+                        }}
+                      >
+                        <i className="bx bx-x" style={{ fontSize: 14 }} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {/* Textarea */}
               <textarea
                 value={input}
@@ -405,7 +451,20 @@ export default function ChatArea({ isSidebarOpen, onToggleSidebar, isResultsOpen
               {/* Toolbar */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", gap: 14 }}>
-                  <button style={{ background: "transparent", border: "none", color: "#6a6a80", cursor: "pointer", padding: 0 }} onMouseEnter={(e) => (e.currentTarget.style.color = "#a0a0c0")} onMouseLeave={(e) => (e.currentTarget.style.color = "#6a6a80")}>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    style={{ display: "none" }} 
+                    accept="image/*" 
+                    multiple 
+                    onChange={handleImageUpload} 
+                  />
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{ background: "transparent", border: "none", color: "#6a6a80", cursor: "pointer", padding: 0 }} 
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "#a0a0c0")} 
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "#6a6a80")}
+                  >
                     <i className="bx bx-plus" style={{ fontSize: 20 }} />
                   </button>
                   <button style={{ background: "transparent", border: "none", color: "#6a6a80", cursor: "pointer", padding: 0 }} onMouseEnter={(e) => (e.currentTarget.style.color = "#a0a0c0")} onMouseLeave={(e) => (e.currentTarget.style.color = "#6a6a80")}>
