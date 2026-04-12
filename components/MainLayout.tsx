@@ -53,7 +53,7 @@ export default function MainLayout() {
         {/* ── Left: Sidebar ──────────────────────────────────────── */}
         <div
           style={{
-            width: isSidebarOpen ? (isMobile ? "100%" : 220) : 0,
+            width: isMobile ? (isSidebarOpen ? "100%" : 0) : (isSidebarOpen ? 220 : 72),
             transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s",
             flexShrink: 0,
             height: "100%",
@@ -65,8 +65,8 @@ export default function MainLayout() {
             transform: isMobile && !isSidebarOpen ? "translateX(-100%)" : "translateX(0)",
           }}
         >
-          <div style={{ width: isMobile ? "100%" : 220, height: "100%" }}>
-            <Sidebar />
+          <div style={{ width: isMobile ? "100%" : (isSidebarOpen ? 220 : 72), height: "100%" }}>
+            <Sidebar isCollapsed={!isSidebarOpen && !isMobile} />
           </div>
         </div>
 

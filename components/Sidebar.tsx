@@ -58,7 +58,7 @@ function HistoryGroup({ label, items, onSelect }: { label: string; items: Histor
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function Sidebar() {
+export default function Sidebar({ isCollapsed = false }: { isCollapsed?: boolean }) {
   const { chats, activeChatId, switchChat, createNewChat } = useChat();
 
   const tokenUsed = 200;
@@ -90,8 +90,8 @@ export default function Sidebar() {
       }}
     >
       {/* ── Logo ──────────────────────────────────────────────────── */}
-      <div style={{ padding: "20px 16px 16px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <div style={{ padding: isCollapsed ? "20px 0 16px" : "20px 16px 16px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: isCollapsed ? "center" : "flex-start", gap: 10 }}>
           {/* Bot Avatar — gradient icon */}
           <div
             style={{
@@ -113,9 +113,11 @@ export default function Sidebar() {
               style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
             />
           </div>
-          <span style={{ fontSize: 16, fontWeight: 800, color: "#fff", letterSpacing: "-0.02em" }}>
-            Advertimus
-          </span>
+          {!isCollapsed && (
+            <span style={{ fontSize: 16, fontWeight: 800, color: "#fff", letterSpacing: "-0.02em" }}>
+              Advertimus
+            </span>
+          )}
         </div>
       </div>
 
@@ -128,9 +130,10 @@ export default function Sidebar() {
             style={{
               display: "flex",
               alignItems: "center",
+              justifyContent: isCollapsed ? "center" : "flex-start",
               gap: 10,
               width: "100%",
-              padding: "9px 12px",
+              padding: isCollapsed ? "9px 0" : "9px 12px",
               borderRadius: 9,
               border: "none",
               cursor: "pointer",
@@ -140,21 +143,23 @@ export default function Sidebar() {
               fontWeight: n.active ? 600 : 400,
               textAlign: "left",
               marginBottom: 2,
-              transition: "background 0.15s, color 0.15s",
+              transition: "background 0.15s, color 0.15s, padding 0.15s",
             }}
             onMouseEnter={(e) => { if (!n.active) { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.04)"; (e.currentTarget as HTMLButtonElement).style.color = "#c0c0d0"; }}}
             onMouseLeave={(e) => { if (!n.active) { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.color = "#7a7a90"; }}}
           >
-            <i className={n.icon} style={{ fontSize: 17 }} />
-            {n.id === "chat" ? "New Chat" : n.label}
+            <i className={n.icon} style={{ fontSize: isCollapsed ? 20 : 17 }} />
+            {!isCollapsed && (n.id === "chat" ? "New Chat" : n.label)}
           </button>
         ))}
       </nav>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: "0 8px" }}>
-        <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 14 }}>
-          <HistoryGroup label="Conversations" items={recentItems} onSelect={switchChat} />
-        </div>
+      <div style={{ flex: 1, overflowY: "auto", padding: "0 8px", opacity: isCollapsed ? 0 : 1, transition: "opacity 0.2s" }}>
+        {!isCollapsed && (
+          <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 14 }}>
+            <HistoryGroup label="Conversations" items={recentItems} onSelect={switchChat} />
+          </div>
+        )}
       </div>
 
       {/* ── Footer ────────────────────────────────────────────────── */}
@@ -193,7 +198,7 @@ export default function Sidebar() {
           >
             SK
           </div>
-          <span style={{ fontSize: 13, fontWeight: 500, color: "#c0c0d0" }}>Sarah K.</span>
+          {!isCollapsed && <span style={{ fontSize: 13, fontWeight: 500, color: "#c0c0d0" }}>Sarah K.</span>}
         </button>
 
         {/* Settings */}
@@ -215,31 +220,33 @@ export default function Sidebar() {
           onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.04)"; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
         >
-          <i className="bx bx-cog" style={{ fontSize: 17 }} />
-          Settings
+          <i className="bx bx-cog" style={{ fontSize: isCollapsed ? 20 : 17 }} />
+          {!isCollapsed && "Settings"}
         </button>
 
         {/* Token bar */}
-        <div style={{ marginTop: 10, padding: "0 4px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
-            <span style={{ fontSize: 10, color: "#5a5a72" }}>Token usage</span>
-            <span style={{ fontSize: 10, color: "#5a5a72" }}>{tokenUsed} / {tokenTotal}</span>
+        {!isCollapsed && (
+          <div style={{ marginTop: 10, padding: "0 4px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+              <span style={{ fontSize: 10, color: "#5a5a72" }}>Token usage</span>
+              <span style={{ fontSize: 10, color: "#5a5a72" }}>{tokenUsed} / {tokenTotal}</span>
+            </div>
+            <div style={{ height: 4, borderRadius: 999, background: "rgba(255,255,255,0.08)", overflow: "hidden" }}>
+              <div
+                style={{
+                  height: "100%",
+                  width: `${pct}%`,
+                  borderRadius: 999,
+                  background: "linear-gradient(90deg,#cc2936,#8b1520)",
+                  transition: "width 0.4s ease",
+                }}
+              />
+            </div>
+            <p style={{ margin: "4px 0 0", fontSize: 10, color: "#5a5a72" }}>
+              {tokenTotal - tokenUsed} tokens remaining this month
+            </p>
           </div>
-          <div style={{ height: 4, borderRadius: 999, background: "rgba(255,255,255,0.08)", overflow: "hidden" }}>
-            <div
-              style={{
-                height: "100%",
-                width: `${pct}%`,
-                borderRadius: 999,
-                background: "linear-gradient(90deg,#cc2936,#8b1520)",
-                transition: "width 0.4s ease",
-              }}
-            />
-          </div>
-          <p style={{ margin: "4px 0 0", fontSize: 10, color: "#5a5a72" }}>
-            {tokenTotal - tokenUsed} tokens remaining this month
-          </p>
-        </div>
+        )}
       </div>
     </div>
   );
