@@ -1,1 +1,1 @@
-export default function ImageUploader() { return <div>ImageUploader Placeholder</div>; }
+export default function ImageUploader() { return null; }

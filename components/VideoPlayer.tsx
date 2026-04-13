@@ -1,1 +1,1 @@
-export default function VideoPlayer() { return <div>VideoPlayer Placeholder</div>; }
+export default function VideoPlayer() { return null; }

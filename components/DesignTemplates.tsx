@@ -1,1 +1,1 @@
-export default function DesignTemplates() { return <div>DesignTemplates Placeholder</div>; }
+export default function DesignTemplates() { return null; }

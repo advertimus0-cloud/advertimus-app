@@ -1,1 +1,1 @@
-export default function ImageGallery() { return <div>ImageGallery Placeholder</div>; }
+export default function ImageGallery() { return null; }

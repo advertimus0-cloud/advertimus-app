@@ -1,1 +1,1 @@
-export default function MessageItem() { return <div>MessageItem Placeholder</div>; }
+export default function MessageItem() { return null; }
