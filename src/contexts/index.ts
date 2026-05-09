@@ -17,6 +17,6 @@
  *    not needed by UI — principle of least privilege.
  */
 
-export { AuthContext, AuthProvider } from './AuthContext';
-export { CreditContext, CreditProvider } from './CreditContext';
-export { ProjectContext, ProjectProvider } from './ProjectContext';
+export { AuthProvider, useAuthContext } from './AuthContext';
+export { CreditProvider, useCreditContext } from './CreditContext';
+export { ProjectProvider, useProjectContext } from './ProjectContext';
