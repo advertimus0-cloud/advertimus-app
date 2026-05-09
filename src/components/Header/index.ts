@@ -11,4 +11,5 @@
  * SECURITY: This component is display-only. It reads sanitized data from
  * context providers — it does NOT perform any auth checks itself (§16).
  */
-export {};
+export { Header } from './Header';
+export type { HeaderProps, HeaderUser, DropdownAction } from './Header';

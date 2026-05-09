@@ -96,3 +96,439 @@ p {
   margin-top: 0;
   margin-bottom: var(--spacing-md);
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MARKETING HEADER  ·  adv-header-*
+   Used by: app/components/Header.tsx  →  app/(marketing)/layout.tsx
+───────────────────────────────────────────────────────────────────────────── */
+
+.adv-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.93);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(93, 26, 27, 0.25);
+}
+
+.adv-header-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  position: relative;
+}
+
+.adv-logo {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Desktop navigation ──────────────────────────────────────────────────── */
+
+.adv-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.adv-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 14px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: color 150ms ease, background-color 150ms ease;
+  white-space: nowrap;
+}
+
+.adv-nav-btn:hover {
+  color: #ffffff;
+  background-color: rgba(93, 26, 27, 0.15);
+}
+
+.adv-nav-btn.is-active {
+  color: #ffffff;
+}
+
+/* ── Action buttons ──────────────────────────────────────────────────────── */
+
+.adv-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.adv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 180ms ease;
+  white-space: nowrap;
+  line-height: 1;
+  font-family: inherit;
+}
+
+.adv-btn-dark {
+  background: transparent;
+  border: 1px solid rgba(93, 26, 27, 0.45);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.adv-btn-dark:hover {
+  background: rgba(93, 26, 27, 0.15);
+  border-color: rgba(93, 26, 27, 0.8);
+  color: #ffffff;
+}
+
+.adv-btn-primary {
+  background: linear-gradient(135deg, #EC4899 0%, #A855F7 100%);
+  border: 1px solid transparent;
+  color: #ffffff;
+}
+
+.adv-btn-primary:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.35);
+}
+
+.adv-btn-full {
+  width: 100%;
+  text-align: center;
+}
+
+/* ── Mobile hamburger ────────────────────────────────────────────────────── */
+
+.adv-mobile-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: 1px solid rgba(93, 26, 27, 0.4);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 20px;
+  margin-left: auto;
+  transition: all 150ms ease;
+}
+
+.adv-mobile-btn:hover {
+  color: #ffffff;
+  border-color: rgba(93, 26, 27, 0.8);
+  background: rgba(93, 26, 27, 0.15);
+}
+
+/* ── Dropdown panel ──────────────────────────────────────────────────────── */
+
+.adv-drop {
+  position: absolute;
+  top: calc(100% + 1px);
+  left: 0;
+  right: 0;
+  background: rgba(4, 4, 8, 0.97);
+  border-bottom: 1px solid rgba(93, 26, 27, 0.25);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 99;
+  animation: advDropIn 160ms ease forwards;
+}
+
+@keyframes advDropIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.adv-drop-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  gap: 48px;
+}
+
+.adv-drop-inner-single {
+  gap: 0;
+}
+
+.adv-drop-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.adv-drop-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(93, 26, 27, 0.95);
+  margin-bottom: 10px;
+}
+
+.adv-drop-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.adv-drop-row:hover {
+  background-color: rgba(93, 26, 27, 0.13);
+}
+
+.adv-ic-box {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(93, 26, 27, 0.5) 0%, rgba(22, 17, 66, 0.5) 100%);
+  border: 1px solid rgba(93, 26, 27, 0.35);
+  border-radius: 8px;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.adv-ic-box-sm {
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+}
+
+.adv-drop-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.adv-drop-item-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.adv-drop-item-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  line-height: 1.35;
+}
+
+/* ── Mobile overlay menu ─────────────────────────────────────────────────── */
+
+.adv-m-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.97);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.adv-m-panel {
+  padding: 20px 24px 48px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.adv-m-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  min-height: 56px;
+}
+
+.adv-m-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(93, 26, 27, 0.15);
+  border: 1px solid rgba(93, 26, 27, 0.4);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 150ms ease;
+}
+
+.adv-m-close:hover {
+  background: rgba(93, 26, 27, 0.3);
+  color: #ffffff;
+}
+
+.adv-m-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.adv-m-sep {
+  border: none;
+  border-top: 1px solid rgba(93, 26, 27, 0.2);
+  margin: 16px 0;
+}
+
+.adv-m-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.adv-m-h {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(93, 26, 27, 0.95);
+  margin-bottom: 8px;
+  margin-top: 4px;
+}
+
+.adv-m-sub {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.28);
+  margin: 14px 0 4px;
+}
+
+.adv-m-note {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.32);
+  padding: 8px 0;
+}
+
+.adv-m-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.72);
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.adv-m-link:hover {
+  background: rgba(93, 26, 27, 0.13);
+  color: #ffffff;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MARKETING FOOTER  ·  adv-footer-*
+   Used by: app/components/Footer.tsx  →  app/(marketing)/layout.tsx
+───────────────────────────────────────────────────────────────────────────── */
+
+.adv-footer {
+  background-color: #000000;
+  border-top: 1px solid rgba(93, 26, 27, 0.2);
+  padding: 64px 24px 0;
+}
+
+.adv-footer-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  padding-bottom: 48px;
+}
+
+.adv-footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.adv-footer-logo {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.adv-footer-h {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.adv-footer-a {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.42);
+  cursor: pointer;
+  transition: color 150ms ease;
+  text-decoration: none;
+}
+
+.adv-footer-a:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.adv-footer-bottom {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 20px 0;
+  border-top: 1px solid rgba(93, 26, 27, 0.15);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.28);
+  text-align: center;
+}
+
+/* ── Responsive breakpoints ──────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .adv-nav,
+  .adv-actions {
+    display: none;
+  }
+
+  .adv-mobile-btn {
+    display: flex;
+  }
+
+  .adv-footer-shell {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .adv-footer-shell {
+    grid-template-columns: 1fr;
+  }
+}
