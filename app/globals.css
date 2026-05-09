@@ -1,3 +1,16 @@
+/* ─── Tailwind CSS v4 ────────────────────────────────────────────────────── */
+@import "tailwindcss";
+
+@theme {
+  /* Custom colors → bg-background, bg-accent1, bg-accent2, bg-pinkAccent */
+  --color-background: #000000;
+  --color-accent1: #5d1a1b;
+  --color-accent2: #161142;
+  --color-pinkAccent: #ec4899;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+
 :root {
   /* PRIMARY COLORS */
   --color-black: #000000;
