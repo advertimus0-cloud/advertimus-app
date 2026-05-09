@@ -18,4 +18,10 @@
  *  - Download links invoke a backend endpoint that validates the user's
  *    ownership of the asset before issuing a signed URL (§2, §16).
  */
-export {};
+export { ResultsPanel } from './ResultsPanel'
+export type {
+  ResultsPanelProps,
+  GenerationData,
+  GenerationScore,
+  GenerationCopy,
+} from './ResultsPanel'

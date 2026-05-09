@@ -15,4 +15,5 @@
  * RULE: These components are purely presentational — they carry no business
  * logic and make no API calls.
  */
-export {};
+export { OptionButton } from './OptionButton'
+export type { OptionButtonProps } from './OptionButton'

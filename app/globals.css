@@ -532,3 +532,72 @@ p {
     grid-template-columns: 1fr;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CHAT MESSAGE ANIMATIONS  ·  adv-msg-*
+   Used by: src/components/ChatArea/MessageItem.tsx
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Agent messages slide in from the left */
+@keyframes advMsgIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* User messages slide in from the right */
+@keyframes advMsgInRight {
+  from { opacity: 0; transform: translateX(10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* System / status messages fade in */
+@keyframes advMsgFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Typing indicator dots bounce */
+@keyframes advDot {
+  0%, 60%, 100% { transform: translateY(0);    opacity: 0.4; }
+  30%           { transform: translateY(-5px); opacity: 0.9; }
+}
+
+.adv-msg-in        { animation: advMsgIn      240ms ease forwards; }
+.adv-msg-in-right  { animation: advMsgInRight 240ms ease forwards; }
+.adv-msg-fade      { animation: advMsgFade    200ms ease forwards; }
+
+.adv-dot   { animation: advDot 1.2s ease-in-out 0s   infinite; }
+.adv-dot-2 { animation: advDot 1.2s ease-in-out 0.2s infinite; }
+.adv-dot-3 { animation: advDot 1.2s ease-in-out 0.4s infinite; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESULTS PANEL ANIMATIONS  ·  adv-panel-in, adv-skeleton
+   Used by: src/components/ResultsPanel/ResultsPanel.tsx
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Panel slides in from the right when showResults becomes true */
+@keyframes advPanelIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Skeleton shimmer for loading states */
+@keyframes advShimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.adv-panel-in {
+  animation: advPanelIn 280ms ease forwards;
+}
+
+.adv-skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.05) 0%,
+    rgba(255,255,255,0.10) 50%,
+    rgba(255,255,255,0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: advShimmer 1.5s ease-in-out infinite;
+}

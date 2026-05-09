@@ -108,7 +108,7 @@ export function MainLayout({ showResults = false, isGenerating = false }: MainLa
             ].join(' ')}
             aria-label="Results panel"
           >
-            <ResultsPanel isGenerating={isGenerating} />
+            <ResultsPanel showResults={showResults} isGenerating={isGenerating} />
           </aside>
         )}
 
