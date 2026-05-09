@@ -15,13 +15,11 @@ export default function MainLayout() {
   const [currentPhase, setCurrentPhase] = React.useState(1);
 
   function handleSendMessage(_content: string) {
-    // Reveal results panel and start mock generation progress
     setIsResultsOpen(true);
     setIsGenerating(true);
     setGenerationProgress(0);
     setCurrentPhase(1);
 
-    // Mock phase progression — replace with real SSE/websocket events
     let phase = 1;
     let progress = 0;
     const interval = setInterval(() => {
@@ -44,16 +42,20 @@ export default function MainLayout() {
     <ChatProvider>
       <div className="flex flex-col w-full h-screen bg-background text-white overflow-hidden">
 
-        {/* ── Top header bar ── */}
+        {/* ── Global header ── */}
         <Header
           onMenuToggle={() => setIsSidebarOpen(o => !o)}
           isSidebarOpen={isSidebarOpen}
+          projectTitle="New conversation"
+          projectSubtitle="AI marketing assistant · ready to generate"
+          onPanelToggle={() => setIsResultsOpen(o => !o)}
+          isPanelOpen={isResultsOpen}
         />
 
-        {/* ── Body: Sidebar | Chat | Results ── */}
+        {/* ── Body ── */}
         <div className="flex flex-1 overflow-hidden relative">
 
-          {/* Mobile overlay backdrop */}
+          {/* Mobile backdrop */}
           {isSidebarOpen && (
             <div
               className="fixed inset-0 bg-black/60 z-20 md:hidden"
@@ -62,10 +64,10 @@ export default function MainLayout() {
             />
           )}
 
-          {/* Sidebar — fixed on mobile, static on desktop */}
+          {/* Sidebar */}
           <aside
             className={[
-              "w-[280px] flex-shrink-0 h-full z-30",
+              "w-[260px] flex-shrink-0 h-full z-30",
               "fixed md:relative md:translate-x-0",
               "transition-transform duration-200 ease-in-out",
               isSidebarOpen ? "translate-x-0" : "-translate-x-full",
@@ -74,22 +76,22 @@ export default function MainLayout() {
             <Sidebar />
           </aside>
 
-          {/* Main chat column */}
+          {/* Chat column */}
           <main
             className="flex-1 flex flex-col min-w-0 overflow-hidden"
-            style={{ borderLeft: '1px solid rgba(93,26,27,0.2)' }}
+            style={{ borderLeft: '1px solid rgba(93,26,27,0.14)' }}
           >
             <ChatArea
-              projectName="New Chat"
+              projectName="New conversation"
               onSendMessage={handleSendMessage}
             />
           </main>
 
-          {/* Results panel — revealed on first send */}
+          {/* Results panel */}
           {isResultsOpen && (
             <aside
-              className="w-[400px] flex-shrink-0 h-full hidden md:block overflow-y-auto"
-              style={{ borderLeft: '1px solid rgba(93,26,27,0.2)' }}
+              className="w-[380px] flex-shrink-0 h-full hidden md:block overflow-hidden"
+              style={{ borderLeft: '1px solid rgba(93,26,27,0.14)' }}
             >
               <ResultsPanel
                 showResults={isResultsOpen}

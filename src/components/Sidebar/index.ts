@@ -12,4 +12,4 @@
  * is pre-filtered server-side per the authenticated user's workspace (§3).
  */
 export { Sidebar } from './Sidebar';
-export type { SidebarProps, SidebarProject, SidebarChat, NavSection } from './Sidebar';
+export type { SidebarProps, SidebarChat, SidebarUser, NavItem } from './Sidebar';

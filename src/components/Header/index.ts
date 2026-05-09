@@ -12,4 +12,4 @@
  * context providers — it does NOT perform any auth checks itself (§16).
  */
 export { Header } from './Header';
-export type { HeaderProps, HeaderUser, DropdownAction } from './Header';
+export type { HeaderProps } from './Header';

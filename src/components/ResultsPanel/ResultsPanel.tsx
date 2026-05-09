@@ -1,38 +1,29 @@
 'use client'
 
 /**
- * ResultsPanel — right-side panel that appears when generation begins.
+ * ResultsPanel — right-side panel that reveals when generation begins.
  *
- * Layout (top → bottom):
- *   [Generation Status / Progress]    ← always visible when open
+ * Layout:
+ *   [Generated assets header + asset count badge]
+ *   [Tab navigation: All | Videos | Images | Scores]
  *   ─────────────────────────────────
- *   Scrollable content:
- *     [Video Section]
- *     [Image Gallery]
- *     [Design Templates]
- *     [Marketing Copy]
- *     [Performance Score]
+ *   [Generation progress] (while isGenerating)
+ *   [Tab content: video cards / image grid / scores] (when complete)
  *   ─────────────────────────────────
- *   [Action Buttons]                  ← sticky footer
+ *   [Action buttons] (sticky footer, only when complete)
  *
- * BEHAVIOR: Hidden (returns null) when showResults={false}.
- * Slides in from the right on first mount (adv-panel-in CSS animation).
+ * BEHAVIOR: Returns null when showResults={false}.
+ * Slides in from the right (adv-panel-in animation).
  *
  * SECURITY (Rule 18):
  * - Pure display component — no API calls, no auth logic (§16).
- * - Media URLs in generationData MUST be Supabase signed URLs produced
- *   server-side; never expose raw storage paths to the client (§8).
- * - Download/share actions must invoke authenticated backend endpoints that
- *   re-validate ownership before issuing signed URLs — never direct storage
- *   links (§2, §8, §16).
- * - All text values from generationData rendered as plain React text nodes
- *   (no dangerouslySetInnerHTML) — LLM-generated copy must be sanitized
- *   server-side before storage (§7).
+ * - Media URLs must be signed, short-lived Supabase Storage URLs (§8).
+ * - Download/Share invoke backend endpoints that re-validate ownership (§8, §16).
+ * - All text from generationData rendered as plain React text nodes (§7).
  * - No secrets, tokens, or Supabase calls in this component.
  */
 
 import React, { useState } from 'react'
-import { VideoSection } from './VideoSection'
 import { ImageGallery } from './ImageGallery'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -53,30 +44,24 @@ export interface GenerationCopy {
 }
 
 export interface GenerationData {
-  /** Supabase signed URL for the generated video (§8) */
   videoUrl?: string
-  /** Supabase signed URLs for up to 4 storyboard / product images */
   imagePreviews?: string[]
-  /** Which social templates were generated */
   templatePlatforms?: Array<'instagram' | 'facebook' | 'pinterest'>
   copy?: GenerationCopy
   score?: GenerationScore
-  /** Human-readable time string — e.g. "3 minutes remaining" */
   estimatedTimeRemaining?: string
-  /** Credit cost deducted for this generation */
   creditCost?: number
 }
 
 export interface ResultsPanelProps {
-  /** When false, panel renders nothing (parent should zero its width or hide the aside) */
   showResults: boolean
   isGenerating: boolean
-  /** 0–100 */
   progress?: number
-  /** 1–7 matching the n8n phases in the implementation guide */
   currentPhase?: number
   generationData?: GenerationData
 }
+
+type TabId = 'all' | 'videos' | 'images' | 'scores'
 
 // ─── Phase definitions ────────────────────────────────────────────────────────
 
@@ -90,23 +75,46 @@ const PHASES = [
   'Finalizing your content',
 ] as const
 
+// ─── Demo video data (replace with real generationData in production) ─────────
+
+interface VideoCardData {
+  id: string
+  format: string
+  duration: string
+  displayTime: string
+  title: string
+  score: number
+  resolution: string
+  thumbnailUrl?: string
+}
+
+const DEMO_VIDEOS: VideoCardData[] = [
+  {
+    id: 'v1',
+    format: 'Instagram Reel',
+    duration: '15s',
+    displayTime: '0:15',
+    title: 'Minimal luxury — reveal',
+    score: 94,
+    resolution: '1920×1080 · MP4',
+  },
+  {
+    id: 'v2',
+    format: 'YouTube Short',
+    duration: '30s',
+    displayTime: '0:30',
+    title: 'Craftsmanship story',
+    score: 88,
+    resolution: '1920×1080 · MP4',
+  },
+]
+
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
 function Skeleton({ className = '' }: { className?: string }) {
   return <div className={`rounded-lg adv-skeleton ${className}`} />
 }
 
-function SectionDivider() {
-  return (
-    <div
-      className="my-0 h-px"
-      style={{ background: 'rgba(93,26,27,0.15)' }}
-      aria-hidden="true"
-    />
-  )
-}
-
-// Reusable inline progress bar
 function ProgressBar({
   value,
   max = 100,
@@ -143,44 +151,7 @@ function ProgressBar({
   )
 }
 
-// Section card wrapper — consistent padding, bg, border
-function SectionCard({
-  title,
-  icon,
-  children,
-  badge,
-}: {
-  title: string
-  icon: string
-  children: React.ReactNode
-  badge?: string
-}) {
-  return (
-    <section className="px-4 py-4">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-base select-none" aria-hidden="true">{icon}</span>
-          <h3 className="text-sm font-semibold text-white/80 tracking-wide">{title}</h3>
-        </div>
-        {badge && (
-          <span
-            className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-            style={{
-              background: 'rgba(93,26,27,0.3)',
-              color: 'rgba(255,255,255,0.5)',
-              border: '1px solid rgba(93,26,27,0.3)',
-            }}
-          >
-            {badge}
-          </span>
-        )}
-      </div>
-      {children}
-    </section>
-  )
-}
-
-// ─── Generation Status ────────────────────────────────────────────────────────
+// ─── Generation Status (shown while isGenerating) ─────────────────────────────
 
 function GenerationStatus({
   isGenerating,
@@ -193,119 +164,58 @@ function GenerationStatus({
   currentPhase?: number
   estimatedTime?: string
 }) {
-  if (!isGenerating && progress >= 100) {
-    // Complete state
-    return (
-      <div
-        className="px-4 py-4"
-        style={{ borderBottom: '1px solid rgba(93,26,27,0.15)' }}
-      >
-        <div className="flex items-center gap-2.5 mb-3">
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)' }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-              stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-white">Your content is ready!</p>
-            <p className="text-[11px] text-white/35 mt-0.5">All assets generated successfully</p>
-          </div>
-        </div>
-        <ProgressBar value={100} color="green" />
-      </div>
-    )
-  }
+  if (!isGenerating && progress >= 100) return null
 
-  // Generating state
   return (
-    <div
-      className="px-4 py-4"
-      style={{ borderBottom: '1px solid rgba(93,26,27,0.15)' }}
-    >
-      {/* Title row */}
+    <div className="px-4 py-4">
       <div className="flex items-center justify-between mb-2.5">
         <div className="flex items-center gap-2">
-          {/* Spinning ring */}
           <div
-            className="w-5 h-5 rounded-full border-2 border-transparent animate-spin flex-shrink-0"
-            style={{
-              borderTopColor: '#EC4899',
-              borderRightColor: 'rgba(168,85,247,0.4)',
-            }}
+            className="w-4 h-4 rounded-full border-2 border-transparent animate-spin flex-shrink-0"
+            style={{ borderTopColor: '#EC4899', borderRightColor: 'rgba(168,85,247,0.4)' }}
             aria-hidden="true"
           />
-          <p className="text-sm font-semibold text-white">
-            Creating your content
-          </p>
+          <p className="text-xs font-semibold text-white/80">Creating your content</p>
         </div>
-        <span
-          className="text-sm font-bold tabular-nums"
-          style={{ color: '#EC4899' }}
-        >
+        <span className="text-xs font-bold tabular-nums" style={{ color: '#EC4899' }}>
           {Math.round(progress)}%
         </span>
       </div>
 
-      {/* Progress bar */}
-      <ProgressBar value={progress} height="h-2" />
+      <ProgressBar value={progress} height="h-1.5" />
 
-      {/* Time estimate */}
       {estimatedTime && (
-        <p className="text-[11px] text-white/30 mt-1.5">
-          Est. {estimatedTime} remaining
-        </p>
+        <p className="text-[10px] text-white/28 mt-1.5">Est. {estimatedTime} remaining</p>
       )}
 
-      {/* Phase list */}
-      <div className="mt-4 space-y-1.5" role="list" aria-label="Generation phases">
+      <div className="mt-3 space-y-1.5" role="list">
         {PHASES.map((phase, i) => {
           const num = i + 1
           const isDone = num < currentPhase
           const isCurrent = num === currentPhase
-          const isPending = num > currentPhase
 
           return (
-            <div
-              key={phase}
-              className="flex items-center gap-2.5"
-              role="listitem"
-              aria-label={`Phase ${num}: ${phase}${isDone ? ' — complete' : isCurrent ? ' — in progress' : ' — pending'}`}
-            >
-              {/* Status icon */}
-              <span className="w-4 flex-shrink-0 flex items-center justify-center">
+            <div key={phase} className="flex items-center gap-2" role="listitem">
+              <span className="w-3.5 flex-shrink-0 flex items-center justify-center">
                 {isDone && (
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
                     stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                 )}
                 {isCurrent && (
-                  <div
-                    className="w-2.5 h-2.5 rounded-full animate-pulse"
-                    style={{ background: '#EC4899' }}
-                    aria-hidden="true"
-                  />
+                  <div className="w-2 h-2 rounded-full animate-pulse"
+                    style={{ background: '#EC4899' }} aria-hidden="true" />
                 )}
-                {isPending && (
-                  <div
-                    className="w-2 h-2 rounded-full"
-                    style={{ background: 'rgba(255,255,255,0.12)' }}
-                    aria-hidden="true"
-                  />
+                {!isDone && !isCurrent && (
+                  <div className="w-1.5 h-1.5 rounded-full"
+                    style={{ background: 'rgba(255,255,255,0.1)' }} aria-hidden="true" />
                 )}
               </span>
-
-              {/* Phase name */}
-              <span
-                className={[
-                  'text-xs leading-tight',
-                  isDone ? 'text-white/55' : isCurrent ? 'text-white font-medium' : 'text-white/25',
-                ].join(' ')}
-              >
+              <span className={[
+                'text-[10px] leading-tight',
+                isDone ? 'text-white/40' : isCurrent ? 'text-white/80 font-medium' : 'text-white/20',
+              ].join(' ')}>
                 {phase}
               </span>
             </div>
@@ -316,282 +226,254 @@ function GenerationStatus({
   )
 }
 
+// ─── VideoCard ────────────────────────────────────────────────────────────────
 
-// ─── Design Templates ─────────────────────────────────────────────────────────
-
-function DesignTemplatesSection({ isGenerating }: { isGenerating: boolean }) {
-  const [activeTab, setActiveTab] = useState<'instagram' | 'facebook' | 'pinterest'>('instagram')
-  const tabs = ['instagram', 'facebook', 'pinterest'] as const
+function VideoCard({ video }: { video: VideoCardData }) {
+  const scoreColor = video.score >= 90 ? '#22c55e' : video.score >= 80 ? '#EC4899' : '#eab308'
+  const scoreBg =
+    video.score >= 90
+      ? 'rgba(34,197,94,0.12)'
+      : video.score >= 80
+      ? 'rgba(236,72,153,0.12)'
+      : 'rgba(234,179,8,0.12)'
+  const scoreBorder =
+    video.score >= 90
+      ? 'rgba(34,197,94,0.25)'
+      : video.score >= 80
+      ? 'rgba(236,72,153,0.25)'
+      : 'rgba(234,179,8,0.25)'
 
   return (
-    <SectionCard title="Design Templates" icon="🎨">
-      {isGenerating ? (
-        <div className="space-y-2.5">
-          <div className="flex gap-2">
-            {[0, 1, 2].map(i => <Skeleton key={i} className="h-7 flex-1 rounded-lg" />)}
-          </div>
-          <Skeleton className="h-36 w-full" />
-        </div>
-      ) : (
-        <div>
-          {/* Platform tabs */}
-          <div className="flex gap-1.5 mb-3" role="tablist" aria-label="Design template platform">
-            {tabs.map(tab => (
-              <button
-                key={tab}
-                role="tab"
-                aria-selected={activeTab === tab}
-                onClick={() => setActiveTab(tab)}
-                className={[
-                  'flex-1 py-1.5 rounded-lg text-[11px] font-medium capitalize transition-all duration-150',
-                  activeTab === tab
-                    ? 'text-white'
-                    : 'text-white/35 hover:text-white/60',
-                ].join(' ')}
-                style={
-                  activeTab === tab
-                    ? {
-                        background: 'linear-gradient(135deg, rgba(93,26,27,0.5) 0%, rgba(22,17,66,0.5) 100%)',
-                        border: '1px solid rgba(93,26,27,0.5)',
-                      }
-                    : {
-                        background: 'rgba(255,255,255,0.03)',
-                        border: '1px solid rgba(93,26,27,0.18)',
-                      }
-                }
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
+    <div>
+      {/* Label row */}
+      <div className="flex items-center justify-between mb-2 px-0.5">
+        <span className="text-[10px] font-semibold text-white/40 tracking-wide">
+          {video.format} · {video.duration}
+        </span>
+        <span className="text-[10px] text-white/28 tabular-nums">{video.displayTime}</span>
+      </div>
 
-          {/* Template preview placeholder */}
+      {/* Card */}
+      <div
+        className="rounded-xl overflow-hidden transition-all duration-200 hover:border-opacity-60"
+        style={{
+          background: 'rgba(255,255,255,0.02)',
+          border: '1px solid rgba(93,26,27,0.3)',
+        }}
+      >
+        <div className="flex">
+          {/* Thumbnail */}
           <div
-            className="rounded-xl flex items-center justify-center"
+            className="w-28 flex-shrink-0 flex items-center justify-center"
             style={{
-              aspectRatio: activeTab === 'instagram' ? '1 / 1' : activeTab === 'facebook' ? '16 / 9' : '2 / 3',
-              background: 'linear-gradient(135deg, rgba(22,17,66,0.7) 0%, rgba(93,26,27,0.3) 100%)',
-              border: '1px solid rgba(93,26,27,0.25)',
+              background: 'linear-gradient(135deg, rgba(22,17,66,0.95) 0%, rgba(93,26,27,0.5) 100%)',
+              minHeight: 88,
             }}
-            role="img"
-            aria-label={`${activeTab} template preview (placeholder)`}
           >
-            <p className="text-white/20 text-xs capitalize">{activeTab} template</p>
-          </div>
-
-          {/* Edit in Canva button */}
-          <button
-            className="mt-2.5 w-full flex items-center justify-center gap-1.5 py-2 rounded-lg
-                       text-xs font-medium text-white/60 hover:text-white/85 transition-colors duration-150"
-            style={{ border: '1px solid rgba(93,26,27,0.28)' }}
-          >
-            🎨 Edit in Canva
-          </button>
-        </div>
-      )}
-    </SectionCard>
-  )
-}
-
-// ─── Marketing Copy ───────────────────────────────────────────────────────────
-
-function MarketingCopySection({
-  isGenerating,
-  copy,
-}: {
-  isGenerating: boolean
-  copy?: GenerationCopy
-}) {
-  const [copied, setCopied] = useState(false)
-
-  function handleCopy() {
-    // Placeholder — real copy will use navigator.clipboard with sanitized text
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
-  return (
-    <SectionCard title="Marketing Copy" icon="📝">
-      {isGenerating ? (
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-3/4" />
-          <Skeleton className="h-3 w-full" />
-          <Skeleton className="h-3 w-full" />
-          <Skeleton className="h-3 w-2/3" />
-          <Skeleton className="h-3 w-5/6 mt-2" />
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {/* Headline */}
-          <div
-            className="rounded-lg p-3"
-            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(93,26,27,0.2)' }}
-          >
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-1">
-              Headline
-            </p>
-            <p className="text-sm font-semibold text-white leading-snug">
-              {copy?.headline ?? 'Timeless craftsmanship in every stitch'}
-            </p>
-          </div>
-
-          {/* Caption */}
-          <div
-            className="rounded-lg p-3"
-            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(93,26,27,0.2)' }}
-          >
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-1">
-              Caption
-            </p>
-            <p className="text-xs text-white/65 leading-relaxed">
-              {copy?.captions?.[0] ?? 'Crafted for those who appreciate the details. Our leather wallets are built to last a lifetime — and look better with every year.'}
-            </p>
-          </div>
-
-          {/* CTA */}
-          {copy?.cta && (
-            <div
-              className="rounded-lg p-3"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(93,26,27,0.2)' }}
+            <button
+              className="w-9 h-9 rounded-full flex items-center justify-center
+                         transition-transform duration-200 hover:scale-110 active:scale-95"
+              style={{
+                background: 'rgba(236,72,153,0.18)',
+                border: '1px solid rgba(236,72,153,0.32)',
+              }}
+              aria-label={`Play ${video.title}`}
             >
-              <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-1">CTA</p>
-              <p className="text-xs text-white/65">{copy.cta}</p>
-            </div>
-          )}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="#EC4899" aria-hidden="true">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+            </button>
+          </div>
 
-          {/* Copy button */}
-          <button
-            onClick={handleCopy}
-            className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70
-                       transition-colors duration-150"
-          >
-            {copied ? (
-              <>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#22c55e"
-                  strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                <span style={{ color: '#22c55e' }}>Copied!</span>
-              </>
-            ) : (
-              <>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                </svg>
-                Copy all to clipboard
-              </>
-            )}
-          </button>
+          {/* Metadata */}
+          <div className="flex-1 px-3 py-2.5 flex flex-col justify-between min-w-0">
+            {/* Title + score */}
+            <div className="flex items-start justify-between gap-2 mb-1">
+              <p className="text-xs font-semibold text-white/85 leading-snug truncate">
+                {video.title}
+              </p>
+              <span
+                className="flex-shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-md tabular-nums"
+                style={{ background: scoreBg, color: scoreColor, border: `1px solid ${scoreBorder}` }}
+              >
+                +{video.score}
+              </span>
+            </div>
+
+            {/* Resolution */}
+            <p className="text-[10px] text-white/28 mb-2">{video.resolution}</p>
+
+            {/* Buttons */}
+            <div className="flex items-center gap-1.5">
+              <button
+                className="flex-1 py-1 rounded-lg text-[10px] font-medium text-white/55
+                           hover:text-white/85 transition-colors duration-150"
+                style={{ border: '1px solid rgba(93,26,27,0.3)' }}
+                aria-label={`Preview ${video.title}`}
+              >
+                Preview
+              </button>
+              <button
+                className="flex-1 py-1 rounded-lg text-[10px] font-semibold text-white
+                           transition-all duration-150 hover:opacity-90"
+                style={{ background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)' }}
+                aria-label={`Download ${video.title}`}
+              >
+                Download
+              </button>
+            </div>
+          </div>
         </div>
-      )}
-    </SectionCard>
+      </div>
+    </div>
   )
 }
 
-// ─── Performance Score ────────────────────────────────────────────────────────
+// ─── Score bar ────────────────────────────────────────────────────────────────
 
-function ScoreBar({
-  label,
-  value,
-}: {
-  label: string
-  value: number
-}) {
-  const color =
-    value >= 88 ? 'green' : value >= 75 ? 'gradient' : 'amber'
+function ScoreBar({ label, value }: { label: string; value: number }) {
+  const color = value >= 88 ? 'green' : value >= 75 ? 'gradient' : 'amber'
+  const numColor = value >= 88 ? '#22c55e' : value >= 75 ? '#EC4899' : '#eab308'
 
   return (
     <div className="flex items-center gap-3">
-      <span className="text-[11px] text-white/45 w-[110px] flex-shrink-0 leading-tight">{label}</span>
+      <span className="text-[11px] text-white/42 w-[110px] flex-shrink-0">{label}</span>
       <div className="flex-1">
         <ProgressBar value={value} color={color} height="h-1.5" />
       </div>
       <span
-        className="text-[11px] font-semibold w-[38px] text-right tabular-nums flex-shrink-0"
-        style={{
-          color:
-            value >= 88 ? '#22c55e' : value >= 75 ? '#EC4899' : '#eab308',
-        }}
+        className="text-[11px] font-bold w-10 text-right tabular-nums flex-shrink-0"
+        style={{ color: numColor }}
       >
-        {value}/100
+        {value}
       </span>
     </div>
   )
 }
 
-function PerformanceSection({
-  isGenerating,
-  score,
-}: {
-  isGenerating: boolean
-  score?: GenerationScore
-}) {
-  const s = score ?? {
-    overall: 0,
-    visual: 0,
-    clarity: 0,
-    alignment: 0,
-    cta: 0,
+// ─── Tab content sections ─────────────────────────────────────────────────────
+
+function VideoListSection({ isGenerating }: { isGenerating: boolean }) {
+  if (isGenerating) {
+    return (
+      <div className="space-y-4">
+        {[0, 1].map(i => (
+          <div key={i}>
+            <div className="flex justify-between mb-2">
+              <Skeleton className="w-28 h-3" />
+              <Skeleton className="w-8 h-3" />
+            </div>
+            <div className="rounded-xl overflow-hidden flex" style={{ border: '1px solid rgba(93,26,27,0.22)' }}>
+              <Skeleton className="w-28 h-[88px] flex-shrink-0 rounded-none" />
+              <div className="flex-1 p-3 space-y-2">
+                <Skeleton className="h-3 w-3/4" />
+                <Skeleton className="h-2.5 w-1/2" />
+                <div className="flex gap-1.5 pt-1">
+                  <Skeleton className="flex-1 h-6 rounded-lg" />
+                  <Skeleton className="flex-1 h-6 rounded-lg" />
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    )
   }
 
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <span className="text-[9px] font-bold tracking-[0.14em] uppercase text-white/30">
+          Videos · {DEMO_VIDEOS.length} generated
+        </span>
+      </div>
+      {DEMO_VIDEOS.map(v => <VideoCard key={v.id} video={v} />)}
+    </div>
+  )
+}
+
+function ImageSection({ isGenerating, images }: { isGenerating: boolean; images?: string[] }) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-[9px] font-bold tracking-[0.14em] uppercase text-white/30">
+          Images · 4 generated
+        </span>
+        {!isGenerating && (
+          <div className="flex gap-2">
+            <button className="text-[10px] text-white/40 hover:text-white/70 transition-colors">
+              Select all
+            </button>
+            <button
+              className="text-[10px] font-semibold transition-all hover:opacity-85"
+              style={{ color: '#EC4899' }}
+            >
+              Download all
+            </button>
+          </div>
+        )}
+      </div>
+      <ImageGallery isGenerating={isGenerating} images={images} showCanvaButton />
+    </div>
+  )
+}
+
+function ScoresSection({ isGenerating, score }: { isGenerating: boolean; score?: GenerationScore }) {
+  const s = score ?? { overall: 91, visual: 88, clarity: 94, alignment: 87, cta: 92 }
+
   const metrics = [
-    { label: 'Overall', value: s.overall },
-    { label: 'Visual Appeal', value: s.visual },
-    { label: 'Message Clarity', value: s.clarity },
+    { label: 'Overall',            value: s.overall   },
+    { label: 'Visual Appeal',      value: s.visual    },
+    { label: 'Message Clarity',    value: s.clarity   },
     { label: 'Audience Alignment', value: s.alignment },
-    { label: 'Call to Action', value: s.cta },
+    { label: 'Call to Action',     value: s.cta       },
   ]
 
   return (
-    <SectionCard title="Performance Score" icon="📊">
+    <div>
+      <span className="text-[9px] font-bold tracking-[0.14em] uppercase text-white/30">
+        Performance prediction
+      </span>
+
       {isGenerating ? (
-        <div className="space-y-3">
+        <div className="space-y-3 mt-3">
           {metrics.map(({ label }) => (
             <div key={label} className="flex items-center gap-3">
-              <Skeleton className="w-[110px] h-3 flex-shrink-0" />
+              <Skeleton className="w-[110px] h-2.5 flex-shrink-0" />
               <Skeleton className="flex-1 h-1.5" />
-              <Skeleton className="w-8 h-3 flex-shrink-0" />
+              <Skeleton className="w-8 h-2.5 flex-shrink-0" />
             </div>
           ))}
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3 mt-3">
           {metrics.map(({ label, value }) => (
             <ScoreBar key={label} label={label} value={value} />
           ))}
         </div>
       )}
-    </SectionCard>
+    </div>
   )
 }
 
-// ─── Action Buttons ───────────────────────────────────────────────────────────
+// ─── Action buttons (sticky footer) ──────────────────────────────────────────
 
-function ActionButtons({
-  isGenerating,
-  creditCost,
-}: {
-  isGenerating: boolean
-  creditCost?: number
-}) {
+function ActionButtons({ isGenerating }: { isGenerating: boolean }) {
   return (
     <div
-      className="flex-shrink-0 px-4 py-4 space-y-2"
+      className="flex-shrink-0 px-4 py-3 space-y-2"
       style={{ borderTop: '1px solid rgba(93,26,27,0.15)' }}
     >
-      {/* Primary: Download All */}
       <button
         disabled={isGenerating}
         className={[
-          'w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold',
-          'text-white transition-all duration-200',
-          isGenerating ? 'opacity-35 cursor-not-allowed' : 'hover:opacity-90 active:scale-[0.99]',
+          'w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white',
+          'transition-all duration-200',
+          isGenerating ? 'opacity-30 cursor-not-allowed' : 'hover:opacity-90 active:scale-[0.99]',
         ].join(' ')}
         style={{ background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)' }}
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           strokeWidth="2" strokeLinecap="round" aria-hidden="true">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
           <polyline points="7 10 12 15 17 10" />
@@ -600,11 +482,10 @@ function ActionButtons({
         Download All
       </button>
 
-      {/* Secondary row */}
       <div className="grid grid-cols-3 gap-1.5">
         {[
-          { label: 'Save', icon: '💾' },
-          { label: 'Share', icon: '🔗' },
+          { label: 'Save',       icon: '💾' },
+          { label: 'Share',      icon: '🔗' },
           { label: 'Edit Style', icon: '🎨' },
         ].map(({ label, icon }) => (
           <button
@@ -612,42 +493,49 @@ function ActionButtons({
             disabled={isGenerating}
             className={[
               'flex flex-col items-center gap-1 py-2.5 rounded-xl text-[11px] font-medium',
-              'text-white/50 transition-all duration-150',
-              isGenerating ? 'opacity-35 cursor-not-allowed' : 'hover:text-white/80 hover:bg-white/[0.05]',
+              'text-white/45 transition-all duration-150',
+              isGenerating
+                ? 'opacity-30 cursor-not-allowed'
+                : 'hover:text-white/75 hover:bg-white/[0.04]',
             ].join(' ')}
-            style={{ border: '1px solid rgba(93,26,27,0.22)' }}
+            style={{ border: '1px solid rgba(93,26,27,0.2)' }}
           >
-            <span className="text-base select-none" aria-hidden="true">{icon}</span>
+            <span className="text-sm select-none" aria-hidden="true">{icon}</span>
             {label}
           </button>
         ))}
       </div>
 
-      {/* Regenerate */}
       <button
         disabled={isGenerating}
         className={[
           'w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium',
-          'text-white/35 transition-all duration-150',
-          isGenerating ? 'opacity-35 cursor-not-allowed' : 'hover:text-white/60 hover:bg-white/[0.04]',
+          'text-white/28 transition-all duration-150',
+          isGenerating
+            ? 'opacity-30 cursor-not-allowed'
+            : 'hover:text-white/55 hover:bg-white/[0.04]',
         ].join(' ')}
-        style={{ border: '1px dashed rgba(93,26,27,0.25)' }}
+        style={{ border: '1px dashed rgba(93,26,27,0.22)' }}
       >
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
           <polyline points="23 4 23 10 17 10" />
           <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
         </svg>
-        Regenerate
-        {creditCost && (
-          <span className="text-[10px] text-white/22 ml-0.5">
-            ({creditCost} credits)
-          </span>
-        )}
+        Regenerate (20 credits)
       </button>
     </div>
   )
 }
+
+// ─── Tab navigation ───────────────────────────────────────────────────────────
+
+const TABS: Array<{ id: TabId; label: string }> = [
+  { id: 'all',    label: 'All'    },
+  { id: 'videos', label: 'Videos' },
+  { id: 'images', label: 'Images' },
+  { id: 'scores', label: 'Scores' },
+]
 
 // ─── ResultsPanel ─────────────────────────────────────────────────────────────
 
@@ -658,54 +546,163 @@ export function ResultsPanel({
   currentPhase = 1,
   generationData,
 }: ResultsPanelProps) {
+  const [activeTab, setActiveTab] = useState<TabId>('all')
+
   if (!showResults) return null
 
   const isComplete = !isGenerating && progress >= 100
+  // Total asset count: 2 demo videos + 4 images
+  const assetCount = isComplete ? 6 : 0
 
   return (
     <div
       className="h-full flex flex-col bg-background overflow-hidden adv-panel-in"
-      aria-label="Generation results"
+      aria-label="Generated assets panel"
       role="complementary"
     >
-      {/* ── Generation status (sticky top) ──────────────────────────────── */}
-      <GenerationStatus
-        isGenerating={isGenerating}
-        progress={progress}
-        currentPhase={currentPhase}
-        estimatedTime={generationData?.estimatedTimeRemaining}
-      />
-
-      {/* ── Scrollable sections ──────────────────────────────────────────── */}
+      {/* ── Panel header ────────────────────────────────────────────────── */}
       <div
-        className="flex-1 overflow-y-auto divide-y"
-        style={{
-          scrollbarWidth: 'thin',
-          scrollbarColor: 'rgba(93,26,27,0.25) transparent',
-          borderColor: 'rgba(93,26,27,0.12)',
-        }}
+        className="flex-shrink-0 px-4 pt-4 pb-3"
+        style={{ borderBottom: '1px solid rgba(93,26,27,0.15)' }}
       >
-        <SectionCard
-          title="Video Ad"
-          icon="🎬"
-          badge={!generationData?.videoUrl && isGenerating ? 'Generating...' : undefined}
-        >
-          <VideoSection isGenerating={isGenerating} videoUrl={generationData?.videoUrl} />
-        </SectionCard>
-        <SectionDivider />
-        <SectionCard title="Product Images" icon="📸" badge="4 images">
-          <ImageGallery isGenerating={isGenerating} images={generationData?.imagePreviews} />
-        </SectionCard>
-        <SectionDivider />
-        <DesignTemplatesSection isGenerating={isGenerating} />
-        <SectionDivider />
-        <MarketingCopySection isGenerating={isGenerating} copy={generationData?.copy} />
-        <SectionDivider />
-        <PerformanceSection isGenerating={isGenerating} score={isComplete ? generationData?.score : undefined} />
+        {/* Title + badge */}
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-bold text-white/85 tracking-wide">
+            Generated assets
+          </h2>
+          {isComplete && (
+            <span
+              className="text-[10px] font-bold px-2.5 py-1 rounded-full"
+              style={{
+                background: 'rgba(34,197,94,0.14)',
+                color: '#22c55e',
+                border: '1px solid rgba(34,197,94,0.28)',
+              }}
+            >
+              {assetCount} assets ready
+            </span>
+          )}
+          {isGenerating && (
+            <span
+              className="text-[10px] font-bold px-2.5 py-1 rounded-full"
+              style={{
+                background: 'rgba(236,72,153,0.1)',
+                color: '#EC4899',
+                border: '1px solid rgba(236,72,153,0.22)',
+              }}
+            >
+              Generating...
+            </span>
+          )}
+        </div>
+
+        {/* Tab navigation */}
+        <div className="flex gap-1" role="tablist" aria-label="Asset filters">
+          {TABS.map(tab => {
+            const isActive = activeTab === tab.id
+            return (
+              <button
+                key={tab.id}
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setActiveTab(tab.id)}
+                className={[
+                  'flex-1 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-150',
+                  isActive ? 'text-white' : 'text-white/35 hover:text-white/60',
+                ].join(' ')}
+                style={
+                  isActive
+                    ? {
+                        background:
+                          'linear-gradient(135deg, rgba(93,26,27,0.45) 0%, rgba(22,17,66,0.45) 100%)',
+                        border: '1px solid rgba(93,26,27,0.48)',
+                      }
+                    : {
+                        background: 'rgba(255,255,255,0.025)',
+                        border: '1px solid rgba(93,26,27,0.16)',
+                      }
+                }
+              >
+                {tab.label}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
-      {/* ── Action buttons (sticky footer) ──────────────────────────────── */}
-      <ActionButtons isGenerating={isGenerating} creditCost={20} />
+      {/* ── Scrollable content ───────────────────────────────────────────── */}
+      <div
+        className="flex-1 overflow-y-auto px-4 py-4 space-y-6 min-h-0"
+        style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(93,26,27,0.2) transparent' }}
+      >
+        {/* Generation status — shown while generating */}
+        {isGenerating && (
+          <GenerationStatus
+            isGenerating={isGenerating}
+            progress={progress}
+            currentPhase={currentPhase}
+            estimatedTime={generationData?.estimatedTimeRemaining}
+          />
+        )}
+
+        {/* Complete status notice */}
+        {isComplete && (
+          <div
+            className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl"
+            style={{
+              background: 'rgba(34,197,94,0.08)',
+              border: '1px solid rgba(34,197,94,0.2)',
+            }}
+          >
+            <div
+              className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ background: 'rgba(34,197,94,0.2)' }}
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <p className="text-xs font-semibold" style={{ color: '#22c55e' }}>
+              Your content is ready!
+            </p>
+          </div>
+        )}
+
+        {/* Videos section */}
+        {(activeTab === 'all' || activeTab === 'videos') && (
+          <VideoListSection isGenerating={isGenerating} />
+        )}
+
+        {/* Divider between videos and images in "all" view */}
+        {activeTab === 'all' && (
+          <div className="h-px" style={{ background: 'rgba(93,26,27,0.12)' }} />
+        )}
+
+        {/* Images section */}
+        {(activeTab === 'all' || activeTab === 'images') && (
+          <ImageSection
+            isGenerating={isGenerating}
+            images={generationData?.imagePreviews}
+          />
+        )}
+
+        {/* Divider in "all" view */}
+        {activeTab === 'all' && (
+          <div className="h-px" style={{ background: 'rgba(93,26,27,0.12)' }} />
+        )}
+
+        {/* Scores section */}
+        {(activeTab === 'all' || activeTab === 'scores') && (
+          <ScoresSection
+            isGenerating={isGenerating}
+            score={isComplete ? generationData?.score : undefined}
+          />
+        )}
+      </div>
+
+      {/* ── Action buttons (sticky footer) ───────────────────────────────── */}
+      <ActionButtons isGenerating={isGenerating} />
     </div>
   )
 }
