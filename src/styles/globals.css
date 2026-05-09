@@ -1,0 +1,122 @@
+/*
+ * src/styles/globals.css — Advertimus Design System
+ *
+ * Purpose: Design tokens, CSS custom properties, and base resets consumed
+ * across all components.  Component-specific overrides live alongside each
+ * component (e.g. src/components/ChatArea/ChatArea.module.css).
+ *
+ * Color Palette — Dark premium theme
+ *   --color-bg-primary    : main application background
+ *   --color-bg-surface    : cards / panels
+ *   --color-bg-elevated   : modals / dropdowns
+ *   --color-accent        : brand purple
+ *   --color-accent-alt    : brand deep red
+ *   --color-text-primary  : primary readable text
+ *   --color-text-secondary: muted / helper text
+ *   --color-border        : subtle separators
+ *
+ * Typography tokens, spacing scale, animation durations, and z-index layers
+ * are also defined here.
+ *
+ * NOTE: Import this file once from the root layout (app/layout.tsx or
+ * src/app/layout.tsx) — never import it multiple times or at component level.
+ */
+
+:root {
+  /* --- Color Tokens --- */
+  --color-bg-primary: #0a0a0f;
+  --color-bg-surface: #111118;
+  --color-bg-elevated: #1a1a24;
+  --color-accent: #6c47ff;
+  --color-accent-hover: #7d5cff;
+  --color-accent-alt: #5d1a1b;
+  --color-gradient-start: #161142;
+  --color-gradient-end: #5d1a1b;
+  --color-text-primary: #f0f0f5;
+  --color-text-secondary: #8888a0;
+  --color-border: rgba(255, 255, 255, 0.08);
+
+  /* --- Typography --- */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+
+  /* --- Spacing Scale (8-pt grid) --- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* --- Radius --- */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+  --radius-full: 9999px;
+
+  /* --- Transitions --- */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+
+  /* --- Z-Index Layers --- */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sidebar: 200;
+  --z-header: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+video {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+}

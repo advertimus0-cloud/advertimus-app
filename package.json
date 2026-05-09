@@ -1,5 +1,5 @@
 {
-  "name": "mysite",
+  "name": "advertismus",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,16 +9,27 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^6.2.0",
+    "@supabase/supabase-js": "^2.103.0",
+    "axios": "^1.15.0",
     "boxicons": "^2.1.4",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "next": "^14.2.5",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.6.0",
+    "sharp": "^0.34.5",
+    "stripe": "^22.0.1",
+    "uuid": "^13.0.0",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/uuid": "^10.0.0",
     "eslint": "^9",
     "typescript": "^5.9.3"
   }
