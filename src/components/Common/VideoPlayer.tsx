@@ -1,0 +1,473 @@
+'use client'
+
+/**
+ * VideoPlayer — reusable HTML5 video player with custom controls.
+ *
+ * SECURITY (Rule 18):
+ * - `src` must be a signed, short-lived Supabase Storage URL produced server-side.
+ *   This component never constructs, modifies, or logs media URLs (§8).
+ * - Download and Share buttons are UI stubs. Real implementation MUST call
+ *   authenticated backend endpoints that re-validate ownership before issuing a
+ *   fresh signed URL — never pass the `src` prop directly to an anchor download (§8, §16).
+ * - Quality switching is UI-only here. In production the parent provides a URL per
+ *   quality level; the component calls `onQualityChange` and the parent swaps `src`.
+ * - No API calls, no auth logic, no secrets in this component (§16).
+ * - Third-party dependencies: none — uses the standard HTML5 <video> API only.
+ */
+
+import React, { useRef, useState, useEffect, useCallback } from 'react'
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface VideoPlayerProps {
+  /** Signed Supabase Storage URL (§8). Falls back to placeholder in demo. */
+  src: string
+  poster?: string
+  defaultQuality?: Quality
+  /** Called when user requests a quality change — parent swaps src. */
+  onQualityChange?: (q: Quality) => void
+  /** UI stub — wire to authenticated backend endpoint (§16). */
+  onDownload?: () => void
+  /** UI stub — wire to authenticated backend share flow (§16). */
+  onShare?: () => void
+  className?: string
+}
+
+type Quality = '720p' | '1080p' | '4K'
+const QUALITIES: Quality[] = ['720p', '1080p', '4K']
+
+function formatTime(sec: number): string {
+  if (!isFinite(sec) || sec < 0) return '0:00'
+  const m = Math.floor(sec / 60)
+  const s = Math.floor(sec % 60)
+  return `${m}:${s.toString().padStart(2, '0')}`
+}
+
+// ─── SVG Icons ────────────────────────────────────────────────────────────────
+
+function IconPlay() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <polygon points="5 3 19 12 5 21 5 3" />
+    </svg>
+  )
+}
+
+function IconPause() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <rect x="6" y="4" width="4" height="16" />
+      <rect x="14" y="4" width="4" height="16" />
+    </svg>
+  )
+}
+
+function IconVolume() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+    </svg>
+  )
+}
+
+function IconMute() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+      <line x1="23" y1="9" x2="17" y2="15" />
+      <line x1="17" y1="9" x2="23" y2="15" />
+    </svg>
+  )
+}
+
+function IconDownload() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+  )
+}
+
+function IconShare() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+    </svg>
+  )
+}
+
+function IconFullscreen() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+      <polyline points="15 3 21 3 21 9" />
+      <polyline points="9 21 3 21 3 15" />
+      <line x1="21" y1="3" x2="14" y2="10" />
+      <line x1="3" y1="21" x2="10" y2="14" />
+    </svg>
+  )
+}
+
+function IconExitFullscreen() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+      <polyline points="4 14 10 14 10 20" />
+      <polyline points="20 10 14 10 14 4" />
+      <line x1="10" y1="14" x2="3" y2="21" />
+      <line x1="21" y1="3" x2="14" y2="10" />
+    </svg>
+  )
+}
+
+// ─── VideoPlayer ──────────────────────────────────────────────────────────────
+
+export function VideoPlayer({
+  src,
+  poster,
+  defaultQuality = '4K',
+  onQualityChange,
+  onDownload,
+  onShare,
+  className = '',
+}: VideoPlayerProps) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
+  const [volume, setVolume] = useState(1)
+  const [isMuted, setIsMuted] = useState(false)
+  const [quality, setQuality] = useState<Quality>(defaultQuality)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [showControls, setShowControls] = useState(true)
+  const [showQualityMenu, setShowQualityMenu] = useState(false)
+  const [isBuffering, setIsBuffering] = useState(false)
+
+  // ── Video event bindings ────────────────────────────────────────────────────
+  useEffect(() => {
+    const v = videoRef.current
+    if (!v) return
+
+    const onPlay = () => setIsPlaying(true)
+    const onPause = () => { setIsPlaying(false); setShowControls(true) }
+    const onTimeUpdate = () => setCurrentTime(v.currentTime)
+    const onDurationChange = () => { if (isFinite(v.duration)) setDuration(v.duration) }
+    const onVolumeChange = () => { setVolume(v.volume); setIsMuted(v.muted) }
+    const onWaiting = () => setIsBuffering(true)
+    const onCanPlay = () => setIsBuffering(false)
+    const onEnded = () => { setIsPlaying(false); setShowControls(true) }
+
+    v.addEventListener('play', onPlay)
+    v.addEventListener('pause', onPause)
+    v.addEventListener('timeupdate', onTimeUpdate)
+    v.addEventListener('durationchange', onDurationChange)
+    v.addEventListener('volumechange', onVolumeChange)
+    v.addEventListener('waiting', onWaiting)
+    v.addEventListener('canplay', onCanPlay)
+    v.addEventListener('ended', onEnded)
+
+    return () => {
+      v.removeEventListener('play', onPlay)
+      v.removeEventListener('pause', onPause)
+      v.removeEventListener('timeupdate', onTimeUpdate)
+      v.removeEventListener('durationchange', onDurationChange)
+      v.removeEventListener('volumechange', onVolumeChange)
+      v.removeEventListener('waiting', onWaiting)
+      v.removeEventListener('canplay', onCanPlay)
+      v.removeEventListener('ended', onEnded)
+    }
+  }, [])
+
+  // ── Fullscreen change listener ──────────────────────────────────────────────
+  useEffect(() => {
+    const onFsChange = () => setIsFullscreen(!!document.fullscreenElement)
+    document.addEventListener('fullscreenchange', onFsChange)
+    return () => document.removeEventListener('fullscreenchange', onFsChange)
+  }, [])
+
+  // ── Controls auto-hide cleanup ──────────────────────────────────────────────
+  useEffect(() => () => {
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
+  }, [])
+
+  // ── Controls auto-hide trigger ──────────────────────────────────────────────
+  const resetHideTimer = useCallback(() => {
+    setShowControls(true)
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
+    hideTimerRef.current = setTimeout(() => {
+      if (videoRef.current && !videoRef.current.paused) setShowControls(false)
+    }, 2500)
+  }, [])
+
+  // ── Playback ────────────────────────────────────────────────────────────────
+  const togglePlay = useCallback(() => {
+    const v = videoRef.current
+    if (!v) return
+    if (v.paused) { v.play() } else { v.pause() }
+  }, [])
+
+  // ── Volume ──────────────────────────────────────────────────────────────────
+  function handleVolumeChange(val: number) {
+    const v = videoRef.current
+    if (!v) return
+    v.volume = val
+    v.muted = val === 0
+  }
+
+  function toggleMute() {
+    const v = videoRef.current
+    if (!v) return
+    if (v.muted || v.volume === 0) {
+      v.muted = false
+      if (v.volume === 0) v.volume = 0.5
+    } else {
+      v.muted = true
+    }
+  }
+
+  // ── Seek ─────────────────────────────────────────────────────────────────────
+  function handleSeek(val: number) {
+    const v = videoRef.current
+    if (!v || !isFinite(v.duration)) return
+    v.currentTime = val
+    setCurrentTime(val)
+  }
+
+  // ── Fullscreen ──────────────────────────────────────────────────────────────
+  async function toggleFullscreen() {
+    const el = containerRef.current
+    if (!el) return
+    if (!document.fullscreenElement) {
+      await el.requestFullscreen().catch(() => null)
+    } else {
+      await document.exitFullscreen().catch(() => null)
+    }
+  }
+
+  // ── Quality ─────────────────────────────────────────────────────────────────
+  function selectQuality(q: Quality) {
+    setQuality(q)
+    setShowQualityMenu(false)
+    onQualityChange?.(q)
+  }
+
+  const displayVolume = isMuted ? 0 : volume
+
+  return (
+    <div
+      ref={containerRef}
+      className={`relative rounded-xl overflow-hidden bg-black select-none ${className}`}
+      onMouseMove={resetHideTimer}
+      onMouseEnter={() => setShowControls(true)}
+      onMouseLeave={() => {
+        if (videoRef.current && !videoRef.current.paused) setShowControls(false)
+      }}
+    >
+      {/* ── Video element ─────────────────────────────────────────────────── */}
+      <video
+        ref={videoRef}
+        src={src}
+        poster={poster}
+        className="w-full aspect-video object-contain cursor-pointer"
+        onClick={togglePlay}
+        preload="metadata"
+        playsInline
+        aria-label="Generated video ad"
+      />
+
+      {/* ── Buffering indicator ───────────────────────────────────────────── */}
+      {isBuffering && (
+        <div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+          aria-hidden="true"
+        >
+          <div
+            className="w-10 h-10 rounded-full border-2 border-transparent animate-spin"
+            style={{
+              borderTopColor: '#EC4899',
+              borderRightColor: 'rgba(168,85,247,0.4)',
+            }}
+          />
+        </div>
+      )}
+
+      {/* ── Center play overlay (paused state, purely visual) ─────────────── */}
+      {!isPlaying && !isBuffering && (
+        <div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+          aria-hidden="true"
+        >
+          <div
+            className="w-14 h-14 rounded-full flex items-center justify-center opacity-90"
+            style={{ background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)' }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+              <polygon points="5 3 19 12 5 21 5 3" />
+            </svg>
+          </div>
+        </div>
+      )}
+
+      {/* ── Controls bar ─────────────────────────────────────────────────── */}
+      <div
+        className={[
+          'absolute bottom-0 left-0 right-0 px-3 pb-2.5 pt-10 transition-opacity duration-200',
+          showControls ? 'opacity-100' : 'opacity-0 pointer-events-none',
+        ].join(' ')}
+        style={{
+          background: 'linear-gradient(to top, rgba(0,0,0,0.90) 0%, transparent 100%)',
+          zIndex: 10,
+        }}
+      >
+        {/* Seek / progress slider */}
+        <input
+          type="range"
+          min={0}
+          max={duration || 100}
+          step={0.05}
+          value={currentTime}
+          disabled={duration === 0}
+          onChange={e => handleSeek(Number(e.target.value))}
+          className="w-full mb-2.5 h-1 rounded-full cursor-pointer accent-pink-500
+                     disabled:opacity-40 disabled:cursor-not-allowed"
+          aria-label="Seek"
+        />
+
+        {/* Controls row */}
+        <div className="flex items-center gap-2">
+
+          {/* Play / Pause */}
+          <button
+            onClick={togglePlay}
+            className="text-white/80 hover:text-white transition-colors duration-100 flex-shrink-0"
+            aria-label={isPlaying ? 'Pause' : 'Play'}
+          >
+            {isPlaying ? <IconPause /> : <IconPlay />}
+          </button>
+
+          {/* Mute toggle */}
+          <button
+            onClick={toggleMute}
+            className="text-white/65 hover:text-white transition-colors duration-100 flex-shrink-0"
+            aria-label={isMuted ? 'Unmute' : 'Mute'}
+          >
+            {isMuted ? <IconMute /> : <IconVolume />}
+          </button>
+
+          {/* Volume slider */}
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            value={displayVolume}
+            onChange={e => handleVolumeChange(Number(e.target.value))}
+            className="w-14 h-0.5 rounded-full cursor-pointer accent-pink-500 flex-shrink-0"
+            aria-label="Volume"
+          />
+
+          {/* Timestamp */}
+          <span className="text-[10px] text-white/50 tabular-nums flex-shrink-0">
+            {formatTime(currentTime)}&nbsp;/&nbsp;{formatTime(duration)}
+          </span>
+
+          <div className="flex-1" />
+
+          {/* Quality selector */}
+          <div className="relative flex-shrink-0">
+            <button
+              onClick={() => setShowQualityMenu(m => !m)}
+              className="text-[10px] font-semibold text-white/55 hover:text-white/90
+                         transition-colors duration-100 px-1.5 py-0.5 rounded"
+              style={{
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.14)',
+              }}
+              aria-label={`Quality: ${quality}`}
+              aria-expanded={showQualityMenu}
+              aria-haspopup="listbox"
+            >
+              {quality}
+            </button>
+
+            {showQualityMenu && (
+              <div
+                className="absolute bottom-full right-0 mb-1.5 rounded-lg overflow-hidden"
+                style={{
+                  background: 'rgba(8,5,18,0.97)',
+                  border: '1px solid rgba(93,26,27,0.45)',
+                  backdropFilter: 'blur(10px)',
+                  zIndex: 20,
+                  minWidth: 60,
+                }}
+                role="listbox"
+                aria-label="Video quality"
+              >
+                {QUALITIES.map(q => (
+                  <button
+                    key={q}
+                    role="option"
+                    aria-selected={q === quality}
+                    onClick={() => selectQuality(q)}
+                    className={[
+                      'w-full text-left px-3 py-1.5 text-[11px] font-medium transition-colors duration-100',
+                      q === quality
+                        ? 'text-pink-400 bg-white/[0.04]'
+                        : 'text-white/55 hover:text-white hover:bg-white/[0.05]',
+                    ].join(' ')}
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Download — UI stub (§16) */}
+          <button
+            onClick={onDownload}
+            className="text-white/50 hover:text-white transition-colors duration-100 flex-shrink-0"
+            aria-label="Download video"
+            title="Download"
+          >
+            <IconDownload />
+          </button>
+
+          {/* Share — UI stub (§16) */}
+          <button
+            onClick={onShare}
+            className="text-white/50 hover:text-white transition-colors duration-100 flex-shrink-0"
+            aria-label="Share video"
+            title="Share"
+          >
+            <IconShare />
+          </button>
+
+          {/* Fullscreen */}
+          <button
+            onClick={toggleFullscreen}
+            className="text-white/50 hover:text-white transition-colors duration-100 flex-shrink-0"
+            aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+          >
+            {isFullscreen ? <IconExitFullscreen /> : <IconFullscreen />}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}

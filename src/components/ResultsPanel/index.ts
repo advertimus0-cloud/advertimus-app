@@ -19,9 +19,13 @@
  *    ownership of the asset before issuing a signed URL (§2, §16).
  */
 export { ResultsPanel } from './ResultsPanel'
+export { VideoSection } from './VideoSection'
+export { ImageGallery } from './ImageGallery'
 export type {
   ResultsPanelProps,
   GenerationData,
   GenerationScore,
   GenerationCopy,
 } from './ResultsPanel'
+export type { VideoSectionProps } from './VideoSection'
+export type { ImageGalleryProps } from './ImageGallery'

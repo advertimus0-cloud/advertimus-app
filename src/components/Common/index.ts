@@ -16,4 +16,6 @@
  * logic and make no API calls.
  */
 export { OptionButton } from './OptionButton'
+export { VideoPlayer } from './VideoPlayer'
 export type { OptionButtonProps } from './OptionButton'
+export type { VideoPlayerProps } from './VideoPlayer'
