@@ -8,13 +8,13 @@
  * - All content rendered as plain React text — no dangerouslySetInnerHTML.
  *   Real agent output MUST be passed through DOMPurify + marked before being
  *   placed in ChatMessage.content (§7 — LLM output is untrusted).
- * - `images[]` must contain Supabase signed URLs generated server-side;
- *   never construct raw storage paths in client code (§8).
+ * - `images[]` must contain Supabase signed URLs generated server-side (§8).
  * - Callbacks are UI-only; actual mutations go through authenticated API routes (§16).
  * - Pure display component — no API calls, no auth logic (§16).
  */
 
 import React from 'react'
+import { Loader2, Check, RefreshCw } from 'lucide-react'
 import { MultiChoiceOptions } from './MultiChoiceOptions'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -35,13 +35,9 @@ export interface MCQOption {
   id: string
   title: string
   description: string
-  /** Emoji or short text symbol */
   icon: string
-  /** Plan gate — grays out the option without removing it */
   locked?: boolean
-  /** Shown below description when locked (e.g. "🔒 Upgrade to Dominance") */
   lockedLabel?: string
-  /** Credit cost — informational, used in descriptions */
   creditCost?: number
 }
 
@@ -67,11 +63,8 @@ export interface ChatMessage {
   type?: MessageType
   options?: MCQOption[]
   selectedOptionId?: string | null
-  /** Which campaign question this options message belongs to */
   questionId?: QuestionId
-  /** State for concept_approval messages */
   conceptApprovalState?: 'pending' | 'approved' | 'revising'
-  /** Payload for summary messages */
   summary?: CampaignSummary
 }
 
@@ -150,10 +143,7 @@ function ConceptApprovalCard({
     return (
       <div className="flex items-center gap-1.5 mt-3 text-[11px] font-medium"
         style={{ color: '#22c55e' }}>
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-          <polyline points="20 6 9 17 4 12" />
-        </svg>
+        <Check size={11} />
         Concept approved
       </div>
     )
@@ -162,11 +152,7 @@ function ConceptApprovalCard({
   if (approvalState === 'revising') {
     return (
       <div className="flex items-center gap-1.5 mt-3 text-[11px] font-medium text-white/45">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-          <polyline points="23 4 23 10 17 10" />
-          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-        </svg>
+        <RefreshCw size={11} />
         Revising concept…
       </div>
     )
@@ -206,14 +192,14 @@ function CampaignSummaryCard({
   onSummaryAction?: (messageId: string, action: 'start' | 'edit' | 'cancel') => void
 }) {
   const rows: Array<{ label: string; value: string }> = [
-    { label: 'Ad Type',       value: summary.adType       },
-    { label: 'Style',         value: summary.style        },
-    { label: 'Format',        value: summary.format       },
-    { label: 'Market',        value: summary.country      },
-    { label: 'Ratio',         value: summary.ratio        },
-    { label: 'Length',        value: summary.videoLength  },
-    { label: 'Images',        value: summary.images       },
-    { label: 'Est. Time',     value: summary.estimatedTime },
+    { label: 'Ad Type',    value: summary.adType       },
+    { label: 'Style',      value: summary.style        },
+    { label: 'Format',     value: summary.format       },
+    { label: 'Market',     value: summary.country      },
+    { label: 'Ratio',      value: summary.ratio        },
+    { label: 'Length',     value: summary.videoLength  },
+    { label: 'Images',     value: summary.images       },
+    { label: 'Est. Time',  value: summary.estimatedTime },
   ]
 
   return (
@@ -224,7 +210,6 @@ function CampaignSummaryCard({
         border: '1px solid rgba(93,26,27,0.32)',
       }}
     >
-      {/* Header */}
       <div
         className="px-4 py-2.5 flex items-center justify-between"
         style={{ borderBottom: '1px solid rgba(93,26,27,0.18)' }}
@@ -244,7 +229,6 @@ function CampaignSummaryCard({
         </span>
       </div>
 
-      {/* Rows */}
       <div className="px-4 py-3 space-y-1.5">
         {rows.map(({ label, value }) => (
           <div key={label} className="flex items-start justify-between gap-3">
@@ -254,7 +238,6 @@ function CampaignSummaryCard({
         ))}
       </div>
 
-      {/* Credits remaining notice */}
       <div
         className="px-4 py-2 flex items-center justify-between"
         style={{ borderTop: '1px solid rgba(93,26,27,0.14)' }}
@@ -265,7 +248,6 @@ function CampaignSummaryCard({
         </span>
       </div>
 
-      {/* Actions */}
       <div
         className="px-4 pb-4 pt-3 flex flex-col gap-2"
         style={{ borderTop: '1px solid rgba(93,26,27,0.12)' }}
@@ -325,15 +307,7 @@ export function MessageItem({
     return (
       <div className="flex justify-center py-2 adv-msg-fade" aria-live="polite">
         <div className="flex items-center gap-2 text-xs text-white/30">
-          <svg
-            width="12" height="12" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="2" strokeLinecap="round"
-            className="animate-spin flex-shrink-0" aria-hidden="true"
-          >
-            <circle cx="12" cy="12" r="3" />
-            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42
-                     M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-          </svg>
+          <Loader2 size={12} className="animate-spin flex-shrink-0" aria-hidden="true" />
           <span>{content}</span>
         </div>
       </div>
@@ -372,7 +346,6 @@ export function MessageItem({
           </div>
         </div>
 
-        {/* MCQ options */}
         {hasOptions && (
           <div className="ml-[38px]">
             <MultiChoiceOptions
@@ -386,7 +359,6 @@ export function MessageItem({
           </div>
         )}
 
-        {/* Concept approval */}
         {showConceptButtons && (
           <div className="ml-[38px]">
             <ConceptApprovalCard
@@ -400,7 +372,6 @@ export function MessageItem({
           </div>
         )}
 
-        {/* Campaign summary */}
         {showSummary && (
           <div className="ml-[38px]">
             <CampaignSummaryCard

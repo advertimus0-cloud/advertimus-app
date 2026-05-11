@@ -6,29 +6,33 @@
  * SECURITY (Rule 18):
  * - `src` must be a signed, short-lived Supabase Storage URL produced server-side.
  *   This component never constructs, modifies, or logs media URLs (§8).
- * - Download and Share buttons are UI stubs. Real implementation MUST call
- *   authenticated backend endpoints that re-validate ownership before issuing a
- *   fresh signed URL — never pass the `src` prop directly to an anchor download (§8, §16).
- * - Quality switching is UI-only here. In production the parent provides a URL per
- *   quality level; the component calls `onQualityChange` and the parent swaps `src`.
+ * - Download and Share are UI stubs — real implementation MUST call authenticated
+ *   backend endpoints that re-validate ownership before issuing a signed URL (§8, §16).
+ * - Quality switching is UI-only; the parent provides a URL per quality level and
+ *   calls `onQualityChange` to swap `src`.
  * - No API calls, no auth logic, no secrets in this component (§16).
- * - Third-party dependencies: none — uses the standard HTML5 <video> API only.
  */
 
 import React, { useRef, useState, useEffect, useCallback } from 'react'
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Download,
+  Share2,
+  Maximize,
+  Minimize,
+} from 'lucide-react'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface VideoPlayerProps {
-  /** Signed Supabase Storage URL (§8). Falls back to placeholder in demo. */
   src: string
   poster?: string
   defaultQuality?: Quality
-  /** Called when user requests a quality change — parent swaps src. */
   onQualityChange?: (q: Quality) => void
-  /** UI stub — wire to authenticated backend endpoint (§16). */
   onDownload?: () => void
-  /** UI stub — wire to authenticated backend share flow (§16). */
   onShare?: () => void
   className?: string
 }
@@ -41,95 +45,6 @@ function formatTime(sec: number): string {
   const m = Math.floor(sec / 60)
   const s = Math.floor(sec % 60)
   return `${m}:${s.toString().padStart(2, '0')}`
-}
-
-// ─── SVG Icons ────────────────────────────────────────────────────────────────
-
-function IconPlay() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <polygon points="5 3 19 12 5 21 5 3" />
-    </svg>
-  )
-}
-
-function IconPause() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <rect x="6" y="4" width="4" height="16" />
-      <rect x="14" y="4" width="4" height="16" />
-    </svg>
-  )
-}
-
-function IconVolume() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-      <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-      <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-    </svg>
-  )
-}
-
-function IconMute() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-      <line x1="23" y1="9" x2="17" y2="15" />
-      <line x1="17" y1="9" x2="23" y2="15" />
-    </svg>
-  )
-}
-
-function IconDownload() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="7 10 12 15 17 10" />
-      <line x1="12" y1="15" x2="12" y2="3" />
-    </svg>
-  )
-}
-
-function IconShare() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-      <circle cx="18" cy="5" r="3" />
-      <circle cx="6" cy="12" r="3" />
-      <circle cx="18" cy="19" r="3" />
-      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-    </svg>
-  )
-}
-
-function IconFullscreen() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-      <polyline points="15 3 21 3 21 9" />
-      <polyline points="9 21 3 21 3 15" />
-      <line x1="21" y1="3" x2="14" y2="10" />
-      <line x1="3" y1="21" x2="10" y2="14" />
-    </svg>
-  )
-}
-
-function IconExitFullscreen() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-      <polyline points="4 14 10 14 10 20" />
-      <polyline points="20 10 14 10 14 4" />
-      <line x1="10" y1="14" x2="3" y2="21" />
-      <line x1="21" y1="3" x2="14" y2="10" />
-    </svg>
-  )
 }
 
 // ─── VideoPlayer ──────────────────────────────────────────────────────────────
@@ -158,7 +73,6 @@ export function VideoPlayer({
   const [showQualityMenu, setShowQualityMenu] = useState(false)
   const [isBuffering, setIsBuffering] = useState(false)
 
-  // ── Video event bindings ────────────────────────────────────────────────────
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
@@ -193,19 +107,16 @@ export function VideoPlayer({
     }
   }, [])
 
-  // ── Fullscreen change listener ──────────────────────────────────────────────
   useEffect(() => {
     const onFsChange = () => setIsFullscreen(!!document.fullscreenElement)
     document.addEventListener('fullscreenchange', onFsChange)
     return () => document.removeEventListener('fullscreenchange', onFsChange)
   }, [])
 
-  // ── Controls auto-hide cleanup ──────────────────────────────────────────────
   useEffect(() => () => {
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
   }, [])
 
-  // ── Controls auto-hide trigger ──────────────────────────────────────────────
   const resetHideTimer = useCallback(() => {
     setShowControls(true)
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
@@ -214,14 +125,12 @@ export function VideoPlayer({
     }, 2500)
   }, [])
 
-  // ── Playback ────────────────────────────────────────────────────────────────
   const togglePlay = useCallback(() => {
     const v = videoRef.current
     if (!v) return
     if (v.paused) { v.play() } else { v.pause() }
   }, [])
 
-  // ── Volume ──────────────────────────────────────────────────────────────────
   function handleVolumeChange(val: number) {
     const v = videoRef.current
     if (!v) return
@@ -240,7 +149,6 @@ export function VideoPlayer({
     }
   }
 
-  // ── Seek ─────────────────────────────────────────────────────────────────────
   function handleSeek(val: number) {
     const v = videoRef.current
     if (!v || !isFinite(v.duration)) return
@@ -248,7 +156,6 @@ export function VideoPlayer({
     setCurrentTime(val)
   }
 
-  // ── Fullscreen ──────────────────────────────────────────────────────────────
   async function toggleFullscreen() {
     const el = containerRef.current
     if (!el) return
@@ -259,7 +166,6 @@ export function VideoPlayer({
     }
   }
 
-  // ── Quality ─────────────────────────────────────────────────────────────────
   function selectQuality(q: Quality) {
     setQuality(q)
     setShowQualityMenu(false)
@@ -290,7 +196,7 @@ export function VideoPlayer({
         aria-label="Generated video ad"
       />
 
-      {/* ── Buffering indicator ───────────────────────────────────────────── */}
+      {/* ── Buffering spinner ─────────────────────────────────────────────── */}
       {isBuffering && (
         <div
           className="absolute inset-0 flex items-center justify-center pointer-events-none"
@@ -306,7 +212,7 @@ export function VideoPlayer({
         </div>
       )}
 
-      {/* ── Center play overlay (paused state, purely visual) ─────────────── */}
+      {/* ── Center play overlay (paused state) ───────────────────────────── */}
       {!isPlaying && !isBuffering && (
         <div
           className="absolute inset-0 flex items-center justify-center pointer-events-none"
@@ -316,9 +222,7 @@ export function VideoPlayer({
             className="w-14 h-14 rounded-full flex items-center justify-center opacity-90"
             style={{ background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="white" aria-hidden="true">
-              <polygon points="5 3 19 12 5 21 5 3" />
-            </svg>
+            <Play size={20} fill="white" color="white" />
           </div>
         </div>
       )}
@@ -334,7 +238,7 @@ export function VideoPlayer({
           zIndex: 10,
         }}
       >
-        {/* Seek / progress slider */}
+        {/* Seek slider */}
         <input
           type="range"
           min={0}
@@ -351,25 +255,25 @@ export function VideoPlayer({
         {/* Controls row */}
         <div className="flex items-center gap-2">
 
-          {/* Play / Pause */}
           <button
             onClick={togglePlay}
             className="text-white/80 hover:text-white transition-colors duration-100 flex-shrink-0"
             aria-label={isPlaying ? 'Pause' : 'Play'}
           >
-            {isPlaying ? <IconPause /> : <IconPlay />}
+            {isPlaying
+              ? <Pause size={14} fill="currentColor" />
+              : <Play  size={14} fill="currentColor" />
+            }
           </button>
 
-          {/* Mute toggle */}
           <button
             onClick={toggleMute}
             className="text-white/65 hover:text-white transition-colors duration-100 flex-shrink-0"
             aria-label={isMuted ? 'Unmute' : 'Mute'}
           >
-            {isMuted ? <IconMute /> : <IconVolume />}
+            {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
           </button>
 
-          {/* Volume slider */}
           <input
             type="range"
             min={0}
@@ -381,7 +285,6 @@ export function VideoPlayer({
             aria-label="Volume"
           />
 
-          {/* Timestamp */}
           <span className="text-[10px] text-white/50 tabular-nums flex-shrink-0">
             {formatTime(currentTime)}&nbsp;/&nbsp;{formatTime(duration)}
           </span>
@@ -438,33 +341,30 @@ export function VideoPlayer({
             )}
           </div>
 
-          {/* Download — UI stub (§16) */}
           <button
             onClick={onDownload}
             className="text-white/50 hover:text-white transition-colors duration-100 flex-shrink-0"
             aria-label="Download video"
             title="Download"
           >
-            <IconDownload />
+            <Download size={13} />
           </button>
 
-          {/* Share — UI stub (§16) */}
           <button
             onClick={onShare}
             className="text-white/50 hover:text-white transition-colors duration-100 flex-shrink-0"
             aria-label="Share video"
             title="Share"
           >
-            <IconShare />
+            <Share2 size={13} />
           </button>
 
-          {/* Fullscreen */}
           <button
             onClick={toggleFullscreen}
             className="text-white/50 hover:text-white transition-colors duration-100 flex-shrink-0"
             aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
           >
-            {isFullscreen ? <IconExitFullscreen /> : <IconFullscreen />}
+            {isFullscreen ? <Minimize size={13} /> : <Maximize size={13} />}
           </button>
         </div>
       </div>

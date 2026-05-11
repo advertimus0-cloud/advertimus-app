@@ -18,6 +18,7 @@
  */
 
 import React, { useState, useRef, useEffect, useCallback } from 'react'
+import { Paperclip, PenTool, Monitor, Clock, Mic, Send, Sparkles } from 'lucide-react'
 import { MessageList } from './MessageList'
 import { ChatMessage, CampaignSummary, QuestionId } from './MessageItem'
 import {
@@ -136,70 +137,6 @@ function createGreeting(): ChatMessage {
   )
 }
 
-// ─── Icons ────────────────────────────────────────────────────────────────────
-
-function IconAttach() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-      <line x1="12" y1="5" x2="12" y2="19" />
-      <line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  )
-}
-
-function IconCanvas() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-      <rect x="3" y="3" width="18" height="18" rx="2" />
-    </svg>
-  )
-}
-
-function IconScreen() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-      <rect x="2" y="3" width="20" height="14" rx="2" />
-      <line x1="8" y1="21" x2="16" y2="21" />
-      <line x1="12" y1="17" x2="12" y2="21" />
-    </svg>
-  )
-}
-
-function IconHistory() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  )
-}
-
-function IconMic() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-      <line x1="12" y1="19" x2="12" y2="23" />
-      <line x1="8" y1="23" x2="16" y2="23" />
-    </svg>
-  )
-}
-
-function IconSend() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
-      <line x1="22" y1="2" x2="11" y2="13" />
-      <polygon points="22 2 15 22 11 13 2 9 22 2" />
-    </svg>
-  )
-}
-
 // ─── ChatArea ─────────────────────────────────────────────────────────────────
 
 export function ChatArea({
@@ -214,7 +151,6 @@ export function ChatArea({
   const [isTyping, setIsTyping] = useState(false)
   const [attachedFiles, setAttachedFiles] = useState<UploadedFile[]>([])
 
-  // Refs keep current values accessible inside setTimeout callbacks (stale closure prevention)
   const messagesRef = useRef<ChatMessage[]>([])
   const stageRef = useRef<FlowStage>('idle')
   const campaignRef = useRef<CampaignConfig>({ ...EMPTY_CAMPAIGN })
@@ -222,7 +158,6 @@ export function ChatArea({
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const uploaderRef = useRef<ImageUploaderHandle>(null)
 
-  // Keep refs in sync with state
   useEffect(() => { messagesRef.current = messages }, [messages])
 
   const hasContent = inputValue.trim().length > 0 || attachedFiles.length > 0
@@ -230,7 +165,6 @@ export function ChatArea({
   const canSend = hasContent && !isBlocked
   const isEmpty = messages.length <= 1 && stageRef.current === 'idle'
 
-  // ── Auto-resize textarea ──────────────────────────────────────────────────
   useEffect(() => {
     const el = textareaRef.current
     if (!el) return
@@ -242,7 +176,6 @@ export function ChatArea({
     if (timerRef.current) clearTimeout(timerRef.current)
   }, [])
 
-  // ── Append helpers ────────────────────────────────────────────────────────
   function appendMessages(newMsgs: ChatMessage[]) {
     setMessages(prev => [...prev, ...newMsgs])
   }
@@ -251,7 +184,6 @@ export function ChatArea({
     setMessages(prev => prev.map(m => m.id === id ? { ...m, ...patch } : m))
   }
 
-  // ── Typing simulation (replace with real streaming in production) ─────────
   function withTyping(delayMs: number, cb: () => void) {
     setIsTyping(true)
     timerRef.current = setTimeout(() => {
@@ -260,7 +192,6 @@ export function ChatArea({
     }, delayMs)
   }
 
-  // ── Ask next MCQ ──────────────────────────────────────────────────────────
   function askMcq(stage: FlowStage) {
     const mcq = MCQ_SEQUENCE.find(m => m.stage === stage)
     if (!mcq) return
@@ -277,13 +208,10 @@ export function ChatArea({
     })
   }
 
-  // ── Build and show campaign summary ──────────────────────────────────────
   function showSummary() {
     stageRef.current = 'summary'
     const c = campaignRef.current
-    const baseCost = c.videoLengthCredits
-    const imagesCost = c.imagesCredits
-    const totalCost = baseCost + imagesCost
+    const totalCost = c.videoLengthCredits + c.imagesCredits
     const remaining = Math.max(0, creditsAvailable - totalCost)
 
     const summary: CampaignSummary = {
@@ -309,14 +237,12 @@ export function ChatArea({
     })
   }
 
-  // ── Handle first user message (product description) ───────────────────────
   function handleProductDescription(_text: string) {
     stageRef.current = 'analyzing'
     appendMessages([systemMsg('Analyzing your product…')])
 
     withTyping(1400, () => {
       stageRef.current = 'concept'
-      // Remove the system message, add concept proposal
       setMessages(prev => [
         ...prev.filter(m => m.role !== 'system'),
         agentMsg(
@@ -334,7 +260,6 @@ export function ChatArea({
     })
   }
 
-  // ── Handle send ───────────────────────────────────────────────────────────
   const handleSend = useCallback(() => {
     const trimmed = inputValue.trim()
     const hasImages = attachedFiles.length > 0
@@ -360,7 +285,6 @@ export function ChatArea({
       return
     }
 
-    // Free-text during concept / summary stages — treat as revision request
     if (stage === 'concept' || stage === 'summary') {
       withTyping(1000, () => {
         appendMessages([
@@ -374,7 +298,6 @@ export function ChatArea({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputValue, attachedFiles, isBlocked, onSendMessage])
 
-  // ── Concept approval ──────────────────────────────────────────────────────
   const handleConceptApproval = useCallback((messageId: string, action: 'approve' | 'revise') => {
     if (action === 'approve') {
       updateMessage(messageId, { conceptApprovalState: 'approved' })
@@ -397,7 +320,6 @@ export function ChatArea({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // ── Option select ─────────────────────────────────────────────────────────
   const handleOptionSelect = useCallback((messageId: string, optionId: string, questionId?: QuestionId) => {
     updateMessage(messageId, { selectedOptionId: optionId })
 
@@ -437,7 +359,6 @@ export function ChatArea({
       }
     }
 
-    // Advance to next stage
     const nextStageMap: Partial<Record<FlowStage, FlowStage>> = {
       mcq_1: 'mcq_2', mcq_2: 'mcq_3', mcq_3: 'mcq_4',
       mcq_4: 'mcq_5', mcq_5: 'mcq_6', mcq_6: 'mcq_7',
@@ -451,7 +372,6 @@ export function ChatArea({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // ── Summary action ────────────────────────────────────────────────────────
   const handleSummaryAction = useCallback((_messageId: string, action: 'start' | 'edit' | 'cancel') => {
     if (action === 'start') {
       stageRef.current = 'generating'
@@ -467,9 +387,7 @@ export function ChatArea({
       stageRef.current = 'mcq_1'
       campaignRef.current = { ...EMPTY_CAMPAIGN }
       withTyping(600, () => {
-        appendMessages([
-          agentMsg("Let's go through the choices again. You can change any option."),
-        ])
+        appendMessages([agentMsg("Let's go through the choices again. You can change any option.")])
         askMcq('mcq_1')
       })
     } else {
@@ -565,6 +483,7 @@ export function ChatArea({
           </div>
 
           <div className="flex items-center justify-between px-3 pb-3 pt-1">
+            {/* Left tools */}
             <div className="flex items-center gap-0.5">
               <button
                 onClick={() => uploaderRef.current?.openPicker()}
@@ -578,7 +497,7 @@ export function ChatArea({
                 ].join(' ')}
                 aria-label={`Attach images${attachedFiles.length > 0 ? ` (${attachedFiles.length})` : ''}`}
               >
-                <IconAttach />
+                <Paperclip size={14} />
               </button>
 
               <button
@@ -588,7 +507,7 @@ export function ChatArea({
                            transition-all duration-150 disabled:opacity-35 disabled:cursor-not-allowed"
                 aria-label="Canvas (coming soon)"
               >
-                <IconCanvas />
+                <PenTool size={14} />
               </button>
 
               <button
@@ -598,10 +517,11 @@ export function ChatArea({
                            transition-all duration-150 disabled:opacity-35 disabled:cursor-not-allowed"
                 aria-label="Screen share (coming soon)"
               >
-                <IconScreen />
+                <Monitor size={14} />
               </button>
             </div>
 
+            {/* Right tools */}
             <div className="flex items-center gap-0.5">
               <button
                 disabled={isBlocked}
@@ -610,7 +530,7 @@ export function ChatArea({
                            transition-all duration-150 disabled:opacity-35 disabled:cursor-not-allowed"
                 aria-label="History (coming soon)"
               >
-                <IconHistory />
+                <Clock size={14} />
               </button>
 
               <button
@@ -620,7 +540,7 @@ export function ChatArea({
                            transition-all duration-150 disabled:opacity-35 disabled:cursor-not-allowed"
                 aria-label="Voice input (coming soon)"
               >
-                <IconMic />
+                <Mic size={14} />
               </button>
 
               <button
@@ -640,13 +560,13 @@ export function ChatArea({
                 }
                 aria-label="Send message"
               >
-                <IconSend />
+                <Send size={13} />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Quick action chips — shown only in initial empty state */}
+        {/* Quick action chips */}
         {showEmptyHeadline && (
           <div className="max-w-3xl mx-auto mt-3 flex flex-wrap gap-2 justify-center">
             {QUICK_ACTIONS.map(action => (
@@ -663,11 +583,7 @@ export function ChatArea({
                   style={{ background: 'linear-gradient(135deg, rgba(93,26,27,0.5) 0%, rgba(22,17,66,0.5) 100%)' }}
                   aria-hidden="true"
                 >
-                  <svg width="8" height="8" viewBox="0 0 24 24" fill="none"
-                    stroke="rgba(255,255,255,0.6)" strokeWidth="2.5" strokeLinecap="round"
-                    aria-hidden="true">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                  </svg>
+                  <Sparkles size={8} />
                 </span>
                 {action}
               </button>

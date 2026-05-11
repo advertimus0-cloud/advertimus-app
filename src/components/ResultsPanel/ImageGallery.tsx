@@ -10,15 +10,16 @@
  *   only server-provided signed URLs should be used (§8).
  * - "Download" and "Download All as ZIP" are UI stubs — production implementation MUST
  *   call an authenticated backend endpoint that re-validates ownership before issuing a
- *   signed download URL. Never use the src URL directly for download (§8, §16).
+ *   signed download URL (§8, §16).
  * - "Edit in Canva" is a UI stub — the redirect must go through a backend route that
- *   validates the user session before constructing any Canva link (§16).
+ *   validates the user session (§16).
  * - No API calls, no auth logic, no secrets in this component (§16).
  */
 
 import React, { useState, useEffect, useCallback } from 'react'
+import { Download, X, ChevronLeft, ChevronRight } from 'lucide-react'
 
-// Remove these before production — only server-signed URLs allowed in prod (§8)
+// Remove before production — only server-signed URLs allowed in prod (§8)
 const PLACEHOLDER_IMAGES = [
   'https://picsum.photos/400/300?random=1',
   'https://picsum.photos/400/300?random=2',
@@ -28,17 +29,6 @@ const PLACEHOLDER_IMAGES = [
 
 function Skeleton({ className = '' }: { className?: string }) {
   return <div className={`rounded-lg adv-skeleton ${className}`} />
-}
-
-function DownloadIcon({ size = 11 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="7 10 12 15 17 10" />
-      <line x1="12" y1="15" x2="12" y2="3" />
-    </svg>
-  )
 }
 
 // ─── Full-size preview modal ───────────────────────────────────────────────────
@@ -53,7 +43,6 @@ interface ImageModalProps {
 }
 
 function ImageModal({ src, index, total, onClose, onPrev, onNext }: ImageModalProps) {
-  // Keyboard navigation: Escape closes, arrows navigate
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose()
@@ -84,11 +73,7 @@ function ImageModal({ src, index, total, onClose, onPrev, onNext }: ImageModalPr
                      text-white/45 hover:text-white transition-colors duration-150"
           aria-label="Close preview"
         >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
+          <X size={13} />
           Close
         </button>
 
@@ -108,13 +93,14 @@ function ImageModal({ src, index, total, onClose, onPrev, onNext }: ImageModalPr
           <button
             onClick={onPrev}
             disabled={total <= 1}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium text-white/55
-                       hover:text-white transition-colors duration-150
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
+                       text-white/55 hover:text-white transition-colors duration-150
                        disabled:opacity-25 disabled:cursor-not-allowed"
             style={{ border: '1px solid rgba(93,26,27,0.3)' }}
             aria-label="Previous image"
           >
-            ← Prev
+            <ChevronLeft size={13} />
+            Prev
           </button>
 
           <span className="text-[11px] text-white/30 tabular-nums">
@@ -124,13 +110,14 @@ function ImageModal({ src, index, total, onClose, onPrev, onNext }: ImageModalPr
           <button
             onClick={onNext}
             disabled={total <= 1}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium text-white/55
-                       hover:text-white transition-colors duration-150
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
+                       text-white/55 hover:text-white transition-colors duration-150
                        disabled:opacity-25 disabled:cursor-not-allowed"
             style={{ border: '1px solid rgba(93,26,27,0.3)' }}
             aria-label="Next image"
           >
-            Next →
+            Next
+            <ChevronRight size={13} />
           </button>
         </div>
       </div>
@@ -142,7 +129,6 @@ function ImageModal({ src, index, total, onClose, onPrev, onNext }: ImageModalPr
 
 export interface ImageGalleryProps {
   isGenerating: boolean
-  /** Signed Supabase Storage URLs (§8). Falls back to placeholders when absent. */
   images?: string[]
   showCanvaButton?: boolean
 }
@@ -167,7 +153,6 @@ export function ImageGallery({
     [srcs.length]
   )
 
-  // ── Skeleton state ──────────────────────────────────────────────────────────
   if (isGenerating) {
     return (
       <div className="space-y-2">
@@ -179,11 +164,9 @@ export function ImageGallery({
     )
   }
 
-  // ── Loaded state ────────────────────────────────────────────────────────────
   return (
     <>
       <div className="space-y-2">
-        {/* 2×2 grid */}
         <div className="grid grid-cols-2 gap-2">
           {srcs.map((src, i) => (
             <div
@@ -201,20 +184,17 @@ export function ImageGallery({
               }}
               aria-label={`Product image ${i + 1} — click to view full size`}
             >
-              {/* Image — scales slightly on hover */}
               <img
                 src={src}
                 alt={`Product image ${i + 1}`}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
 
-              {/* Hover overlay */}
               <div
                 className="absolute inset-0 flex flex-col items-end justify-between p-2
                            opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                 style={{ background: 'rgba(0,0,0,0.50)' }}
               >
-                {/* Image number badge — top-right */}
                 <span
                   className="text-[10px] font-bold text-white/90 px-1.5 py-0.5 rounded-full"
                   style={{
@@ -225,7 +205,6 @@ export function ImageGallery({
                   {i + 1}
                 </span>
 
-                {/* Download button — bottom-right (UI stub) */}
                 <button
                   onClick={e => {
                     e.stopPropagation()
@@ -240,7 +219,7 @@ export function ImageGallery({
                   }}
                   aria-label={`Download image ${i + 1}`}
                 >
-                  <DownloadIcon size={10} />
+                  <Download size={10} />
                   Save
                 </button>
               </div>
@@ -248,7 +227,7 @@ export function ImageGallery({
           ))}
         </div>
 
-        {/* Download All as ZIP — UI stub (§8, §16) */}
+        {/* Download All as ZIP */}
         <button
           className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg
                      text-xs font-medium text-white/50 hover:text-white/80
@@ -256,11 +235,11 @@ export function ImageGallery({
           style={{ border: '1px dashed rgba(93,26,27,0.32)' }}
           aria-label="Download all images as ZIP"
         >
-          <DownloadIcon />
+          <Download size={11} />
           Download All as ZIP
         </button>
 
-        {/* Edit in Canva — UI stub (§16) */}
+        {/* Edit in Canva */}
         {showCanvaButton && (
           <button
             className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg
@@ -274,7 +253,6 @@ export function ImageGallery({
         )}
       </div>
 
-      {/* Full-size preview modal */}
       {previewIndex !== null && (
         <ImageModal
           src={srcs[previewIndex]}

@@ -3,39 +3,35 @@
 /**
  * Sidebar — left navigation panel for the Advertimus dashboard.
  *
- * Layout (top → bottom):
- *   [Logo mark + wordmark]
- *   [Nav: Projects | Assets | Chat | History]
- *   ─────────────────────────────────────────
- *   [Scrollable chat history: TODAY / YESTERDAY / EARLIER]
- *   ─────────────────────────────────────────
- *   [User avatar + name + settings icon]
- *   [Token usage meter]
- *
  * SECURITY (Rule 18):
  * - Pure display component — no API calls, no auth logic (§16).
  * - All user data scoped to the authenticated workspace before reaching this
  *   component — callers enforce §3 and §4.
  * - React escapes all dynamic text nodes → XSS-safe by default (§7).
- * - All callbacks (onSelectChat, onNewChat, onSettings) are UI stubs; mutations
- *   go through authenticated API routes, not here (§16).
+ * - All callbacks are UI stubs; mutations go through authenticated API routes (§16).
  */
 
 import React from 'react'
+import {
+  BookOpen,
+  LayoutGrid,
+  MessageSquare,
+  Clock,
+  Settings,
+  Plus,
+} from 'lucide-react'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface SidebarChat {
   id: string
   title: string
-  /** e.g. "5 videos generated", "Just started" */
   subtitle?: string
   group: 'today' | 'yesterday' | 'earlier'
 }
 
 export interface SidebarUser {
   name: string
-  /** 2-character initials shown in the avatar circle */
   initials: string
 }
 
@@ -55,47 +51,14 @@ export interface SidebarProps {
   onSettings?: () => void
 }
 
+// ─── Nav config ───────────────────────────────────────────────────────────────
 
-// ─── Icons ────────────────────────────────────────────────────────────────────
-
-const NAV_ICONS: Record<NavItem, React.ReactNode> = {
-  projects: (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-    </svg>
-  ),
-  assets: (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="3" y="3" width="7" height="7" rx="1.5" />
-      <rect x="14" y="3" width="7" height="7" rx="1.5" />
-      <rect x="3" y="14" width="7" height="7" rx="1.5" />
-      <rect x="14" y="14" width="7" height="7" rx="1.5" />
-    </svg>
-  ),
-  chat: (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-    </svg>
-  ),
-  history: (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  ),
-}
-
-const NAV_LABELS: Record<NavItem, string> = {
-  projects: 'Projects',
-  assets: 'Assets',
-  chat: 'Chat',
-  history: 'History',
-}
+const NAV_ITEMS: Array<{ id: NavItem; label: string; icon: React.ReactNode }> = [
+  { id: 'projects', label: 'Projects',  icon: <BookOpen      size={15} /> },
+  { id: 'assets',   label: 'Assets',    icon: <LayoutGrid    size={15} /> },
+  { id: 'chat',     label: 'Chat',      icon: <MessageSquare size={15} /> },
+  { id: 'history',  label: 'History',   icon: <Clock         size={15} /> },
+]
 
 // ─── Chat group ───────────────────────────────────────────────────────────────
 
@@ -219,7 +182,7 @@ export function Sidebar({
 
       {/* ── Primary nav ──────────────────────────────────────────────────── */}
       <nav className="flex-shrink-0 px-3 pb-3 space-y-0.5" aria-label="Main navigation">
-        {(['projects', 'assets', 'chat', 'history'] as NavItem[]).map(id => {
+        {NAV_ITEMS.map(({ id, label, icon }) => {
           const isActive = activeNav === id
           return (
             <button
@@ -244,9 +207,9 @@ export function Sidebar({
               aria-current={isActive ? 'page' : undefined}
             >
               <span className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-white/28'}`}>
-                {NAV_ICONS[id]}
+                {icon}
               </span>
-              {NAV_LABELS[id]}
+              {label}
             </button>
           )
         })}
@@ -271,11 +234,7 @@ export function Sidebar({
                      transition-all duration-150"
           style={{ border: '1px dashed rgba(93,26,27,0.2)' }}
         >
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
+          <Plus size={11} />
           New conversation
         </button>
       </div>
@@ -305,11 +264,7 @@ export function Sidebar({
                        transition-all duration-150"
             aria-label="Settings"
           >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-            </svg>
+            <Settings size={13} />
           </button>
         </div>
 

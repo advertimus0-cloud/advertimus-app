@@ -3,35 +3,25 @@
 /**
  * Header — top bar of the Advertimus dashboard.
  *
- * Layout:
- *   LEFT:   [≡ menu] [● avatar] ["Project title" · subtitle]
- *   RIGHT:  [Export] [Share] [⊞ Panel]
- *
  * SECURITY (Rule 18):
  * - Pure display component — no API calls, no auth logic (§16).
  * - All text is rendered as plain React text nodes → XSS-safe (§7).
- * - Export / Share / Panel callbacks are UI stubs; real export/share must
+ * - Export / Share / Panel callbacks are UI stubs; real implementations must
  *   invoke authenticated backend endpoints (§16).
- * - onMenuToggle is passed from parent — no sensitive logic here.
- * - No secrets, tokens, or Supabase calls in this component.
  */
 
 import React from 'react'
+import { Menu, X, Upload, Share2, PanelRight } from 'lucide-react'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface HeaderProps {
   onMenuToggle: () => void
   isSidebarOpen: boolean
-  /** Main title shown in the center-left — e.g. "New conversation" */
   projectTitle?: string
-  /** Subtitle below title — e.g. "AI marketing assistant · ready to generate" */
   projectSubtitle?: string
-  /** UI stub — wire to authenticated export endpoint in production (§16) */
   onExport?: () => void
-  /** UI stub — wire to authenticated share flow in production (§16) */
   onShare?: () => void
-  /** Toggles the results panel */
   onPanelToggle?: () => void
   isPanelOpen?: boolean
 }
@@ -56,7 +46,7 @@ export function Header({
     >
       {/* ── LEFT: menu + project identity ─────────────────────────────── */}
       <div className="flex items-center gap-3 min-w-0">
-        {/* Mobile hamburger */}
+        {/* Mobile menu toggle */}
         <button
           onClick={onMenuToggle}
           className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg
@@ -65,23 +55,10 @@ export function Header({
           aria-label={isSidebarOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isSidebarOpen}
         >
-          {isSidebarOpen ? (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          ) : (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          )}
+          {isSidebarOpen ? <X size={16} /> : <Menu size={16} />}
         </button>
 
-        {/* Desktop hamburger / menu icon */}
+        {/* Desktop sidebar toggle */}
         <button
           onClick={onMenuToggle}
           className="flex-shrink-0 w-7 h-7 hidden md:flex items-center justify-center
@@ -90,12 +67,7 @@ export function Header({
           aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
           aria-expanded={isSidebarOpen}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
+          <Menu size={14} />
         </button>
 
         {/* Project avatar */}
@@ -121,7 +93,7 @@ export function Header({
 
       {/* ── RIGHT: action buttons ─────────────────────────────────────── */}
       <div className="flex items-center gap-2 flex-shrink-0">
-        {/* Export — UI stub */}
+        {/* Export */}
         <button
           onClick={onExport}
           className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg
@@ -130,16 +102,11 @@ export function Header({
           style={{ border: '1px solid rgba(93,26,27,0.28)' }}
           aria-label="Export assets"
         >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="17 8 12 3 7 8" />
-            <line x1="12" y1="3" x2="12" y2="15" />
-          </svg>
+          <Upload size={12} />
           Export
         </button>
 
-        {/* Share — UI stub */}
+        {/* Share */}
         <button
           onClick={onShare}
           className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg
@@ -148,14 +115,7 @@ export function Header({
           style={{ border: '1px solid rgba(93,26,27,0.28)' }}
           aria-label="Share project"
         >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-            <circle cx="18" cy="5" r="3" />
-            <circle cx="6" cy="12" r="3" />
-            <circle cx="18" cy="19" r="3" />
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-          </svg>
+          <Share2 size={12} />
           Share
         </button>
 
@@ -180,11 +140,7 @@ export function Header({
           aria-label={isPanelOpen ? 'Close results panel' : 'Open results panel'}
           aria-pressed={isPanelOpen}
         >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-            <line x1="15" y1="3" x2="15" y2="21" />
-          </svg>
+          <PanelRight size={13} />
           Panel
         </button>
       </div>
