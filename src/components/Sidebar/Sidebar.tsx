@@ -55,17 +55,6 @@ export interface SidebarProps {
   onSettings?: () => void
 }
 
-// ─── Demo data ────────────────────────────────────────────────────────────────
-
-const DEFAULT_CHATS: SidebarChat[] = [
-  { id: 'c1', title: 'New conversation',   subtitle: 'Just started',          group: 'today'     },
-  { id: 'c2', title: 'Leather wallet ads', subtitle: '5 videos generated',    group: 'yesterday' },
-  { id: 'c3', title: 'Seasonal posts design', subtitle: '3 designs · 2 copy sets', group: 'yesterday' },
-  { id: 'c4', title: 'Product photography', subtitle: 'Mar 10 · 4 images',   group: 'earlier'   },
-  { id: 'c5', title: 'Summer campaign',    subtitle: 'Mar 7 · 6 assets',      group: 'earlier'   },
-]
-
-const DEFAULT_USER: SidebarUser = { name: 'Sarah K.', initials: 'SK' }
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -172,13 +161,13 @@ function ChatGroup({
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
 export function Sidebar({
-  chatHistory = DEFAULT_CHATS,
-  activeChatId = 'c1',
+  chatHistory = [] as SidebarChat[],
+  activeChatId = null,
   activeNav = 'chat',
-  user = DEFAULT_USER,
-  tokenUsed = 200,
-  tokenMax = 400,
-  tokenRemaining = 320,
+  user = { name: 'Loading…', initials: '?' } as SidebarUser,
+  tokenUsed = 0,
+  tokenMax = 0,
+  tokenRemaining = 0,
   onNavigate,
   onSelectChat,
   onNewChat,

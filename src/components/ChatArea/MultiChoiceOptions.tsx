@@ -131,6 +131,103 @@ export const FORMAT_OPTIONS: MCQOption[] = [
   },
 ]
 
+export const COUNTRY_OPTIONS: MCQOption[] = [
+  {
+    id: 'united-states',
+    title: 'United States',
+    description: 'Target the US market — English, USD pricing, American cultural cues',
+    icon: '🇺🇸',
+  },
+  {
+    id: 'europe',
+    title: 'Europe',
+    description: 'Broad European reach — multi-language friendly, diverse audience',
+    icon: '🇪🇺',
+  },
+  {
+    id: 'middle-east',
+    title: 'Middle East',
+    description: 'Arabic-speaking markets — culturally tailored visuals and messaging',
+    icon: '🌙',
+  },
+  {
+    id: 'asia',
+    title: 'Asia',
+    description: 'Asia-Pacific markets — high-growth, mobile-first audiences',
+    icon: '🌏',
+  },
+  {
+    id: 'global',
+    title: 'Global',
+    description: 'Universal appeal — no region-specific cultural markers',
+    icon: '🌍',
+  },
+  {
+    id: 'custom-market',
+    title: 'Custom Market',
+    description: 'Specify your own target region or country combination',
+    icon: '📍',
+  },
+]
+
+export const RATIO_OPTIONS: MCQOption[] = [
+  {
+    id: 'landscape-16-9',
+    title: 'Landscape 16:9',
+    description: 'Horizontal format — YouTube, Facebook feed, desktop screens',
+    icon: '🖥️',
+  },
+  {
+    id: 'portrait-9-16',
+    title: 'Portrait 9:16',
+    description: 'Vertical format — Instagram Reels, TikTok, YouTube Shorts',
+    icon: '📱',
+  },
+  {
+    id: 'square-1-1',
+    title: 'Square 1:1',
+    description: 'Square format — Instagram feed, Facebook posts, universal fit',
+    icon: '⬜',
+  },
+  {
+    id: 'all-formats',
+    title: 'All Formats',
+    description: 'Generate all three ratios — maximum platform coverage',
+    icon: '📐',
+  },
+]
+
+export const IMAGES_OPTIONS: MCQOption[] = [
+  {
+    id: 'product-images-only',
+    title: 'Product Images Only',
+    description: 'Use only your uploaded product photos — +40 credits',
+    icon: '📦',
+    creditCost: 40,
+  },
+  {
+    id: 'designs-only',
+    title: 'Designs Only',
+    description: 'AI-generated graphic designs, no product photos — +60 credits',
+    icon: '🎨',
+    creditCost: 60,
+  },
+  {
+    id: 'both',
+    title: 'Both (Product + Designs)',
+    description: 'Mix of product photos and AI-generated graphics — +100 credits',
+    icon: '✨',
+    creditCost: 100,
+  },
+  {
+    id: 'skip-images',
+    title: 'Skip',
+    description: 'No additional images — use only video footage',
+    icon: '⏭️',
+    creditCost: 0,
+  },
+]
+
 /** Growth plan defaults — locked options depend on the user's active plan.
  *  Swap the `locked` / `lockedLabel` fields based on `plan_type` from context. */
 export const LENGTH_OPTIONS: MCQOption[] = [

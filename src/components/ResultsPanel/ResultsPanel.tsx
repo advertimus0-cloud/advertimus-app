@@ -44,7 +44,7 @@ export interface GenerationCopy {
 }
 
 export interface GenerationData {
-  videoUrl?: string
+  videos?: VideoCardData[]
   imagePreviews?: string[]
   templatePlatforms?: Array<'instagram' | 'facebook' | 'pinterest'>
   copy?: GenerationCopy
@@ -75,9 +75,9 @@ const PHASES = [
   'Finalizing your content',
 ] as const
 
-// ─── Demo video data (replace with real generationData in production) ─────────
+// ─── Video card data type ─────────────────────────────────────────────────────
 
-interface VideoCardData {
+export interface VideoCardData {
   id: string
   format: string
   duration: string
@@ -85,29 +85,9 @@ interface VideoCardData {
   title: string
   score: number
   resolution: string
+  videoUrl?: string
   thumbnailUrl?: string
 }
-
-const DEMO_VIDEOS: VideoCardData[] = [
-  {
-    id: 'v1',
-    format: 'Instagram Reel',
-    duration: '15s',
-    displayTime: '0:15',
-    title: 'Minimal luxury — reveal',
-    score: 94,
-    resolution: '1920×1080 · MP4',
-  },
-  {
-    id: 'v2',
-    format: 'YouTube Short',
-    duration: '30s',
-    displayTime: '0:30',
-    title: 'Craftsmanship story',
-    score: 88,
-    resolution: '1920×1080 · MP4',
-  },
-]
 
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
@@ -353,7 +333,7 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
 
 // ─── Tab content sections ─────────────────────────────────────────────────────
 
-function VideoListSection({ isGenerating }: { isGenerating: boolean }) {
+function VideoListSection({ isGenerating, videos = [] }: { isGenerating: boolean; videos?: VideoCardData[] }) {
   if (isGenerating) {
     return (
       <div className="space-y-4">
@@ -384,10 +364,14 @@ function VideoListSection({ isGenerating }: { isGenerating: boolean }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <span className="text-[9px] font-bold tracking-[0.14em] uppercase text-white/30">
-          Videos · {DEMO_VIDEOS.length} generated
+          Videos · {videos.length} generated
         </span>
       </div>
-      {DEMO_VIDEOS.map(v => <VideoCard key={v.id} video={v} />)}
+      {videos.length === 0 ? (
+        <p className="text-xs text-white/28 text-center py-4">No videos yet</p>
+      ) : (
+        videos.map(v => <VideoCard key={v.id} video={v} />)
+      )}
     </div>
   )
 }
@@ -551,8 +535,9 @@ export function ResultsPanel({
   if (!showResults) return null
 
   const isComplete = !isGenerating && progress >= 100
-  // Total asset count: 2 demo videos + 4 images
-  const assetCount = isComplete ? 6 : 0
+  const videoCount = generationData?.videos?.length ?? 0
+  const imageCount = generationData?.imagePreviews?.length ?? 0
+  const assetCount = videoCount + imageCount
 
   return (
     <div
@@ -671,7 +656,7 @@ export function ResultsPanel({
 
         {/* Videos section */}
         {(activeTab === 'all' || activeTab === 'videos') && (
-          <VideoListSection isGenerating={isGenerating} />
+          <VideoListSection isGenerating={isGenerating} videos={generationData?.videos} />
         )}
 
         {/* Divider between videos and images in "all" view */}

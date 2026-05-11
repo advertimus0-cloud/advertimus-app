@@ -1,7 +1,8 @@
 'use client'
 
 /**
- * MessageItem — renders a single chat bubble (user | agent | system | options).
+ * MessageItem — renders a single chat bubble (user | agent | system | options |
+ * concept_approval | summary).
  *
  * SECURITY (Rule 18):
  * - All content rendered as plain React text — no dangerouslySetInnerHTML.
@@ -9,9 +10,7 @@
  *   placed in ChatMessage.content (§7 — LLM output is untrusted).
  * - `images[]` must contain Supabase signed URLs generated server-side;
  *   never construct raw storage paths in client code (§8).
- * - `onOptionSelect` is a UI callback only; actual mutations go through
- *   authenticated API routes (§16). Locked options are UI hints — plan
- *   enforcement is also enforced server-side.
+ * - Callbacks are UI-only; actual mutations go through authenticated API routes (§16).
  * - Pure display component — no API calls, no auth logic (§16).
  */
 
@@ -21,7 +20,16 @@ import { MultiChoiceOptions } from './MultiChoiceOptions'
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type MessageRole = 'user' | 'agent' | 'system'
-export type MessageType = 'text' | 'options'
+export type MessageType = 'text' | 'options' | 'concept_approval' | 'summary'
+
+export type QuestionId =
+  | 'ad_type'
+  | 'style'
+  | 'format'
+  | 'country'
+  | 'ratio'
+  | 'video_length'
+  | 'images'
 
 export interface MCQOption {
   id: string
@@ -33,8 +41,21 @@ export interface MCQOption {
   locked?: boolean
   /** Shown below description when locked (e.g. "🔒 Upgrade to Dominance") */
   lockedLabel?: string
-  /** Credit cost — informational, used in LENGTH_OPTIONS descriptions */
+  /** Credit cost — informational, used in descriptions */
   creditCost?: number
+}
+
+export interface CampaignSummary {
+  adType: string
+  style: string
+  format: string
+  country: string
+  ratio: string
+  videoLength: string
+  images: string
+  creditCost: number
+  creditsRemaining: number
+  estimatedTime: string
 }
 
 export interface ChatMessage {
@@ -43,11 +64,15 @@ export interface ChatMessage {
   content: string
   timestamp: string
   images?: string[]
-  /** 'options' causes agent message to render MCQ cards below the bubble */
   type?: MessageType
   options?: MCQOption[]
-  /** ID of the option the user chose (null = not yet answered) */
   selectedOptionId?: string | null
+  /** Which campaign question this options message belongs to */
+  questionId?: QuestionId
+  /** State for concept_approval messages */
+  conceptApprovalState?: 'pending' | 'approved' | 'revising'
+  /** Payload for summary messages */
+  summary?: CampaignSummary
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -110,20 +135,189 @@ export function TypingIndicator() {
   )
 }
 
+// ─── Concept approval card ────────────────────────────────────────────────────
+
+function ConceptApprovalCard({
+  messageId,
+  approvalState,
+  onConceptApproval,
+}: {
+  messageId: string
+  approvalState: 'pending' | 'approved' | 'revising'
+  onConceptApproval?: (messageId: string, action: 'approve' | 'revise') => void
+}) {
+  if (approvalState === 'approved') {
+    return (
+      <div className="flex items-center gap-1.5 mt-3 text-[11px] font-medium"
+        style={{ color: '#22c55e' }}>
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+        Concept approved
+      </div>
+    )
+  }
+
+  if (approvalState === 'revising') {
+    return (
+      <div className="flex items-center gap-1.5 mt-3 text-[11px] font-medium text-white/45">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
+          <polyline points="23 4 23 10 17 10" />
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+        </svg>
+        Revising concept…
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex gap-2 mt-3">
+      <button
+        onClick={() => onConceptApproval?.(messageId, 'approve')}
+        className="flex-1 py-2 rounded-xl text-xs font-semibold text-white
+                   transition-all duration-150 hover:opacity-90 active:scale-[0.98]"
+        style={{ background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }}
+      >
+        Yes, looks great
+      </button>
+      <button
+        onClick={() => onConceptApproval?.(messageId, 'revise')}
+        className="flex-1 py-2 rounded-xl text-xs font-medium text-white/55
+                   hover:text-white/85 transition-all duration-150"
+        style={{ border: '1px solid rgba(93,26,27,0.35)' }}
+      >
+        Revise it
+      </button>
+    </div>
+  )
+}
+
+// ─── Campaign summary card ────────────────────────────────────────────────────
+
+function CampaignSummaryCard({
+  summary,
+  messageId,
+  onSummaryAction,
+}: {
+  summary: CampaignSummary
+  messageId: string
+  onSummaryAction?: (messageId: string, action: 'start' | 'edit' | 'cancel') => void
+}) {
+  const rows: Array<{ label: string; value: string }> = [
+    { label: 'Ad Type',       value: summary.adType       },
+    { label: 'Style',         value: summary.style        },
+    { label: 'Format',        value: summary.format       },
+    { label: 'Market',        value: summary.country      },
+    { label: 'Ratio',         value: summary.ratio        },
+    { label: 'Length',        value: summary.videoLength  },
+    { label: 'Images',        value: summary.images       },
+    { label: 'Est. Time',     value: summary.estimatedTime },
+  ]
+
+  return (
+    <div
+      className="mt-3 rounded-2xl overflow-hidden"
+      style={{
+        background: 'rgba(22,17,66,0.5)',
+        border: '1px solid rgba(93,26,27,0.32)',
+      }}
+    >
+      {/* Header */}
+      <div
+        className="px-4 py-2.5 flex items-center justify-between"
+        style={{ borderBottom: '1px solid rgba(93,26,27,0.18)' }}
+      >
+        <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-white/40">
+          Campaign Summary
+        </span>
+        <span
+          className="text-[10px] font-bold px-2 py-0.5 rounded-full tabular-nums"
+          style={{
+            background: 'rgba(93,26,27,0.25)',
+            color: 'rgba(255,255,255,0.7)',
+            border: '1px solid rgba(93,26,27,0.4)',
+          }}
+        >
+          {summary.creditCost} credits
+        </span>
+      </div>
+
+      {/* Rows */}
+      <div className="px-4 py-3 space-y-1.5">
+        {rows.map(({ label, value }) => (
+          <div key={label} className="flex items-start justify-between gap-3">
+            <span className="text-[11px] text-white/38 flex-shrink-0 w-[90px]">{label}</span>
+            <span className="text-[11px] text-white/80 text-right min-w-0 font-medium">{value}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Credits remaining notice */}
+      <div
+        className="px-4 py-2 flex items-center justify-between"
+        style={{ borderTop: '1px solid rgba(93,26,27,0.14)' }}
+      >
+        <span className="text-[10px] text-white/30">Credits remaining after</span>
+        <span className="text-[10px] font-bold text-white/55 tabular-nums">
+          {summary.creditsRemaining}
+        </span>
+      </div>
+
+      {/* Actions */}
+      <div
+        className="px-4 pb-4 pt-3 flex flex-col gap-2"
+        style={{ borderTop: '1px solid rgba(93,26,27,0.12)' }}
+      >
+        <button
+          onClick={() => onSummaryAction?.(messageId, 'start')}
+          className="w-full py-2.5 rounded-xl text-sm font-semibold text-white
+                     transition-all duration-150 hover:opacity-90 active:scale-[0.98]"
+          style={{ background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }}
+        >
+          Start Generation
+        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => onSummaryAction?.(messageId, 'edit')}
+            className="flex-1 py-2 rounded-xl text-xs font-medium text-white/50
+                       hover:text-white/80 transition-all duration-150"
+            style={{ border: '1px solid rgba(93,26,27,0.28)' }}
+          >
+            Edit Choices
+          </button>
+          <button
+            onClick={() => onSummaryAction?.(messageId, 'cancel')}
+            className="flex-1 py-2 rounded-xl text-xs font-medium text-white/30
+                       hover:text-white/55 transition-all duration-150"
+            style={{ border: '1px solid rgba(255,255,255,0.08)' }}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── MessageItem ──────────────────────────────────────────────────────────────
 
 interface MessageItemProps {
   message: ChatMessage
-  /**
-   * Called when the user selects an MCQ option.
-   * Args: (messageId, optionId) — parent updates selectedOptionId in state.
-   * Display only for now; wire to API in the next step.
-   */
-  onOptionSelect?: (messageId: string, optionId: string) => void
+  onOptionSelect?: (messageId: string, optionId: string, questionId?: QuestionId) => void
+  onConceptApproval?: (messageId: string, action: 'approve' | 'revise') => void
+  onSummaryAction?: (messageId: string, action: 'start' | 'edit' | 'cancel') => void
 }
 
-export function MessageItem({ message, onOptionSelect }: MessageItemProps) {
-  const { role, content, timestamp, images, type, options, selectedOptionId } = message
+export function MessageItem({
+  message,
+  onOptionSelect,
+  onConceptApproval,
+  onSummaryAction,
+}: MessageItemProps) {
+  const { role, content, timestamp, images, type, options, selectedOptionId,
+    conceptApprovalState, summary, questionId } = message
   const hasOptions = type === 'options' && options && options.length > 0
 
   // ── System / status message ───────────────────────────────────────────────
@@ -146,15 +340,18 @@ export function MessageItem({ message, onOptionSelect }: MessageItemProps) {
     )
   }
 
-  // ── Agent message (left-aligned, optionally with MCQ options below) ───────
+  // ── Agent message ─────────────────────────────────────────────────────────
   if (role === 'agent') {
+    const showConceptButtons = type === 'concept_approval'
+    const showSummary = type === 'summary' && summary != null
+    const hasExtras = hasOptions || showConceptButtons || showSummary
+
     return (
       <div
         className="mb-5 adv-msg-in"
         role="article"
         aria-label={`Advertimus at ${timestamp}`}
       >
-        {/* Row: avatar + text bubble */}
         <div className="flex items-end gap-2.5">
           <AgentAvatar />
           <div className="flex flex-col items-start max-w-[75%] md:max-w-[65%]">
@@ -167,9 +364,7 @@ export function MessageItem({ message, onOptionSelect }: MessageItemProps) {
             >
               {content}
             </div>
-
-            {/* Timestamp sits under bubble when there are NO options below */}
-            {!hasOptions && (
+            {!hasExtras && (
               <time className="mt-1.5 ml-1 text-[10px] text-white/22" dateTime={timestamp}>
                 {timestamp}
               </time>
@@ -177,13 +372,41 @@ export function MessageItem({ message, onOptionSelect }: MessageItemProps) {
           </div>
         </div>
 
-        {/* MCQ options — indented to align with text bubble (avatar 28px + gap 10px = 38px) */}
+        {/* MCQ options */}
         {hasOptions && (
           <div className="ml-[38px]">
             <MultiChoiceOptions
               options={options!}
               selectedId={selectedOptionId ?? null}
-              onSelect={(optionId) => onOptionSelect?.(message.id, optionId)}
+              onSelect={(optionId) => onOptionSelect?.(message.id, optionId, questionId)}
+            />
+            <time className="block mt-2 ml-1 text-[10px] text-white/22" dateTime={timestamp}>
+              {timestamp}
+            </time>
+          </div>
+        )}
+
+        {/* Concept approval */}
+        {showConceptButtons && (
+          <div className="ml-[38px]">
+            <ConceptApprovalCard
+              messageId={message.id}
+              approvalState={conceptApprovalState ?? 'pending'}
+              onConceptApproval={onConceptApproval}
+            />
+            <time className="block mt-2 ml-1 text-[10px] text-white/22" dateTime={timestamp}>
+              {timestamp}
+            </time>
+          </div>
+        )}
+
+        {/* Campaign summary */}
+        {showSummary && (
+          <div className="ml-[38px]">
+            <CampaignSummaryCard
+              summary={summary!}
+              messageId={message.id}
+              onSummaryAction={onSummaryAction}
             />
             <time className="block mt-2 ml-1 text-[10px] text-white/22" dateTime={timestamp}>
               {timestamp}

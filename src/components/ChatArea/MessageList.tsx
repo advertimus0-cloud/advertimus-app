@@ -11,14 +11,13 @@
  */
 
 import React, { useEffect, useRef } from 'react'
-import { MessageItem, TypingIndicator, ChatMessage } from './MessageItem'
+import { MessageItem, TypingIndicator, ChatMessage, QuestionId } from './MessageItem'
 
 // ─── Empty state ──────────────────────────────────────────────────────────────
 
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center h-full text-center px-6 py-16 select-none">
-      {/* Logo glyph */}
       <div
         className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 text-white font-bold text-xl"
         style={{
@@ -45,7 +44,6 @@ function EmptyState() {
         button to give me visual context.
       </p>
 
-      {/* Suggested prompts */}
       <div className="mt-6 flex flex-wrap gap-2 justify-center">
         {[
           'I sell leather wallets',
@@ -69,21 +67,24 @@ function EmptyState() {
 
 interface MessageListProps {
   messages: ChatMessage[]
-  isGenerating?: boolean
-  onOptionSelect?: (messageId: string, optionId: string) => void
+  isTyping?: boolean
+  onOptionSelect?: (messageId: string, optionId: string, questionId?: QuestionId) => void
+  onConceptApproval?: (messageId: string, action: 'approve' | 'revise') => void
+  onSummaryAction?: (messageId: string, action: 'start' | 'edit' | 'cancel') => void
 }
 
 export function MessageList({
   messages,
-  isGenerating = false,
+  isTyping = false,
   onOptionSelect,
+  onConceptApproval,
+  onSummaryAction,
 }: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  // Auto-scroll to latest message whenever messages or generating state changes
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages.length, isGenerating])
+  }, [messages.length, isTyping])
 
   return (
     <div
@@ -102,13 +103,13 @@ export function MessageList({
               key={message.id}
               message={message}
               onOptionSelect={onOptionSelect}
+              onConceptApproval={onConceptApproval}
+              onSummaryAction={onSummaryAction}
             />
           ))}
 
-          {/* Typing indicator while agent is responding */}
-          {isGenerating && <TypingIndicator />}
+          {isTyping && <TypingIndicator />}
 
-          {/* Scroll anchor */}
           <div ref={bottomRef} aria-hidden="true" />
         </div>
       )}
