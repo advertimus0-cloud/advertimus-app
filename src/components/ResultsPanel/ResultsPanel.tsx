@@ -132,7 +132,7 @@ function ProgressBar({
       ? '#22c55e'
       : color === 'amber'
       ? '#eab308'
-      : 'linear-gradient(90deg, #EC4899 0%, #A855F7 100%)'
+      : 'linear-gradient(90deg, #5d1a1b 0%, #161142 100%)'
 
   return (
     <div
@@ -172,12 +172,12 @@ function GenerationStatus({
         <div className="flex items-center gap-2">
           <div
             className="w-4 h-4 rounded-full border-2 border-transparent animate-spin flex-shrink-0"
-            style={{ borderTopColor: '#EC4899', borderRightColor: 'rgba(168,85,247,0.4)' }}
+            style={{ borderTopColor: 'rgba(93,26,27,0.9)', borderRightColor: 'rgba(22,17,66,0.4)' }}
             aria-hidden="true"
           />
           <p className="text-xs font-semibold text-white/80">Creating your content</p>
         </div>
-        <span className="text-xs font-bold tabular-nums" style={{ color: '#EC4899' }}>
+        <span className="text-xs font-bold tabular-nums" style={{ color: 'rgba(255,255,255,0.75)' }}>
           {Math.round(progress)}%
         </span>
       </div>
@@ -205,7 +205,7 @@ function GenerationStatus({
                 )}
                 {isCurrent && (
                   <div className="w-2 h-2 rounded-full animate-pulse"
-                    style={{ background: '#EC4899' }} aria-hidden="true" />
+                    style={{ background: 'rgba(93,26,27,0.9)' }} aria-hidden="true" />
                 )}
                 {!isDone && !isCurrent && (
                   <div className="w-1.5 h-1.5 rounded-full"
@@ -229,18 +229,18 @@ function GenerationStatus({
 // ─── VideoCard ────────────────────────────────────────────────────────────────
 
 function VideoCard({ video }: { video: VideoCardData }) {
-  const scoreColor = video.score >= 90 ? '#22c55e' : video.score >= 80 ? '#EC4899' : '#eab308'
+  const scoreColor = video.score >= 90 ? '#22c55e' : video.score >= 80 ? 'rgba(255,255,255,0.75)' : '#eab308'
   const scoreBg =
     video.score >= 90
       ? 'rgba(34,197,94,0.12)'
       : video.score >= 80
-      ? 'rgba(236,72,153,0.12)'
+      ? 'rgba(255,255,255,0.06)'
       : 'rgba(234,179,8,0.12)'
   const scoreBorder =
     video.score >= 90
       ? 'rgba(34,197,94,0.25)'
       : video.score >= 80
-      ? 'rgba(236,72,153,0.25)'
+      ? 'rgba(255,255,255,0.12)'
       : 'rgba(234,179,8,0.25)'
 
   return (
@@ -274,12 +274,12 @@ function VideoCard({ video }: { video: VideoCardData }) {
               className="w-9 h-9 rounded-full flex items-center justify-center
                          transition-transform duration-200 hover:scale-110 active:scale-95"
               style={{
-                background: 'rgba(236,72,153,0.18)',
-                border: '1px solid rgba(236,72,153,0.32)',
+                background: 'rgba(93,26,27,0.22)',
+                border: '1px solid rgba(93,26,27,0.42)',
               }}
               aria-label={`Play ${video.title}`}
             >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="#EC4899" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(255,255,255,0.8)" aria-hidden="true">
                 <polygon points="5 3 19 12 5 21 5 3" />
               </svg>
             </button>
@@ -316,7 +316,7 @@ function VideoCard({ video }: { video: VideoCardData }) {
               <button
                 className="flex-1 py-1 rounded-lg text-[10px] font-semibold text-white
                            transition-all duration-150 hover:opacity-90"
-                style={{ background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)' }}
+                style={{ background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }}
                 aria-label={`Download ${video.title}`}
               >
                 Download
@@ -333,7 +333,7 @@ function VideoCard({ video }: { video: VideoCardData }) {
 
 function ScoreBar({ label, value }: { label: string; value: number }) {
   const color = value >= 88 ? 'green' : value >= 75 ? 'gradient' : 'amber'
-  const numColor = value >= 88 ? '#22c55e' : value >= 75 ? '#EC4899' : '#eab308'
+  const numColor = value >= 88 ? '#22c55e' : value >= 75 ? 'rgba(255,255,255,0.75)' : '#eab308'
 
   return (
     <div className="flex items-center gap-3">
@@ -406,7 +406,7 @@ function ImageSection({ isGenerating, images }: { isGenerating: boolean; images?
             </button>
             <button
               className="text-[10px] font-semibold transition-all hover:opacity-85"
-              style={{ color: '#EC4899' }}
+              style={{ color: 'rgba(255,255,255,0.65)' }}
             >
               Download all
             </button>
@@ -471,7 +471,7 @@ function ActionButtons({ isGenerating }: { isGenerating: boolean }) {
           'transition-all duration-200',
           isGenerating ? 'opacity-30 cursor-not-allowed' : 'hover:opacity-90 active:scale-[0.99]',
         ].join(' ')}
-        style={{ background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }}
       >
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           strokeWidth="2" strokeLinecap="round" aria-hidden="true">
@@ -586,9 +586,9 @@ export function ResultsPanel({
             <span
               className="text-[10px] font-bold px-2.5 py-1 rounded-full"
               style={{
-                background: 'rgba(236,72,153,0.1)',
-                color: '#EC4899',
-                border: '1px solid rgba(236,72,153,0.22)',
+                background: 'rgba(93,26,27,0.12)',
+                color: 'rgba(255,255,255,0.65)',
+                border: '1px solid rgba(93,26,27,0.28)',
               }}
             >
               Generating...

@@ -172,7 +172,7 @@ function Thumbnail({
                    justify-center text-white text-sm font-bold leading-none
                    opacity-0 group-hover:opacity-100 transition-all duration-150
                    hover:scale-110 shadow-lg"
-        style={{ background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }}
         aria-label={`Remove ${file.name}`}
       >
         ×
@@ -379,7 +379,7 @@ export const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>
           className="rounded-xl transition-all duration-200"
           style={{
             border: isDragging
-              ? '2px dashed #EC4899'
+              ? '2px dashed rgba(93,26,27,0.8)'
               : files.length > 0
               ? '1px solid rgba(93,26,27,0.38)'
               : '1px dashed rgba(93,26,27,0.35)',
@@ -431,7 +431,7 @@ export const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>
                         background:
                           files.length >= maxFiles
                             ? '#ef4444'
-                            : 'linear-gradient(90deg, #EC4899, #A855F7)',
+                            : 'linear-gradient(90deg, #5d1a1b, #161142)',
                       }}
                     />
                   </div>
@@ -513,7 +513,7 @@ export const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>
 
         {/* Plan hint */}
         {files.length >= maxFiles && (
-          <p className="text-center mt-1.5 text-[11px]" style={{ color: 'rgba(236,72,153,0.65)' }}>
+          <p className="text-center mt-1.5 text-[11px]" style={{ color: 'rgba(255,255,255,0.45)' }}>
             Image limit reached for your plan.{' '}
             <span className="underline cursor-pointer">Upgrade for more.</span>
           </p>

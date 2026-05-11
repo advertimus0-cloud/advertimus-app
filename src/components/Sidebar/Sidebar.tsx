@@ -217,7 +217,7 @@ export function Sidebar({
         <span
           className="font-bold text-sm tracking-[0.18em] uppercase select-none"
           style={{
-            background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)',
+            background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',

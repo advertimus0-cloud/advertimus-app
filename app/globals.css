@@ -2,11 +2,10 @@
 @import "tailwindcss";
 
 @theme {
-  /* Custom colors → bg-background, bg-accent1, bg-accent2, bg-pinkAccent */
+  /* Custom colors → bg-background, bg-accent1, bg-accent2 */
   --color-background: #000000;
   --color-accent1: #5d1a1b;
   --color-accent2: #161142;
-  --color-pinkAccent: #ec4899;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
@@ -22,12 +21,12 @@
   --color-text-secondary: #E0E0E0;
 
   /* ACCENTS */
-  --color-accent-primary: #EC4899;
-  --color-accent-secondary: #A855F7;
+  --color-accent-primary: #A855F7;
+  --color-accent-secondary: #7c3aed;
 
   /* GRADIENTS */
   --gradient-border: linear-gradient(135deg, #5d1a1b 0%, #161142 100%);
-  --gradient-hover: linear-gradient(135deg, #EC4899 0%, #A855F7 100%);
+  --gradient-hover: linear-gradient(135deg, #5d1a1b 0%, #161142 100%);
   --gradient-text-box: linear-gradient(135deg, rgba(93, 26, 27, 0.3) 0%, rgba(22, 17, 66, 0.3) 100%);
 
   /* SPACING */
@@ -212,7 +211,7 @@ p {
 }
 
 .adv-btn-primary {
-  background: linear-gradient(135deg, #EC4899 0%, #A855F7 100%);
+  background: linear-gradient(135deg, #5d1a1b 0%, #161142 100%);
   border: 1px solid transparent;
   color: #ffffff;
 }
@@ -220,7 +219,7 @@ p {
 .adv-btn-primary:hover {
   opacity: 0.88;
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.35);
+  box-shadow: 0 4px 16px rgba(93, 26, 27, 0.45);
 }
 
 .adv-btn-full {

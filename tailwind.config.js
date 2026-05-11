@@ -17,10 +17,6 @@ module.exports = {
           DEFAULT: "#FFFFFF",
           secondary: "#E0E0E0",
         },
-        pinkAccent: {
-          DEFAULT: '#ec4899', // Pink accents for buttons
-          hover: '#db2777'
-        }
       },
       textColor: {
         DEFAULT: "#FFFFFF",

@@ -299,8 +299,8 @@ export function VideoPlayer({
           <div
             className="w-10 h-10 rounded-full border-2 border-transparent animate-spin"
             style={{
-              borderTopColor: '#EC4899',
-              borderRightColor: 'rgba(168,85,247,0.4)',
+              borderTopColor: 'rgba(93,26,27,0.9)',
+              borderRightColor: 'rgba(22,17,66,0.4)',
             }}
           />
         </div>
@@ -314,7 +314,7 @@ export function VideoPlayer({
         >
           <div
             className="w-14 h-14 rounded-full flex items-center justify-center opacity-90"
-            style={{ background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)' }}
+            style={{ background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="white" aria-hidden="true">
               <polygon points="5 3 19 12 5 21 5 3" />
@@ -343,7 +343,7 @@ export function VideoPlayer({
           value={currentTime}
           disabled={duration === 0}
           onChange={e => handleSeek(Number(e.target.value))}
-          className="w-full mb-2.5 h-1 rounded-full cursor-pointer accent-pink-500
+          className="w-full mb-2.5 h-1 rounded-full cursor-pointer accent-purple-500
                      disabled:opacity-40 disabled:cursor-not-allowed"
           aria-label="Seek"
         />
@@ -377,7 +377,7 @@ export function VideoPlayer({
             step={0.01}
             value={displayVolume}
             onChange={e => handleVolumeChange(Number(e.target.value))}
-            className="w-14 h-0.5 rounded-full cursor-pointer accent-pink-500 flex-shrink-0"
+            className="w-14 h-0.5 rounded-full cursor-pointer accent-purple-500 flex-shrink-0"
             aria-label="Volume"
           />
 
@@ -427,7 +427,7 @@ export function VideoPlayer({
                     className={[
                       'w-full text-left px-3 py-1.5 text-[11px] font-medium transition-colors duration-100',
                       q === quality
-                        ? 'text-pink-400 bg-white/[0.04]'
+                        ? 'text-purple-400 bg-white/[0.04]'
                         : 'text-white/55 hover:text-white hover:bg-white/[0.05]',
                     ].join(' ')}
                   >

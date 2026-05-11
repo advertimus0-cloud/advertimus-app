@@ -67,8 +67,8 @@ export function OptionButton({
   const containerStyle: React.CSSProperties = isSelected
     ? {
         background: 'linear-gradient(135deg, rgba(93,26,27,0.35) 0%, rgba(22,17,66,0.35) 100%)',
-        border: '1px solid #EC4899',
-        boxShadow: '0 0 18px rgba(236,72,153,0.18), inset 0 0 0 1px rgba(168,85,247,0.12)',
+        border: '1px solid rgba(93,26,27,0.7)',
+        boxShadow: '0 0 18px rgba(93,26,27,0.25), inset 0 0 0 1px rgba(22,17,66,0.2)',
       }
     : {
         background: 'rgba(255,255,255,0.025)',
@@ -77,7 +77,7 @@ export function OptionButton({
 
   // ── Number badge per state ────────────────────────────────────────────────
   const badgeStyle: React.CSSProperties = isSelected
-    ? { background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)', color: '#fff' }
+    ? { background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)', color: '#fff' }
     : isLocked
     ? { background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.3)' }
     : { background: 'rgba(93,26,27,0.45)', color: 'rgba(255,255,255,0.7)' }
@@ -139,7 +139,7 @@ export function OptionButton({
         {isLocked && option.lockedLabel && (
           <span
             className="text-[11px] font-medium mt-0.5"
-            style={{ color: 'rgba(236,72,153,0.7)' }}
+            style={{ color: 'rgba(255,255,255,0.45)' }}
           >
             {option.lockedLabel}
           </span>
@@ -148,7 +148,7 @@ export function OptionButton({
         {/* Selected checkmark confirmation */}
         {isSelected && (
           <span className="text-[11px] font-medium mt-0.5 flex items-center gap-1"
-            style={{ color: '#EC4899' }}>
+            style={{ color: 'rgba(255,255,255,0.7)' }}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
               strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <polyline points="20 6 9 17 4 12" />

@@ -290,7 +290,7 @@ export function ChatArea({
           className="max-w-3xl mx-auto rounded-2xl overflow-hidden transition-all duration-200"
           style={{
             background: 'rgba(255,255,255,0.03)',
-            border: `1px solid ${attachedFiles.length > 0 ? 'rgba(236,72,153,0.3)' : 'rgba(93,26,27,0.3)'}`,
+            border: `1px solid ${attachedFiles.length > 0 ? 'rgba(168,85,247,0.3)' : 'rgba(93,26,27,0.3)'}`,
             boxShadow: '0 4px 24px rgba(0,0,0,0.35)',
           }}
         >
@@ -324,7 +324,7 @@ export function ChatArea({
                   'w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-150',
                   'disabled:opacity-35 disabled:cursor-not-allowed',
                   attachedFiles.length > 0
-                    ? 'text-pink-400/80 hover:text-pink-300 hover:bg-white/[0.06]'
+                    ? 'text-purple-400/80 hover:text-purple-300 hover:bg-white/[0.06]'
                     : 'text-white/28 hover:text-white/60 hover:bg-white/[0.05]',
                 ].join(' ')}
                 aria-label={`Attach images${attachedFiles.length > 0 ? ` (${attachedFiles.length})` : ''}`}
@@ -392,7 +392,7 @@ export function ChatArea({
                 ].join(' ')}
                 style={
                   canSend
-                    ? { background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)' }
+                    ? { background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }
                     : { background: 'rgba(255,255,255,0.05)' }
                 }
                 aria-label="Send message"
