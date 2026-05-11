@@ -35,7 +35,7 @@ export interface MCQOption {
   id: string
   title: string
   description: string
-  icon: string
+  icon: React.ReactNode
   locked?: boolean
   lockedLabel?: string
   creditCost?: number

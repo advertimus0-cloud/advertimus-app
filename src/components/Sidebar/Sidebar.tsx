@@ -206,7 +206,7 @@ export function Sidebar({
               }
               aria-current={isActive ? 'page' : undefined}
             >
-              <span className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-white/28'}`}>
+              <span className="flex-shrink-0 inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
                 {icon}
               </span>
               {label}
@@ -234,7 +234,9 @@ export function Sidebar({
                      transition-all duration-150"
           style={{ border: '1px dashed rgba(93,26,27,0.2)' }}
         >
-          <Plus size={11} />
+          <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-0.5">
+            <Plus size={11} />
+          </span>
           New conversation
         </button>
       </div>
@@ -264,7 +266,9 @@ export function Sidebar({
                        transition-all duration-150"
             aria-label="Settings"
           >
-            <Settings size={13} />
+            <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-0.5">
+              <Settings size={13} />
+            </span>
           </button>
         </div>
 

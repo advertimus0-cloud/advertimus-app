@@ -250,7 +250,9 @@ function VideoCard({ video }: { video: VideoCardData }) {
               }}
               aria-label={`Play ${video.title}`}
             >
-              <Play size={12} fill="rgba(255,255,255,0.8)" color="rgba(255,255,255,0.8)" aria-hidden="true" />
+              <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1" aria-hidden="true">
+              <Play size={12} />
+            </span>
             </button>
           </div>
 
@@ -278,7 +280,9 @@ function VideoCard({ video }: { video: VideoCardData }) {
                 style={{ border: '1px solid rgba(93,26,27,0.3)' }}
                 aria-label={`Preview ${video.title}`}
               >
-                <Eye size={10} />
+                <span className="inline-flex items-center justify-center rounded bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-0.5">
+                  <Eye size={10} />
+                </span>
                 Preview
               </button>
               <button
@@ -455,9 +459,9 @@ function ActionButtons({ isGenerating }: { isGenerating: boolean }) {
 
       <div className="grid grid-cols-3 gap-1.5">
         {[
-          { label: 'Save',       icon: <Save    size={13} /> },
-          { label: 'Share',      icon: <Link    size={13} /> },
-          { label: 'Edit Style', icon: <Palette size={13} /> },
+          { label: 'Save',       icon: <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1"><Save    size={13} /></span> },
+          { label: 'Share',      icon: <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1"><Link    size={13} /></span> },
+          { label: 'Edit Style', icon: <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1"><Palette size={13} /></span> },
         ].map(({ label, icon }) => (
           <button
             key={label}
@@ -488,7 +492,9 @@ function ActionButtons({ isGenerating }: { isGenerating: boolean }) {
         ].join(' ')}
         style={{ border: '1px dashed rgba(93,26,27,0.22)' }}
       >
-        <RefreshCw size={11} />
+        <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+          <RefreshCw size={11} />
+        </span>
         Regenerate (20 credits)
       </button>
     </div>

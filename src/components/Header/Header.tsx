@@ -102,7 +102,9 @@ export function Header({
           style={{ border: '1px solid rgba(93,26,27,0.28)' }}
           aria-label="Export assets"
         >
-          <Upload size={12} />
+          <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+            <Upload size={12} />
+          </span>
           Export
         </button>
 
@@ -115,7 +117,9 @@ export function Header({
           style={{ border: '1px solid rgba(93,26,27,0.28)' }}
           aria-label="Share project"
         >
-          <Share2 size={12} />
+          <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+            <Share2 size={12} />
+          </span>
           Share
         </button>
 
@@ -140,7 +144,9 @@ export function Header({
           aria-label={isPanelOpen ? 'Close results panel' : 'Open results panel'}
           aria-pressed={isPanelOpen}
         >
-          <PanelRight size={13} />
+          <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+            <PanelRight size={13} />
+          </span>
           Panel
         </button>
       </div>

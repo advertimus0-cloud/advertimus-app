@@ -89,9 +89,11 @@ export function OptionButton({
         {isLocked ? <Lock size={9} /> : index}
       </span>
 
-      {/* ── Emoji icon ───────────────────────────────────────────────────── */}
+      {/* ── Icon ─────────────────────────────────────────────────────────── */}
       <span
-        className="flex-shrink-0 text-[18px] leading-none mt-[1px] select-none"
+        className="flex-shrink-0 inline-flex items-center justify-center rounded-md
+                   bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)]
+                   p-1.5 mt-[1px]"
         aria-hidden="true"
       >
         {option.icon}

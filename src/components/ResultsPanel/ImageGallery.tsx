@@ -17,7 +17,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { Download, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Download, X, ChevronLeft, ChevronRight, Paintbrush } from 'lucide-react'
 
 // Remove before production — only server-signed URLs allowed in prod (§8)
 const PLACEHOLDER_IMAGES = [
@@ -73,7 +73,9 @@ function ImageModal({ src, index, total, onClose, onPrev, onNext }: ImageModalPr
                      text-white/45 hover:text-white transition-colors duration-150"
           aria-label="Close preview"
         >
-          <X size={13} />
+          <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+            <X size={13} />
+          </span>
           Close
         </button>
 
@@ -99,7 +101,9 @@ function ImageModal({ src, index, total, onClose, onPrev, onNext }: ImageModalPr
             style={{ border: '1px solid rgba(93,26,27,0.3)' }}
             aria-label="Previous image"
           >
-            <ChevronLeft size={13} />
+            <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+              <ChevronLeft size={13} />
+            </span>
             Prev
           </button>
 
@@ -117,7 +121,9 @@ function ImageModal({ src, index, total, onClose, onPrev, onNext }: ImageModalPr
             aria-label="Next image"
           >
             Next
-            <ChevronRight size={13} />
+            <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+              <ChevronRight size={13} />
+            </span>
           </button>
         </div>
       </div>
@@ -219,7 +225,9 @@ export function ImageGallery({
                   }}
                   aria-label={`Download image ${i + 1}`}
                 >
-                  <Download size={10} />
+                  <span className="inline-flex items-center justify-center rounded bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-0.5">
+                    <Download size={10} />
+                  </span>
                   Save
                 </button>
               </div>
@@ -235,7 +243,9 @@ export function ImageGallery({
           style={{ border: '1px dashed rgba(93,26,27,0.32)' }}
           aria-label="Download all images as ZIP"
         >
-          <Download size={11} />
+          <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+            <Download size={11} />
+          </span>
           Download All as ZIP
         </button>
 
@@ -248,7 +258,10 @@ export function ImageGallery({
             style={{ border: '1px solid rgba(93,26,27,0.2)' }}
             aria-label="Edit in Canva"
           >
-            🎨 Edit in Canva
+            <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+              <Paintbrush size={11} />
+            </span>
+            Edit in Canva
           </button>
         )}
       </div>

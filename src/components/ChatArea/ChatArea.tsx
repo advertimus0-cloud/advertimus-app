@@ -497,7 +497,9 @@ export function ChatArea({
                 ].join(' ')}
                 aria-label={`Attach images${attachedFiles.length > 0 ? ` (${attachedFiles.length})` : ''}`}
               >
-                <Paperclip size={14} />
+                <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+                  <Paperclip size={14} />
+                </span>
               </button>
 
               <button
@@ -507,7 +509,9 @@ export function ChatArea({
                            transition-all duration-150 disabled:opacity-35 disabled:cursor-not-allowed"
                 aria-label="Canvas (coming soon)"
               >
-                <PenTool size={14} />
+                <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+                  <PenTool size={14} />
+                </span>
               </button>
 
               <button
@@ -517,7 +521,9 @@ export function ChatArea({
                            transition-all duration-150 disabled:opacity-35 disabled:cursor-not-allowed"
                 aria-label="Screen share (coming soon)"
               >
-                <Monitor size={14} />
+                <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+                  <Monitor size={14} />
+                </span>
               </button>
             </div>
 
@@ -530,7 +536,9 @@ export function ChatArea({
                            transition-all duration-150 disabled:opacity-35 disabled:cursor-not-allowed"
                 aria-label="History (coming soon)"
               >
-                <Clock size={14} />
+                <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+                  <Clock size={14} />
+                </span>
               </button>
 
               <button
@@ -540,7 +548,9 @@ export function ChatArea({
                            transition-all duration-150 disabled:opacity-35 disabled:cursor-not-allowed"
                 aria-label="Voice input (coming soon)"
               >
-                <Mic size={14} />
+                <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+                  <Mic size={14} />
+                </span>
               </button>
 
               <button
@@ -579,8 +589,7 @@ export function ChatArea({
                 style={{ border: '1px solid rgba(93,26,27,0.25)' }}
               >
                 <span
-                  className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{ background: 'linear-gradient(135deg, rgba(93,26,27,0.5) 0%, rgba(22,17,66,0.5) 100%)' }}
+                  className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-0.5 flex-shrink-0"
                   aria-hidden="true"
                 >
                   <Sparkles size={8} />

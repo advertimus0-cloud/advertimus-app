@@ -318,7 +318,9 @@ export const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>
                          focus:outline-none focus-visible:ring-2 focus-visible:ring-accent1/50"
               aria-label="Click to select reference images"
             >
-              <ImagePlus size={28} />
+              <span className="inline-flex items-center justify-center rounded-xl bg-red-500/10 text-red-600 shadow-[0_0_20px_rgba(220,38,38,0.18)] p-3">
+                <ImagePlus size={28} />
+              </span>
               <div className="text-center">
                 <p className="text-sm font-medium leading-snug">
                   {isDragging ? 'Drop images here' : 'Drag & drop images, or click to browse'}
