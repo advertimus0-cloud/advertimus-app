@@ -12,6 +12,7 @@
  */
 
 import React from 'react'
+import Image from 'next/image'
 import {
   BookOpen,
   LayoutGrid,
@@ -166,18 +167,14 @@ export function Sidebar({
         >
           <span className="text-white text-xs font-black">A</span>
         </div>
-        <span
-          className="font-bold text-sm tracking-[0.18em] uppercase select-none"
-          style={{
-            background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}
-          aria-label="Advertimus"
-        >
-          Advertimus
-        </span>
+        <Image
+          src="/advertimus-logo.PNG"
+          alt="Advertimus"
+          width={110}
+          height={26}
+          className="object-contain select-none"
+          priority
+        />
       </div>
 
       {/* ── Primary nav ──────────────────────────────────────────────────── */}

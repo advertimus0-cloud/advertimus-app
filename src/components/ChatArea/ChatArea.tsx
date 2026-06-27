@@ -18,7 +18,7 @@
  */
 
 import React, { useState, useRef, useEffect, useCallback } from 'react'
-import { Paperclip, PenTool, Monitor, Clock, Mic, Send, Sparkles } from 'lucide-react'
+import { Paperclip, PenTool, Monitor, Clock, Mic, Send, Zap, Lightbulb, Type } from 'lucide-react'
 import { MessageList } from './MessageList'
 import { ChatMessage, CampaignSummary, QuestionId } from './MessageItem'
 import {
@@ -106,10 +106,9 @@ const MCQ_OPTIONS: Record<QuestionId, typeof AD_TYPE_OPTIONS> = {
 }
 
 const QUICK_ACTIONS = [
-  'Create Instagram ad',
-  'Write ad copy',
-  'YouTube Shorts script',
-  'Predict performance',
+  { label: 'Create professional ready ad', icon: <Zap size={9} /> },
+  { label: 'Get an ad idea',               icon: <Lightbulb size={9} /> },
+  { label: 'Get ad caption',               icon: <Type size={9} /> },
 ]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -141,7 +140,7 @@ function createGreeting(): ChatMessage {
 
 export function ChatArea({
   projectName: _projectName = 'New Chat',
-  headline = 'lets make the best marketing campaign',
+  headline = "Let's make the best marketing campaign",
   creditsAvailable = 0,
   onGenerationStart,
   onSendMessage,
@@ -169,7 +168,7 @@ export function ChatArea({
     const el = textareaRef.current
     if (!el) return
     el.style.height = 'auto'
-    el.style.height = `${Math.min(el.scrollHeight, 120)}px`
+    el.style.height = `${Math.min(el.scrollHeight, 160)}px`
   }, [inputValue])
 
   useEffect(() => () => {
@@ -414,196 +413,237 @@ export function ChatArea({
     textareaRef.current?.focus()
   }
 
-  const showEmptyHeadline = isEmpty && messages.length === 1
+  // ─── Shared UI pieces ─────────────────────────────────────────────────────
+
+  const toolbarIconClass = (active?: boolean) =>
+    [
+      'w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-150',
+      'disabled:opacity-35 disabled:cursor-not-allowed',
+      active
+        ? 'text-purple-400/80 hover:text-purple-300 hover:bg-white/[0.08]'
+        : 'text-white/30 hover:text-white/60 hover:bg-white/[0.08]',
+    ].join(' ')
+
+  const iconBadge = (children: React.ReactNode) => (
+    <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+      {children}
+    </span>
+  )
+
+  const sendButton = (
+    <button
+      onClick={handleSend}
+      disabled={!canSend}
+      className={[
+        'w-8 h-8 rounded-xl flex items-center justify-center ml-1',
+        'transition-all duration-200',
+        canSend
+          ? 'text-white hover:scale-105 active:scale-95'
+          : 'text-white/18 cursor-not-allowed',
+      ].join(' ')}
+      style={
+        canSend
+          ? { background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }
+          : { background: 'rgba(255,255,255,0.08)' }
+      }
+      aria-label="Send message"
+    >
+      <Send size={13} />
+    </button>
+  )
+
+  const toolbarLeft = (
+    <div className="flex items-center gap-0.5">
+      <button
+        onClick={() => uploaderRef.current?.openPicker()}
+        disabled={isBlocked}
+        className={toolbarIconClass(attachedFiles.length > 0)}
+        aria-label={`Attach images${attachedFiles.length > 0 ? ` (${attachedFiles.length})` : ''}`}
+      >
+        {iconBadge(<Paperclip size={14} />)}
+      </button>
+      <button disabled={isBlocked} className={toolbarIconClass()} aria-label="Canvas (coming soon)">
+        {iconBadge(<PenTool size={14} />)}
+      </button>
+      <button disabled={isBlocked} className={toolbarIconClass()} aria-label="Screen share (coming soon)">
+        {iconBadge(<Monitor size={14} />)}
+      </button>
+    </div>
+  )
+
+  const toolbarRight = (
+    <div className="flex items-center gap-0.5">
+      <button disabled={isBlocked} className={toolbarIconClass()} aria-label="History (coming soon)">
+        {iconBadge(<Clock size={14} />)}
+      </button>
+      <button disabled={isBlocked} className={toolbarIconClass()} aria-label="Voice input (coming soon)">
+        {iconBadge(<Mic size={14} />)}
+      </button>
+      {sendButton}
+    </div>
+  )
+
+  const disclaimer = (
+    <p className="text-center mt-3 text-[10px] text-white/22 select-none tracking-wide">
+      Advertimus is AI and may make mistakes
+    </p>
+  )
+
+  const quickChips = (
+    <div className="mt-5 flex flex-wrap gap-2 justify-center">
+      {QUICK_ACTIONS.map(({ label, icon }) => (
+        <button
+          key={label}
+          onClick={() => handleQuickAction(label)}
+          className="flex items-center gap-2 px-4 py-2 rounded-full
+                     text-xs font-medium text-white/48 hover:text-white/78
+                     transition-all duration-150 hover:bg-white/[0.05]"
+          style={{ border: '1px solid rgba(93,26,27,0.28)' }}
+        >
+          <span
+            className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-0.5 flex-shrink-0"
+            aria-hidden="true"
+          >
+            {icon}
+          </span>
+          {label}
+        </button>
+      ))}
+    </div>
+  )
+
+  // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col h-full bg-background overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden bg-background">
 
-      {/* ── Message area ─────────────────────────────────────────────────── */}
-      {showEmptyHeadline ? (
-        <div className="flex-1 flex flex-col items-center justify-center px-6 select-none">
-          <h1
-            className="text-center font-semibold leading-tight max-w-xl"
-            style={{
-              fontSize: 'clamp(24px, 4vw, 40px)',
-              color: 'rgba(255,255,255,0.88)',
-              letterSpacing: '-0.02em',
-            }}
-          >
-            {headline}
-          </h1>
-          <p className="mt-3 text-white/28 text-sm text-center max-w-sm">
-            Assign a task or describe your product to get started
-          </p>
+      {isEmpty ? (
+
+        // ── EMPTY STATE: entire block centered vertically ─────────────────
+        <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto px-4">
+          <div className="w-full max-w-2xl py-8">
+
+            {/* Headline */}
+            <div className="text-center mb-10 select-none">
+              <h1
+                className="font-bold leading-tight"
+                style={{
+                  fontSize: 'clamp(22px, 3.5vw, 40px)',
+                  color: 'rgba(255,255,255,0.92)',
+                  letterSpacing: '-0.03em',
+                }}
+              >
+                {headline}
+              </h1>
+              <p className="mt-3 text-sm" style={{ color: 'rgba(255,255,255,0.36)' }}>
+                Describe your product or idea to get started
+              </p>
+            </div>
+
+            {/* Image uploader */}
+            <ImageUploader
+              ref={uploaderRef}
+              onFilesChange={setAttachedFiles}
+              maxFiles={12}
+              maxSizeMB={20}
+              disabled={isBlocked}
+            />
+
+            {/* Text box */}
+            <div
+              className="rounded-2xl overflow-hidden transition-all duration-200"
+              style={{
+                background: '#252525',
+                border: `1.5px solid ${attachedFiles.length > 0 ? 'rgba(168,85,247,0.5)' : 'rgba(93,26,27,0.55)'}`,
+                boxShadow: '0 8px 40px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.05) inset',
+              }}
+            >
+              <div className="px-5 pt-5 pb-2">
+                <textarea
+                  ref={textareaRef}
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Describe your product, idea or campaign..."
+                  rows={2}
+                  disabled={isBlocked}
+                  className="w-full bg-transparent text-white text-[15px] leading-relaxed
+                             placeholder-white/30 resize-none outline-none"
+                  style={{ maxHeight: '160px', minHeight: '52px' }}
+                  aria-label="Message input"
+                  aria-multiline="true"
+                />
+              </div>
+              <div className="flex items-center justify-between px-4 pb-4 pt-1">
+                {toolbarLeft}
+                {toolbarRight}
+              </div>
+            </div>
+
+            {quickChips}
+            {disclaimer}
+          </div>
         </div>
+
       ) : (
-        <MessageList
-          messages={messages}
-          isTyping={isTyping}
-          onOptionSelect={handleOptionSelect}
-          onConceptApproval={handleConceptApproval}
-          onSummaryAction={handleSummaryAction}
-        />
+
+        // ── ACTIVE STATE: messages list + input pinned at bottom ──────────
+        <>
+          <MessageList
+            messages={messages}
+            isTyping={isTyping}
+            onOptionSelect={handleOptionSelect}
+            onConceptApproval={handleConceptApproval}
+            onSummaryAction={handleSummaryAction}
+          />
+
+          <div className="flex-shrink-0 px-6 pb-5 pt-0">
+            <div className="max-w-2xl mx-auto">
+              <ImageUploader
+                ref={uploaderRef}
+                onFilesChange={setAttachedFiles}
+                maxFiles={12}
+                maxSizeMB={20}
+                disabled={isBlocked}
+              />
+
+              <div
+                className="w-full rounded-2xl overflow-hidden transition-all duration-200"
+                style={{
+                  background: '#252525',
+                  border: `1px solid ${attachedFiles.length > 0 ? 'rgba(168,85,247,0.4)' : 'rgba(93,26,27,0.4)'}`,
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.45)',
+                }}
+              >
+                <div className="px-4 pt-3.5 pb-1">
+                  <textarea
+                    ref={textareaRef}
+                    value={inputValue}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Assign a task or ask anything..."
+                    rows={1}
+                    disabled={isBlocked}
+                    className="w-full bg-transparent text-white text-[15px] leading-relaxed
+                               placeholder-white/30 resize-none outline-none"
+                    style={{ maxHeight: '120px' }}
+                    aria-label="Message input"
+                    aria-multiline="true"
+                  />
+                </div>
+                <div className="flex items-center justify-between px-3 pb-3 pt-1">
+                  {toolbarLeft}
+                  {toolbarRight}
+                </div>
+              </div>
+
+              {disclaimer}
+            </div>
+          </div>
+        </>
+
       )}
 
-      {/* ── Input area ───────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 px-4 pb-4 pt-0">
-
-        <ImageUploader
-          ref={uploaderRef}
-          onFilesChange={setAttachedFiles}
-          maxFiles={12}
-          maxSizeMB={20}
-          disabled={isBlocked}
-        />
-
-        <div
-          className="max-w-3xl mx-auto rounded-2xl overflow-hidden transition-all duration-200"
-          style={{
-            background: 'rgba(255,255,255,0.03)',
-            border: `1px solid ${attachedFiles.length > 0 ? 'rgba(168,85,247,0.3)' : 'rgba(93,26,27,0.3)'}`,
-            boxShadow: '0 4px 24px rgba(0,0,0,0.35)',
-          }}
-        >
-          <div className="px-4 pt-3.5 pb-1">
-            <textarea
-              ref={textareaRef}
-              value={inputValue}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              placeholder="Assign a task or ask anything..."
-              rows={1}
-              disabled={isBlocked}
-              className="w-full bg-transparent text-white text-sm leading-relaxed
-                         placeholder-white/22 resize-none outline-none"
-              style={{ maxHeight: '120px' }}
-              aria-label="Message input"
-              aria-multiline="true"
-            />
-          </div>
-
-          <div className="flex items-center justify-between px-3 pb-3 pt-1">
-            {/* Left tools */}
-            <div className="flex items-center gap-0.5">
-              <button
-                onClick={() => uploaderRef.current?.openPicker()}
-                disabled={isBlocked}
-                className={[
-                  'w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-150',
-                  'disabled:opacity-35 disabled:cursor-not-allowed',
-                  attachedFiles.length > 0
-                    ? 'text-purple-400/80 hover:text-purple-300 hover:bg-white/[0.06]'
-                    : 'text-white/28 hover:text-white/60 hover:bg-white/[0.05]',
-                ].join(' ')}
-                aria-label={`Attach images${attachedFiles.length > 0 ? ` (${attachedFiles.length})` : ''}`}
-              >
-                <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
-                  <Paperclip size={14} />
-                </span>
-              </button>
-
-              <button
-                disabled={isBlocked}
-                className="w-8 h-8 rounded-lg flex items-center justify-center
-                           text-white/22 hover:text-white/50 hover:bg-white/[0.05]
-                           transition-all duration-150 disabled:opacity-35 disabled:cursor-not-allowed"
-                aria-label="Canvas (coming soon)"
-              >
-                <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
-                  <PenTool size={14} />
-                </span>
-              </button>
-
-              <button
-                disabled={isBlocked}
-                className="w-8 h-8 rounded-lg flex items-center justify-center
-                           text-white/22 hover:text-white/50 hover:bg-white/[0.05]
-                           transition-all duration-150 disabled:opacity-35 disabled:cursor-not-allowed"
-                aria-label="Screen share (coming soon)"
-              >
-                <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
-                  <Monitor size={14} />
-                </span>
-              </button>
-            </div>
-
-            {/* Right tools */}
-            <div className="flex items-center gap-0.5">
-              <button
-                disabled={isBlocked}
-                className="w-8 h-8 rounded-lg flex items-center justify-center
-                           text-white/22 hover:text-white/50 hover:bg-white/[0.05]
-                           transition-all duration-150 disabled:opacity-35 disabled:cursor-not-allowed"
-                aria-label="History (coming soon)"
-              >
-                <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
-                  <Clock size={14} />
-                </span>
-              </button>
-
-              <button
-                disabled={isBlocked}
-                className="w-8 h-8 rounded-lg flex items-center justify-center
-                           text-white/22 hover:text-white/50 hover:bg-white/[0.05]
-                           transition-all duration-150 disabled:opacity-35 disabled:cursor-not-allowed"
-                aria-label="Voice input (coming soon)"
-              >
-                <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
-                  <Mic size={14} />
-                </span>
-              </button>
-
-              <button
-                onClick={handleSend}
-                disabled={!canSend}
-                className={[
-                  'w-8 h-8 rounded-xl flex items-center justify-center ml-1',
-                  'transition-all duration-200',
-                  canSend
-                    ? 'text-white hover:scale-105 active:scale-95'
-                    : 'text-white/18 cursor-not-allowed',
-                ].join(' ')}
-                style={
-                  canSend
-                    ? { background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }
-                    : { background: 'rgba(255,255,255,0.05)' }
-                }
-                aria-label="Send message"
-              >
-                <Send size={13} />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick action chips */}
-        {showEmptyHeadline && (
-          <div className="max-w-3xl mx-auto mt-3 flex flex-wrap gap-2 justify-center">
-            {QUICK_ACTIONS.map(action => (
-              <button
-                key={action}
-                onClick={() => handleQuickAction(action)}
-                className="flex items-center gap-2 px-3.5 py-1.5 rounded-full
-                           text-xs font-medium text-white/45 hover:text-white/75
-                           transition-all duration-150 hover:bg-white/[0.04]"
-                style={{ border: '1px solid rgba(93,26,27,0.25)' }}
-              >
-                <span
-                  className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-0.5 flex-shrink-0"
-                  aria-hidden="true"
-                >
-                  <Sparkles size={8} />
-                </span>
-                {action}
-              </button>
-            ))}
-          </div>
-        )}
-
-        <p className="text-center mt-2 text-[10px] text-white/12 select-none">
-          Enter to send · Shift+Enter for new line
-        </p>
-      </div>
     </div>
   )
 }

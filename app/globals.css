@@ -3,7 +3,7 @@
 
 @theme {
   /* Custom colors → bg-background, bg-accent1, bg-accent2 */
-  --color-background: #000000;
+  --color-background: #1a1a1a;
   --color-accent1: #5d1a1b;
   --color-accent2: #161142;
 }
@@ -50,7 +50,7 @@ html, body {
 
 body {
   margin: 0;
-  background-color: var(--color-black);
+  background-color: #1a1a1a;
   color: var(--color-text-primary);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
 }
