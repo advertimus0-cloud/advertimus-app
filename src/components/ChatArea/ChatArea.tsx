@@ -18,7 +18,7 @@
  */
 
 import React, { useState, useRef, useEffect, useCallback } from 'react'
-import { Paperclip, PenTool, Monitor, Clock, Mic, Send, Zap, Lightbulb, Type } from 'lucide-react'
+import { Paperclip, PenTool, Monitor, Clock, Mic, ArrowUp, Zap, Lightbulb, Type } from 'lucide-react'
 import { MessageList } from './MessageList'
 import { ChatMessage, CampaignSummary, QuestionId } from './MessageItem'
 import {
@@ -435,20 +435,23 @@ export function ChatArea({
       onClick={handleSend}
       disabled={!canSend}
       className={[
-        'w-8 h-8 rounded-xl flex items-center justify-center ml-1',
+        'w-9 h-9 rounded-xl flex items-center justify-center ml-1 flex-shrink-0',
         'transition-all duration-200',
         canSend
           ? 'text-white hover:scale-105 active:scale-95'
-          : 'text-white/18 cursor-not-allowed',
+          : 'text-white/20 cursor-not-allowed',
       ].join(' ')}
       style={
         canSend
-          ? { background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }
-          : { background: 'rgba(255,255,255,0.08)' }
+          ? {
+              background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)',
+              boxShadow: '0 0 18px rgba(93,26,27,0.55), 0 2px 8px rgba(0,0,0,0.4)',
+            }
+          : { background: 'rgba(255,255,255,0.06)' }
       }
       aria-label="Send message"
     >
-      <Send size={13} />
+      <ArrowUp size={15} strokeWidth={2.5} />
     </button>
   )
 
@@ -484,7 +487,7 @@ export function ChatArea({
   )
 
   const disclaimer = (
-    <p className="text-center mt-3 text-[10px] text-white/22 select-none tracking-wide">
+    <p className="text-center mt-6 mb-2 text-[10px] text-white/22 select-none tracking-wide">
       Advertimus is AI and may make mistakes
     </p>
   )
@@ -528,9 +531,11 @@ export function ChatArea({
               <h1
                 className="font-bold leading-tight"
                 style={{
-                  fontSize: 'clamp(22px, 3.5vw, 40px)',
+                  fontFamily: 'var(--font-display, inherit)',
+                  fontSize: 'clamp(24px, 3.2vw, 40px)',
                   color: 'rgba(255,255,255,0.92)',
-                  letterSpacing: '-0.03em',
+                  letterSpacing: '-0.01em',
+                  fontWeight: 700,
                 }}
               >
                 {headline}

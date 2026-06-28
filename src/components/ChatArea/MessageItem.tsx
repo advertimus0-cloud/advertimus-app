@@ -78,14 +78,14 @@ export interface ChatMessage {
 function AgentAvatar() {
   return (
     <div
-      className="w-7 h-7 rounded-full flex-shrink-0 overflow-hidden"
+      className="w-9 h-9 rounded-full flex-shrink-0 overflow-hidden"
       aria-hidden="true"
     >
       <Image
-        src="/adverboticon.jpg"
+        src="/advernewicon.jpg"
         alt="Advertimus AI"
-        width={28}
-        height={28}
+        width={36}
+        height={36}
         className="w-full h-full object-cover"
         priority
       />
@@ -119,13 +119,15 @@ function ImageThumbnails({ images }: { images: string[] }) {
 
 export function TypingIndicator() {
   return (
-    <div
-      className="flex items-center gap-3 mb-6 adv-msg-in"
-      role="status"
-      aria-label="Advertimus is typing"
-    >
-      <AgentAvatar />
-      <div className="flex items-center gap-[5px] pt-0.5">
+    <div className="mb-6 adv-msg-in" role="status" aria-label="Advertimus is typing">
+      <div className="flex items-center gap-2 mb-2">
+        <AgentAvatar />
+        <span className="text-[11px] font-semibold tracking-wide select-none"
+          style={{ color: 'rgba(255,255,255,0.38)' }}>
+          Advertimus
+        </span>
+      </div>
+      <div className="flex items-center gap-[5px]">
         <span className="w-1.5 h-1.5 rounded-full bg-white/35 adv-dot" aria-hidden="true" />
         <span className="w-1.5 h-1.5 rounded-full bg-white/35 adv-dot-2" aria-hidden="true" />
         <span className="w-1.5 h-1.5 rounded-full bg-white/35 adv-dot-3" aria-hidden="true" />
@@ -311,65 +313,66 @@ export function MessageItem({
     )
   }
 
-  // ── Agent message — flat, no bubble ───────────────────────────────────────
+  // ── Agent message — stacked: avatar+label on top, text below ────────────
   if (role === 'agent') {
     const showConceptButtons = type === 'concept_approval'
     const showSummary = type === 'summary' && summary != null
 
     return (
       <div
-        className="flex gap-3 mb-7 adv-msg-in"
+        className="mb-7 adv-msg-in"
         role="article"
         aria-label={`Advertimus at ${timestamp}`}
       >
-        {/* Avatar */}
-        <div className="flex-shrink-0 mt-0.5">
+        {/* Avatar + name row */}
+        <div className="flex items-center gap-2 mb-2">
           <AgentAvatar />
+          <span className="text-[11px] font-semibold tracking-wide select-none"
+            style={{ color: 'rgba(255,255,255,0.38)' }}>
+            Advertimus
+          </span>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 min-w-0 pt-0.5">
-          {/* Plain text — no background box */}
-          <p
-            className="text-[15px] leading-relaxed whitespace-pre-wrap"
-            style={{ color: 'rgba(255,255,255,0.88)' }}
-          >
-            {content}
-          </p>
+        {/* Text — starts at left edge, under avatar */}
+        <p
+          className="text-[15px] leading-relaxed whitespace-pre-wrap"
+          style={{ color: 'rgba(255,255,255,0.88)' }}
+        >
+          {content}
+        </p>
 
-          {/* MCQ options */}
-          {hasOptions && (
-            <div className="mt-3">
-              <MultiChoiceOptions
-                options={options!}
-                selectedId={selectedOptionId ?? null}
-                onSelect={(optionId) => onOptionSelect?.(message.id, optionId, questionId)}
-              />
-            </div>
-          )}
-
-          {/* Concept approval */}
-          {showConceptButtons && (
-            <ConceptApprovalCard
-              messageId={message.id}
-              approvalState={conceptApprovalState ?? 'pending'}
-              onConceptApproval={onConceptApproval}
+        {/* MCQ options */}
+        {hasOptions && (
+          <div className="mt-3">
+            <MultiChoiceOptions
+              options={options!}
+              selectedId={selectedOptionId ?? null}
+              onSelect={(optionId) => onOptionSelect?.(message.id, optionId, questionId)}
             />
-          )}
+          </div>
+        )}
 
-          {/* Campaign summary */}
-          {showSummary && (
-            <CampaignSummaryCard
-              summary={summary!}
-              messageId={message.id}
-              onSummaryAction={onSummaryAction}
-            />
-          )}
+        {/* Concept approval */}
+        {showConceptButtons && (
+          <ConceptApprovalCard
+            messageId={message.id}
+            approvalState={conceptApprovalState ?? 'pending'}
+            onConceptApproval={onConceptApproval}
+          />
+        )}
 
-          <time className="block mt-2 text-xs text-white/28" dateTime={timestamp}>
-            {timestamp}
-          </time>
-        </div>
+        {/* Campaign summary */}
+        {showSummary && (
+          <CampaignSummaryCard
+            summary={summary!}
+            messageId={message.id}
+            onSummaryAction={onSummaryAction}
+          />
+        )}
+
+        <time className="block mt-2 text-xs text-white/28" dateTime={timestamp}>
+          {timestamp}
+        </time>
       </div>
     )
   }
