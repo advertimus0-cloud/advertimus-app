@@ -4,21 +4,44 @@ import React, { useState, useTransition } from "react";
 import Link from "next/link";
 import { signUp, getGoogleOAuthUrl } from "./actions";
 
+const inputStyle = (disabled: boolean): React.CSSProperties => ({
+  width: "100%", padding: "14px 44px 14px 16px", borderRadius: 12,
+  background: "rgba(0,0,0,0.5)", border: "1px solid rgba(255,255,255,0.1)",
+  color: "#fff", fontSize: 15, outline: "none",
+  boxSizing: "border-box", opacity: disabled ? 0.6 : 1,
+});
+
+const eyeStyle: React.CSSProperties = {
+  position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)",
+  background: "none", border: "none", cursor: "pointer",
+  color: "#5a5a72", fontSize: 20, padding: 0, display: "flex", alignItems: "center",
+};
+
 export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [company, setCompany] = useState("");
   const [agreed, setAgreed] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  const passwordMismatch = confirmPassword.length > 0 && password !== confirmPassword;
+  const isReady =
+    email && password.length >= 8 && password === confirmPassword && agreed && !isPending;
+
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
     setError(null);
     startTransition(async () => {
       const result = await signUp(email, password, company);
       if (result?.error) setError(result.error);
-      // On success, signUp() calls redirect('/verify-email?email=...') server-side
     });
   };
 
@@ -33,8 +56,6 @@ export default function SignupPage() {
       }
     });
   };
-
-  const isReady = email && password.length >= 8 && agreed && !isPending;
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#000", fontFamily: "Inter, sans-serif" }}>
@@ -78,6 +99,7 @@ export default function SignupPage() {
           )}
 
           <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+            {/* Email */}
             <div>
               <label style={{ display: "block", marginBottom: 8, fontSize: 13, fontWeight: 600, color: "#c0c0d0" }}>Work Email</label>
               <input
@@ -86,52 +108,76 @@ export default function SignupPage() {
                 onChange={e => setEmail(e.target.value)}
                 placeholder="email@company.com"
                 disabled={isPending}
-                style={{
-                  width: "100%", padding: "14px 16px", borderRadius: 12,
-                  background: "rgba(0,0,0,0.5)", border: "1px solid rgba(255,255,255,0.1)",
-                  color: "#fff", fontSize: 15, outline: "none", transition: "border 0.2s",
-                  boxSizing: "border-box", opacity: isPending ? 0.6 : 1
-                }}
+                style={{ ...inputStyle(isPending), padding: "14px 16px" }}
                 required
               />
             </div>
 
+            {/* Company */}
             <div>
-              <label style={{ display: "block", marginBottom: 8, fontSize: 13, fontWeight: 600, color: "#c0c0d0" }}>Company Name <span style={{ color: "#5a5a72", fontWeight: 400 }}>(Optional)</span></label>
+              <label style={{ display: "block", marginBottom: 8, fontSize: 13, fontWeight: 600, color: "#c0c0d0" }}>
+                Company Name <span style={{ color: "#5a5a72", fontWeight: 400 }}>(Optional)</span>
+              </label>
               <input
                 type="text"
                 value={company}
                 onChange={e => setCompany(e.target.value)}
                 placeholder="Company Name"
                 disabled={isPending}
-                style={{
-                  width: "100%", padding: "14px 16px", borderRadius: 12,
-                  background: "rgba(0,0,0,0.5)", border: "1px solid rgba(255,255,255,0.1)",
-                  color: "#fff", fontSize: 15, outline: "none", transition: "border 0.2s",
-                  boxSizing: "border-box", opacity: isPending ? 0.6 : 1
-                }}
+                style={{ ...inputStyle(isPending), padding: "14px 16px" }}
               />
             </div>
 
+            {/* Password */}
             <div>
               <label style={{ display: "block", marginBottom: 8, fontSize: 13, fontWeight: 600, color: "#c0c0d0" }}>Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="At least 8 characters"
-                disabled={isPending}
-                style={{
-                  width: "100%", padding: "14px 16px", borderRadius: 12,
-                  background: "rgba(0,0,0,0.5)", border: "1px solid rgba(255,255,255,0.1)",
-                  color: "#fff", fontSize: 15, outline: "none", transition: "border 0.2s",
-                  boxSizing: "border-box", opacity: isPending ? 0.6 : 1
-                }}
-                required
-                minLength={8}
-              />
+              <div style={{ position: "relative" }}>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="At least 8 characters"
+                  disabled={isPending}
+                  style={inputStyle(isPending)}
+                  required
+                  minLength={8}
+                />
+                <button type="button" style={eyeStyle} onClick={() => setShowPassword(v => !v)} tabIndex={-1}>
+                  <i className={showPassword ? "bx bx-hide" : "bx bx-show"} />
+                </button>
+              </div>
             </div>
 
+            {/* Confirm Password */}
+            <div>
+              <label style={{ display: "block", marginBottom: 8, fontSize: 13, fontWeight: 600, color: "#c0c0d0" }}>Confirm Password</label>
+              <div style={{ position: "relative" }}>
+                <input
+                  type={showConfirm ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter your password"
+                  disabled={isPending}
+                  style={{
+                    ...inputStyle(isPending),
+                    border: passwordMismatch
+                      ? "1px solid rgba(204,41,54,0.6)"
+                      : "1px solid rgba(255,255,255,0.1)",
+                  }}
+                  required
+                />
+                <button type="button" style={eyeStyle} onClick={() => setShowConfirm(v => !v)} tabIndex={-1}>
+                  <i className={showConfirm ? "bx bx-hide" : "bx bx-show"} />
+                </button>
+              </div>
+              {passwordMismatch && (
+                <p style={{ margin: "6px 0 0", fontSize: 12, color: "#ff6b6b" }}>
+                  Passwords do not match.
+                </p>
+              )}
+            </div>
+
+            {/* Terms */}
             <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginTop: 4 }}>
               <input
                 type="checkbox"
