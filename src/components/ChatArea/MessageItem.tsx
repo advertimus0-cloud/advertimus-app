@@ -86,7 +86,8 @@ function AgentAvatar() {
         alt="Advertimus AI"
         width={36}
         height={36}
-        className="w-full h-full object-cover"
+        quality={100}
+        className="w-full h-full object-cover scale-[1.08]"
         priority
       />
     </div>
@@ -119,18 +120,38 @@ function ImageThumbnails({ images }: { images: string[] }) {
 
 export function TypingIndicator() {
   return (
-    <div className="mb-6 adv-msg-in" role="status" aria-label="Advertimus is typing">
-      <div className="flex items-center gap-2 mb-2">
-        <AgentAvatar />
+    <div className="mb-6 adv-msg-in" role="status" aria-label="Advertimus is thinking">
+      <div className="flex items-center gap-2.5">
+        {/* Spinning gradient ring around bot avatar */}
+        <div className="relative flex-shrink-0" style={{ width: 40, height: 40 }}>
+          {/* Outer conic-gradient disc — spins */}
+          <div
+            className="absolute inset-0 rounded-full animate-spin"
+            style={{
+              background: 'conic-gradient(from 0deg, rgba(93,26,27,0) 0%, #5d1a1b 35%, #7c3aed 58%, rgba(93,26,27,0) 75%)',
+              animationDuration: '1.6s',
+            }}
+          />
+          {/* Inner mask creates the visual ring gap */}
+          <div className="absolute rounded-full" style={{ inset: '3px', background: '#1a1a1a' }} />
+          {/* Bot avatar */}
+          <div className="absolute rounded-full overflow-hidden" style={{ inset: '3px' }}>
+            <Image
+              src="/advernewicon.jpg"
+              alt="Advertimus"
+              width={34}
+              height={34}
+              quality={100}
+              className="w-full h-full object-cover scale-[1.08]"
+              priority
+            />
+          </div>
+        </div>
+
         <span className="text-[11px] font-semibold tracking-wide select-none"
           style={{ color: 'rgba(255,255,255,0.38)' }}>
           Advertimus
         </span>
-      </div>
-      <div className="flex items-center gap-[5px]">
-        <span className="w-1.5 h-1.5 rounded-full bg-white/35 adv-dot" aria-hidden="true" />
-        <span className="w-1.5 h-1.5 rounded-full bg-white/35 adv-dot-2" aria-hidden="true" />
-        <span className="w-1.5 h-1.5 rounded-full bg-white/35 adv-dot-3" aria-hidden="true" />
       </div>
     </div>
   )

@@ -157,11 +157,9 @@ export default function MainLayout() {
             style={{
               right: isResultsOpen ? RESULTS_WIDTH + 12 : 12,
               border: isResultsOpen
-                ? "1px solid rgba(93,26,27,0.48)"
+                ? "1px solid rgba(93,26,27,0.5)"
                 : "1px solid rgba(93,26,27,0.28)",
-              background: isResultsOpen
-                ? "linear-gradient(135deg, rgba(93,26,27,0.38) 0%, rgba(22,17,66,0.38) 100%)"
-                : undefined,
+              background: isResultsOpen ? "rgba(93,26,27,0.22)" : undefined,
               transition: "right 300ms ease-in-out, background 150ms, border-color 150ms",
             }}
             aria-label={isResultsOpen ? "Close results panel" : "Open results panel"}

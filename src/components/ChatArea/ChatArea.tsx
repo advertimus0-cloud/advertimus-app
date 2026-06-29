@@ -444,8 +444,8 @@ export function ChatArea({
       style={
         canSend
           ? {
-              background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)',
-              boxShadow: '0 0 18px rgba(93,26,27,0.55), 0 2px 8px rgba(0,0,0,0.4)',
+              background: '#5d1a1b',
+              boxShadow: '0 2px 12px rgba(93,26,27,0.5)',
             }
           : { background: 'rgba(255,255,255,0.06)' }
       }
@@ -487,24 +487,25 @@ export function ChatArea({
   )
 
   const disclaimer = (
-    <p className="text-center mt-6 mb-2 text-[10px] text-white/22 select-none tracking-wide">
+    <p className="text-center mt-10 mb-3 text-[11px] select-none tracking-wide"
+       style={{ color: 'rgba(130,130,130,0.7)' }}>
       Advertimus is AI and may make mistakes
     </p>
   )
 
   const quickChips = (
-    <div className="mt-5 flex flex-wrap gap-2 justify-center">
+    <div className="mt-6 flex flex-wrap gap-3 justify-center">
       {QUICK_ACTIONS.map(({ label, icon }) => (
         <button
           key={label}
           onClick={() => handleQuickAction(label)}
-          className="flex items-center gap-2 px-4 py-2 rounded-full
-                     text-xs font-medium text-white/48 hover:text-white/78
+          className="flex items-center gap-2.5 px-5 py-2.5 rounded-full
+                     text-sm font-medium text-white/55 hover:text-white/85
                      transition-all duration-150 hover:bg-white/[0.05]"
-          style={{ border: '1px solid rgba(93,26,27,0.28)' }}
+          style={{ border: '1px solid rgba(93,26,27,0.3)' }}
         >
           <span
-            className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-0.5 flex-shrink-0"
+            className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_12px_rgba(220,38,38,0.12)] p-1 flex-shrink-0"
             aria-hidden="true"
           >
             {icon}

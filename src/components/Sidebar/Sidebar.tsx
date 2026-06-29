@@ -93,7 +93,8 @@ function BotAvatar({ size = 40 }: { size?: number }) {
         alt="Advertimus"
         width={size}
         height={size}
-        className="w-full h-full object-cover"
+        quality={100}
+        className="w-full h-full object-cover scale-[1.08]"
         priority
       />
     </div>
@@ -204,8 +205,8 @@ export function Sidebar({
     return (
       // Clicking anywhere on the mini sidebar expands it
       <div
-        className="h-full flex flex-col items-center bg-background py-3 gap-1 cursor-pointer"
-        style={{ width: 64, borderRight: BORDER }}
+        className="h-full flex flex-col items-center py-3 gap-1 cursor-pointer"
+        style={{ width: 64, borderRight: BORDER, background: '#252525' }}
         onClick={onToggle}
         role="button"
         aria-label="Expand sidebar"
@@ -243,8 +244,8 @@ export function Sidebar({
                 style={
                   isActive
                     ? {
-                        background: 'linear-gradient(135deg, rgba(93,26,27,0.45) 0%, rgba(22,17,66,0.2) 100%)',
-                        border: '1px solid rgba(93,26,27,0.55)',
+                        background: 'rgba(93,26,27,0.28)',
+                        border: '1px solid rgba(93,26,27,0.5)',
                       }
                     : { border: '1px solid transparent' }
                 }
@@ -262,7 +263,7 @@ export function Sidebar({
         <div
           className="w-9 h-9 rounded-full flex items-center justify-center
                      text-white text-[11px] font-bold select-none mb-1"
-          style={{ background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }}
+          style={{ background: '#5d1a1b' }}
           aria-hidden="true"
         >
           {user.initials}
@@ -283,35 +284,37 @@ export function Sidebar({
     : 'linear-gradient(90deg, #22c55e, #16a34a)'
 
   return (
+    // Clicking empty background area in full sidebar collapses it
     <aside
-      className="h-full w-full flex flex-col bg-background overflow-hidden"
-      style={{ borderRight: BORDER }}
+      className="h-full w-full flex flex-col overflow-hidden"
+      style={{ borderRight: BORDER, background: '#252525' }}
       aria-label="Sidebar navigation"
+      onClick={onToggle}
     >
-      {/* ── Logo row + collapse button ──────────────────────────────────── */}
-      <div className="flex-shrink-0 flex items-center gap-3 px-4 py-4">
+      {/* ── Logo row — clicking logo row also collapses ─────────────────── */}
+      <div className="flex-shrink-0 flex items-center gap-3 px-4 py-4 cursor-pointer select-none">
         <BotAvatar size={38} />
         <Image
           src="/advertimus-logo.PNG"
           alt="Advertimus"
-          width={124}
-          height={28}
+          width={130}
+          height={30}
+          quality={100}
           className="object-contain select-none flex-1 min-w-0"
           priority
         />
-        <button
-          onClick={onToggle}
-          className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg
+        <div className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg
                      text-white/28 hover:text-white/60 hover:bg-white/[0.05]
-                     transition-all duration-150"
-          aria-label="Collapse sidebar"
-        >
+                     transition-all duration-150">
           <ChevronLeft size={15} />
-        </button>
+        </div>
       </div>
 
-      {/* ── Primary nav ─────────────────────────────────────────────────── */}
-      <nav className="flex-shrink-0 px-3 pb-3 space-y-0.5" aria-label="Main navigation">
+      {/* ── Primary nav ──────────────────────────────────────────────────── */}
+      <nav
+        className="flex-shrink-0 px-3 pb-3 space-y-0.5"
+        aria-label="Main navigation"
+      >
         {NAV_ITEMS.map(item => {
           const isActive = activeNav === item.id || pathname === item.href
           return (
@@ -321,31 +324,23 @@ export function Sidebar({
               title={item.description}
               className={[
                 'w-full flex items-center gap-3 py-2.5 rounded-xl text-sm font-medium',
-                'transition-all duration-200 text-left group relative overflow-hidden',
-                isActive ? 'text-white' : 'text-white/40 hover:text-white/80',
+                'transition-all duration-200 text-left',
+                isActive ? 'text-white' : 'text-white/40 hover:text-white/80 hover:bg-white/[0.04]',
               ].join(' ')}
               style={
                 isActive
                   ? {
-                      background: 'linear-gradient(90deg, rgba(93,26,27,0.42) 0%, rgba(22,17,66,0.18) 60%, transparent 100%)',
-                      borderLeft: '2px solid rgba(93,26,27,0.9)',
+                      background: 'rgba(93,26,27,0.22)',
+                      borderLeft: '2px solid rgba(93,26,27,0.85)',
                       paddingLeft: '10px',
                       paddingRight: '12px',
-                      boxShadow: 'inset 0 0 24px rgba(93,26,27,0.06)',
                     }
                   : { borderLeft: '2px solid transparent', paddingLeft: '10px', paddingRight: '12px' }
               }
               aria-current={isActive ? 'page' : undefined}
             >
-              {!isActive && (
-                <span
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl pointer-events-none"
-                  style={{ background: 'linear-gradient(90deg, rgba(93,26,27,0.1) 0%, transparent 100%)' }}
-                  aria-hidden="true"
-                />
-              )}
               <IconBadge>{item.icon}</IconBadge>
-              <span className="relative z-10">{item.label}</span>
+              <span>{item.label}</span>
             </button>
           )
         })}
@@ -384,7 +379,7 @@ export function Sidebar({
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
                        text-white text-[11px] font-bold select-none"
-            style={{ background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }}
+            style={{ background: '#5d1a1b' }}
             aria-hidden="true"
           >
             {user.initials}
