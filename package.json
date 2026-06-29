@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^6.2.0",
-    "@supabase/supabase-js": "^2.103.0",
+    "@supabase/server": "^1.2.0",
+    "@supabase/ssr": "^0.12.0",
+    "@supabase/supabase-js": "^2.108.2",
     "axios": "^1.15.0",
     "boxicons": "^2.1.4",
     "clsx": "^2.1.1",

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Advertimus — Dashboard",
@@ -6,22 +8,26 @@ export const metadata: Metadata = {
 };
 
 /**
- * Dashboard Layout — fully isolated from the marketing site.
+ * Dashboard Layout — server-side auth guard (defense-in-depth alongside middleware).
+ * Any unauthenticated request that somehow bypasses middleware is caught here.
  *
- * This layout intentionally renders NO Header, Footer, or any marketing UI.
- * It provides a full-screen shell for the 3-column chat application.
- *
- * Auth enforcement: all /dashboard routes must be protected by middleware
- * (not done here — middleware.ts will guard the entire /dashboard segment).
- *
- * Security: No secrets, no API calls, no user data in this layout.
- * This is a pure structural Server Component.
+ * Security: uses getUser() which validates with the Supabase auth server.
+ * Never use getSession() for auth checks (only reads JWT locally).
  */
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-background text-white">
       {children}
