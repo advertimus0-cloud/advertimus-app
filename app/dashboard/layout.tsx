@@ -19,13 +19,16 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Guard: if Supabase is not configured, skip auth check
+  if (process.env.SUPABASE_URL && process.env.SUPABASE_PUBLISHABLE_KEY) {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
+    if (!user) {
+      redirect("/login");
+    }
   }
 
   return (
