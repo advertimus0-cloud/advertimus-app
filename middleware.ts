@@ -1,6 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+// Cache-bust marker — forces a fresh Vercel build so updated env vars
+// (NEXT_PUBLIC_APP_URL etc.) actually get re-inlined instead of reusing a stale build.
 export async function middleware(request: NextRequest) {
   const supabaseUrl = (
     process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL
