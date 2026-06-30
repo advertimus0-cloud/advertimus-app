@@ -4,13 +4,6 @@ import { getUserCredits } from "@/lib/services/supabaseService";
 
 const TRIAL_CREDIT_LIMIT = 400;
 
-/**
- * Dashboard root page — /dashboard
- *
- * Fetches the authenticated user + credit balance server-side and passes
- * them into MainLayout (pure presentation component) so the sidebar shows
- * real account data instead of "Loading…" placeholders.
- */
 export default async function DashboardPage() {
   const userResult = await getCurrentUser();
   const user = userResult.data;
@@ -25,6 +18,8 @@ export default async function DashboardPage() {
   return (
     <MainLayout
       user={{ name: displayName, initials }}
+      userEmail={user?.email ?? ""}
+      userCompany={user?.company ?? ""}
       tokenUsed={Math.max(0, TRIAL_CREDIT_LIMIT - balance)}
       tokenMax={TRIAL_CREDIT_LIMIT}
       tokenRemaining={balance}

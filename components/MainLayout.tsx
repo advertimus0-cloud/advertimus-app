@@ -7,19 +7,16 @@
  *  Desktop (≥768px) : mini (64px icons-only) ↔ full (280px). Toggle lives INSIDE sidebar.
  *  Mobile  (<768px) : hidden (translate off-screen) ↔ full overlay (280px). Floating toggle.
  *
- * Panel button lives as an absolute element inside the main+results container,
- * so it automatically stays to the LEFT of the results panel when it opens.
- *
  * SECURITY (Rule 18): pure layout — no API calls, no auth logic (§16).
  */
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Menu, PanelRight } from "lucide-react";
 import { Sidebar } from "../src/components/Sidebar";
 import { ChatArea } from "../src/components/ChatArea";
 import { ResultsPanel } from "../src/components/ResultsPanel";
 import { ChatProvider } from "../context/ChatContext";
+import SettingsPanel from "./SettingsPanel";
 
 const SIDEBAR_FULL = 280;
 const SIDEBAR_MINI = 64;
@@ -32,6 +29,8 @@ export interface MainLayoutUser {
 
 export interface MainLayoutProps {
   user?: MainLayoutUser;
+  userEmail?: string;
+  userCompany?: string;
   tokenUsed?: number;
   tokenMax?: number;
   tokenRemaining?: number;
@@ -39,13 +38,15 @@ export interface MainLayoutProps {
 
 export default function MainLayout({
   user,
+  userEmail = "",
+  userCompany = "",
   tokenUsed,
   tokenMax,
   tokenRemaining,
 }: MainLayoutProps) {
-  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
   const [currentPhase, setCurrentPhase] = useState(1);
@@ -55,7 +56,6 @@ export default function MainLayout({
     function check() {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
-      // Mobile starts closed, desktop starts open
       if (mobile) setIsSidebarOpen(false);
       else setIsSidebarOpen(true);
     }
@@ -90,10 +90,7 @@ export default function MainLayout({
     }, 300);
   }
 
-  // ── Sidebar styles ──────────────────────────────────────────────────────────
-  // Desktop: mini (64px, icons-only) ↔ full (280px), animate WIDTH
-  // Mobile : hidden (off-screen)    ↔ full (280px), animate TRANSFORM
-  const isCollapsed = !isMobile && !isSidebarOpen; // desktop mini mode
+  const isCollapsed = !isMobile && !isSidebarOpen;
 
   const sidebarStyle: React.CSSProperties = isMobile
     ? {
@@ -111,7 +108,6 @@ export default function MainLayout({
         position: "relative",
         flexShrink: 0,
         height: "100%",
-        // Desktop: never collapses to 0 — always shows mini (64px) or full (280px)
         width: isSidebarOpen ? SIDEBAR_FULL : SIDEBAR_MINI,
         overflow: "hidden",
         transition: "width 300ms ease-in-out",
@@ -130,7 +126,7 @@ export default function MainLayout({
           />
         )}
 
-        {/* Mobile-only floating toggle (only when sidebar is hidden off-screen) */}
+        {/* Mobile-only floating toggle */}
         {isMobile && !isSidebarOpen && (
           <button
             onClick={toggleSidebar}
@@ -145,7 +141,7 @@ export default function MainLayout({
           </button>
         )}
 
-        {/* Sidebar — toggle button lives INSIDE sidebar (no overlap with logo) */}
+        {/* Sidebar */}
         <aside
           style={sidebarStyle}
           aria-label="Sidebar navigation"
@@ -159,66 +155,77 @@ export default function MainLayout({
             tokenUsed={tokenUsed}
             tokenMax={tokenMax}
             tokenRemaining={tokenRemaining}
-            onSettings={() => router.push("/dashboard/settings")}
+            onSettings={() => setIsSettingsOpen(true)}
           />
         </aside>
 
-        {/* ── Main area: chat + results, relative so Panel button is absolute inside ── */}
+        {/* Main content area — shows either chat+results OR settings panel */}
         <div className="flex flex-1 min-w-0 overflow-hidden relative">
 
-          {/* Panel toggle — absolute inside this container.
-              When results panel is open (380px on right), shifts left by 380+12px
-              so it naturally floats at the left edge of the results panel. */}
-          <button
-            onClick={() => setIsResultsOpen((o) => !o)}
-            className={[
-              "absolute top-3 z-10 flex items-center gap-1.5 px-3 py-1.5",
-              "rounded-lg text-xs font-medium transition-all duration-300",
-              isResultsOpen
-                ? "text-white"
-                : "text-white/50 hover:text-white/80 hover:bg-white/[0.05]",
-            ].join(" ")}
-            style={{
-              right: isResultsOpen ? RESULTS_WIDTH + 12 : 12,
-              border: isResultsOpen
-                ? "1px solid rgba(93,26,27,0.5)"
-                : "1px solid rgba(93,26,27,0.28)",
-              background: isResultsOpen ? "rgba(93,26,27,0.22)" : undefined,
-              transition: "right 300ms ease-in-out, background 150ms, border-color 150ms",
-            }}
-            aria-label={isResultsOpen ? "Close results panel" : "Open results panel"}
-            aria-pressed={isResultsOpen}
-          >
-            <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
-              <PanelRight size={13} />
-            </span>
-            Panel
-          </button>
-
-          {/* Chat column */}
-          <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-            <ChatArea
-              projectName="New conversation"
-              onSendMessage={handleSendMessage}
+          {isSettingsOpen ? (
+            /* ── Settings panel replaces chat content ── */
+            <SettingsPanel
+              email={userEmail}
+              company={userCompany}
+              credits={tokenRemaining ?? 0}
+              initials={user?.initials ?? "?"}
+              onClose={() => setIsSettingsOpen(false)}
             />
-          </main>
+          ) : (
+            <>
+              {/* Panel toggle button */}
+              <button
+                onClick={() => setIsResultsOpen((o) => !o)}
+                className={[
+                  "absolute top-3 z-10 flex items-center gap-1.5 px-3 py-1.5",
+                  "rounded-lg text-xs font-medium transition-all duration-300",
+                  isResultsOpen
+                    ? "text-white"
+                    : "text-white/50 hover:text-white/80 hover:bg-white/[0.05]",
+                ].join(" ")}
+                style={{
+                  right: isResultsOpen ? RESULTS_WIDTH + 12 : 12,
+                  border: isResultsOpen
+                    ? "1px solid rgba(93,26,27,0.5)"
+                    : "1px solid rgba(93,26,27,0.28)",
+                  background: isResultsOpen ? "rgba(93,26,27,0.22)" : undefined,
+                  transition: "right 300ms ease-in-out, background 150ms, border-color 150ms",
+                }}
+                aria-label={isResultsOpen ? "Close results panel" : "Open results panel"}
+                aria-pressed={isResultsOpen}
+              >
+                <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+                  <PanelRight size={13} />
+                </span>
+                Panel
+              </button>
 
-          {/* Results panel */}
-          {isResultsOpen && (
-            <aside
-              className="flex-shrink-0 h-full hidden md:block overflow-hidden"
-              style={{
-                width: RESULTS_WIDTH,
-                borderLeft: "1px solid rgba(93,26,27,0.14)",
-              }}
-            >
-              <ResultsPanel
-                showResults={isResultsOpen}
-                isGenerating={isGenerating}
-                progress={generationProgress}
-                currentPhase={currentPhase}
-              />
-            </aside>
+              {/* Chat column */}
+              <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+                <ChatArea
+                  projectName="New conversation"
+                  onSendMessage={handleSendMessage}
+                />
+              </main>
+
+              {/* Results panel */}
+              {isResultsOpen && (
+                <aside
+                  className="flex-shrink-0 h-full hidden md:block overflow-hidden"
+                  style={{
+                    width: RESULTS_WIDTH,
+                    borderLeft: "1px solid rgba(93,26,27,0.14)",
+                  }}
+                >
+                  <ResultsPanel
+                    showResults={isResultsOpen}
+                    isGenerating={isGenerating}
+                    progress={generationProgress}
+                    currentPhase={currentPhase}
+                  />
+                </aside>
+              )}
+            </>
           )}
         </div>
       </div>
