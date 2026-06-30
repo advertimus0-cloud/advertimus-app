@@ -425,13 +425,7 @@ export function ChatArea({
     ].join(' ')
 
   const iconBadge = (children: React.ReactNode) => (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-      borderRadius: '6px', padding: '4px',
-      background: 'rgba(22,17,66,0.55)',
-      color: 'rgba(140,160,255,0.9)',
-      boxShadow: '0 0 10px rgba(22,17,66,0.6)',
-    }}>
+    <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
       {children}
     </span>
   )
@@ -511,8 +505,7 @@ export function ChatArea({
           style={{ border: '1px solid rgba(93,26,27,0.3)' }}
         >
           <span
-            className="inline-flex items-center justify-center rounded-md p-1 flex-shrink-0"
-            style={{ background: 'rgba(22,17,66,0.55)', color: 'rgba(140,160,255,0.9)', boxShadow: '0 0 10px rgba(22,17,66,0.6)' }}
+            className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_12px_rgba(220,38,38,0.12)] p-1 flex-shrink-0"
             aria-hidden="true"
           >
             {icon}
@@ -562,13 +555,12 @@ export function ChatArea({
               disabled={isBlocked}
             />
 
-            {/* Text box */}
+            {/* Text box — revolving glow when idle (no messages yet) */}
             <div
-              className="rounded-2xl overflow-hidden transition-all duration-200"
+              className={`rounded-2xl overflow-hidden transition-all duration-200 chat-box-revolve`}
               style={{
                 background: '#252525',
                 border: `1.5px solid ${attachedFiles.length > 0 ? 'rgba(168,85,247,0.5)' : 'rgba(93,26,27,0.55)'}`,
-                boxShadow: '0 8px 40px rgba(0,0,0,0.55), 0 0 40px rgba(22,17,66,0.5), 0 0 80px rgba(22,17,66,0.25), 0 1px 0 rgba(255,255,255,0.05) inset',
               }}
             >
               <div className="px-5 pt-5 pb-2">
@@ -620,12 +612,12 @@ export function ChatArea({
                 disabled={isBlocked}
               />
 
+              {/* Active-state text box — revolves when agent is typing (user is waiting) */}
               <div
-                className="w-full rounded-2xl overflow-hidden transition-all duration-200"
+                className={`w-full rounded-2xl overflow-hidden transition-all duration-200 ${isTyping ? 'chat-box-revolve-active' : 'chat-box-base'}`}
                 style={{
                   background: '#252525',
                   border: `1px solid ${attachedFiles.length > 0 ? 'rgba(168,85,247,0.4)' : 'rgba(93,26,27,0.4)'}`,
-                  boxShadow: '0 4px 24px rgba(0,0,0,0.45), 0 0 30px rgba(22,17,66,0.45), 0 0 60px rgba(22,17,66,0.2)',
                 }}
               >
                 <div className="px-4 pt-3.5 pb-1">

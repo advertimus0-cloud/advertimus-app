@@ -685,6 +685,51 @@ p {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   CHAT TEXT BOX — revolving glow that orbits the box edges
+   .chat-box-revolve  : idle/waiting state — show revolving glow
+   .chat-box-base     : active chat state — subtle base shadow only
+───────────────────────────────────────────────────────────────────────────── */
+
+@keyframes revolveGlow {
+  0%   { box-shadow: 0 8px 40px rgba(0,0,0,0.55), 14px  0px 35px rgba(22,17,66,0.85), -6px  0px 14px rgba(22,17,66,0.25), 0 1px 0 rgba(255,255,255,0.05) inset; }
+  25%  { box-shadow: 0 8px 40px rgba(0,0,0,0.55),  0px 14px 35px rgba(22,17,66,0.85),  0px -6px 14px rgba(22,17,66,0.25), 0 1px 0 rgba(255,255,255,0.05) inset; }
+  50%  { box-shadow: 0 8px 40px rgba(0,0,0,0.55), -14px  0px 35px rgba(22,17,66,0.85), 6px  0px 14px rgba(22,17,66,0.25), 0 1px 0 rgba(255,255,255,0.05) inset; }
+  75%  { box-shadow: 0 8px 40px rgba(0,0,0,0.55),  0px -14px 35px rgba(22,17,66,0.85), 0px  6px 14px rgba(22,17,66,0.25), 0 1px 0 rgba(255,255,255,0.05) inset; }
+  100% { box-shadow: 0 8px 40px rgba(0,0,0,0.55), 14px  0px 35px rgba(22,17,66,0.85), -6px  0px 14px rgba(22,17,66,0.25), 0 1px 0 rgba(255,255,255,0.05) inset; }
+}
+
+@keyframes revolveGlowActive {
+  0%   { box-shadow: 0 4px 24px rgba(0,0,0,0.45), 10px  0px 25px rgba(22,17,66,0.75), -4px  0px 10px rgba(22,17,66,0.2); }
+  25%  { box-shadow: 0 4px 24px rgba(0,0,0,0.45),  0px 10px 25px rgba(22,17,66,0.75),  0px -4px 10px rgba(22,17,66,0.2); }
+  50%  { box-shadow: 0 4px 24px rgba(0,0,0,0.45), -10px  0px 25px rgba(22,17,66,0.75), 4px  0px 10px rgba(22,17,66,0.2); }
+  75%  { box-shadow: 0 4px 24px rgba(0,0,0,0.45),  0px -10px 25px rgba(22,17,66,0.75), 0px  4px 10px rgba(22,17,66,0.2); }
+  100% { box-shadow: 0 4px 24px rgba(0,0,0,0.45), 10px  0px 25px rgba(22,17,66,0.75), -4px  0px 10px rgba(22,17,66,0.2); }
+}
+
+.chat-box-revolve {
+  animation: revolveGlow 5s ease-in-out infinite;
+}
+
+.chat-box-revolve-active {
+  animation: revolveGlowActive 3.5s ease-in-out infinite;
+}
+
+.chat-box-base {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.45);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MOBILE INPUT ZOOM FIX
+   iOS Safari auto-zooms when a focused input font-size < 16px.
+   Setting font-size ≥ 16px system-wide is the accessibility-safe fix
+   (does NOT disable user zoom, unlike maximum-scale=1 in the viewport).
+───────────────────────────────────────────────────────────────────────────── */
+
+input, textarea, select, [contenteditable] {
+  font-size: max(16px, 1em);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    CHAT MESSAGE ANIMATIONS  ·  adv-msg-*
    Used by: src/components/ChatArea/MessageItem.tsx
 ───────────────────────────────────────────────────────────────────────────── */

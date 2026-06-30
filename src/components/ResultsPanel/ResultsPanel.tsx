@@ -449,8 +449,9 @@ function ActionButtons({ isGenerating }: { isGenerating: boolean }) {
         className={[
           'w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white',
           'transition-all duration-200',
-          isGenerating ? 'opacity-30 cursor-not-allowed' : 'adv-animated-btn',
+          isGenerating ? 'opacity-30 cursor-not-allowed' : 'hover:opacity-90 active:scale-[0.99]',
         ].join(' ')}
+        style={{ background: '#cc2936', boxShadow: isGenerating ? 'none' : '0 0 20px rgba(204,41,54,0.35)' }}
       >
         <Download size={13} />
         Download All
