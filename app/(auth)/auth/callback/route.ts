@@ -8,11 +8,21 @@ import { NextResponse } from 'next/server'
  *
  * SECURITY: code exchange happens server-side via createClient().
  * The resulting session is stored in HttpOnly cookies by @supabase/ssr.
+ *
+ * The `next` param is sanitised to prevent open-redirect attacks — only
+ * relative paths starting with a single "/" are accepted.
  */
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/dashboard'
+
+  // Sanitise `next` — must be a relative path, never a protocol-relative
+  // or absolute URL (e.g. //evil.com or https://evil.com).
+  const rawNext = searchParams.get('next') ?? ''
+  const next =
+    rawNext.startsWith('/') && !rawNext.startsWith('//')
+      ? rawNext
+      : '/dashboard'
 
   if (code) {
     try {
