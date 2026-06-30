@@ -16,7 +16,7 @@ export async function getGoogleOAuthUrl() {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+        redirectTo: `${process.env.APP_URL ?? process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
       },
     })
     if (error || !data.url) return { error: error?.message ?? 'OAuth unavailable' }
