@@ -46,10 +46,14 @@ export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl
 
     const isDashboard = pathname.startsWith('/dashboard')
+    // Deliberately excludes /reset-password — that route relies on the
+    // short-lived recovery session created by the email link, and must
+    // never be redirected away just because the user appears "authenticated".
     const isAuthRoute =
       pathname.startsWith('/login') ||
       pathname.startsWith('/signup') ||
-      pathname.startsWith('/verify-email')
+      pathname.startsWith('/verify-email') ||
+      pathname.startsWith('/forgot-password')
 
     // Unauthenticated user accessing dashboard — redirect to login
     if (isDashboard && !user) {

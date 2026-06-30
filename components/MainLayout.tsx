@@ -14,6 +14,7 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Menu, PanelRight } from "lucide-react";
 import { Sidebar } from "../src/components/Sidebar";
 import { ChatArea } from "../src/components/ChatArea";
@@ -24,7 +25,25 @@ const SIDEBAR_FULL = 280;
 const SIDEBAR_MINI = 64;
 const RESULTS_WIDTH = 380;
 
-export default function MainLayout() {
+export interface MainLayoutUser {
+  name: string;
+  initials: string;
+}
+
+export interface MainLayoutProps {
+  user?: MainLayoutUser;
+  tokenUsed?: number;
+  tokenMax?: number;
+  tokenRemaining?: number;
+}
+
+export default function MainLayout({
+  user,
+  tokenUsed,
+  tokenMax,
+  tokenRemaining,
+}: MainLayoutProps) {
+  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -136,6 +155,11 @@ export default function MainLayout() {
             isCollapsed={isCollapsed}
             onToggle={toggleSidebar}
             onMobileClose={isMobile ? () => setIsSidebarOpen(false) : undefined}
+            user={user}
+            tokenUsed={tokenUsed}
+            tokenMax={tokenMax}
+            tokenRemaining={tokenRemaining}
+            onSettings={() => router.push("/dashboard/settings")}
           />
         </aside>
 

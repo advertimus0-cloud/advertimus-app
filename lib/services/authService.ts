@@ -55,12 +55,23 @@ export async function logout(): Promise<AuthResult> {
   }
 }
 
-export async function getCurrentUser(): Promise<AuthResult<{ id: string; email?: string }>> {
+export async function getCurrentUser(): Promise<
+  AuthResult<{ id: string; email?: string; company?: string }>
+> {
   try {
     const supabase = createClient()
     const { data, error } = await supabase.auth.getUser()
     if (error || !data.user) return { error: error?.message ?? 'Not authenticated' }
-    return { data: { id: data.user.id, email: data.user.email } }
+    return {
+      data: {
+        id: data.user.id,
+        email: data.user.email,
+        company:
+          typeof data.user.user_metadata?.company === 'string'
+            ? data.user.user_metadata.company
+            : undefined,
+      },
+    }
   } catch (err) {
     console.error('[authService.getCurrentUser]', err)
     return { error: 'Unable to fetch current user.' }

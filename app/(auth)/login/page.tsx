@@ -103,7 +103,7 @@ function LoginContent() {
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                 <label style={{ fontSize: 13, fontWeight: 600, color: "#c0c0d0" }}>Password</label>
-                <a href="#" style={{ fontSize: 12, color: "#cc2936", textDecoration: "none" }}>Forgot password?</a>
+                <Link href="/forgot-password" style={{ fontSize: 12, color: "#cc2936", textDecoration: "none" }}>Forgot password?</Link>
               </div>
               <input
                 type="password"
