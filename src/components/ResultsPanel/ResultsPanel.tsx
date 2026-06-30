@@ -375,7 +375,7 @@ function ImageSection({ isGenerating, images }: { isGenerating: boolean; images?
     <div>
       <div className="flex items-center justify-between mb-3">
         <span className="text-[9px] font-bold tracking-[0.14em] uppercase text-white/30">
-          Images · {images?.length ?? 4} generated
+          Images · {images?.length ?? 0} generated
         </span>
         {!isGenerating && (
           <div className="flex gap-2">
@@ -449,9 +449,8 @@ function ActionButtons({ isGenerating }: { isGenerating: boolean }) {
         className={[
           'w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white',
           'transition-all duration-200',
-          isGenerating ? 'opacity-30 cursor-not-allowed' : 'hover:opacity-90 active:scale-[0.99]',
+          isGenerating ? 'opacity-30 cursor-not-allowed' : 'adv-animated-btn',
         ].join(' ')}
-        style={{ background: '#cc2936' }}
       >
         <Download size={13} />
         Download All
@@ -580,15 +579,11 @@ export function ResultsPanel({
                 onClick={() => setActiveTab(tab.id)}
                 className={[
                   'flex-1 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-150',
-                  isActive ? 'text-white' : 'text-white/35 hover:text-white/60',
+                  isActive ? 'text-white adv-tab-active' : 'text-white/35 hover:text-white/60',
                 ].join(' ')}
                 style={
                   isActive
-                    ? {
-                        background:
-                          'linear-gradient(135deg, rgba(93,26,27,0.45) 0%, rgba(22,17,66,0.45) 100%)',
-                        border: '1px solid rgba(93,26,27,0.48)',
-                      }
+                    ? undefined
                     : {
                         background: 'rgba(255,255,255,0.025)',
                         border: '1px solid rgba(93,26,27,0.16)',

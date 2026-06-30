@@ -19,14 +19,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Download, X, ChevronLeft, ChevronRight, Paintbrush } from 'lucide-react'
 
-// Remove before production — only server-signed URLs allowed in prod (§8)
-const PLACEHOLDER_IMAGES = [
-  'https://picsum.photos/400/300?random=1',
-  'https://picsum.photos/400/300?random=2',
-  'https://picsum.photos/400/300?random=3',
-  'https://picsum.photos/400/300?random=4',
-]
-
 function Skeleton({ className = '' }: { className?: string }) {
   return <div className={`rounded-lg adv-skeleton ${className}`} />
 }
@@ -146,7 +138,7 @@ export function ImageGallery({
 }: ImageGalleryProps) {
   const [previewIndex, setPreviewIndex] = useState<number | null>(null)
 
-  const srcs = images?.length ? images.slice(0, 4) : PLACEHOLDER_IMAGES
+  const srcs = images?.length ? images.slice(0, 4) : []
 
   const openPreview = useCallback((i: number) => setPreviewIndex(i), [])
   const closePreview = useCallback(() => setPreviewIndex(null), [])
@@ -158,6 +150,14 @@ export function ImageGallery({
     setPreviewIndex(i => i === null ? null : (i + 1) % srcs.length),
     [srcs.length]
   )
+
+  if (!isGenerating && srcs.length === 0) {
+    return (
+      <div className="py-8 text-center">
+        <p className="text-xs text-white/25">No images generated yet</p>
+      </div>
+    )
+  }
 
   if (isGenerating) {
     return (

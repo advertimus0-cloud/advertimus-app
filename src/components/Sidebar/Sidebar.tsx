@@ -279,10 +279,7 @@ export function Sidebar({
   const earlierChats   = chatHistory.filter(c => c.group === 'earlier')
 
   const tokenPct = tokenMax > 0 ? Math.min(100, (tokenUsed / tokenMax) * 100) : 0
-  const barColor =
-    tokenPct > 75 ? 'linear-gradient(90deg, #ef4444, #dc2626)'
-    : tokenPct > 45 ? 'linear-gradient(90deg, #eab308, #ca8a04)'
-    : 'linear-gradient(90deg, #22c55e, #16a34a)'
+  const barColor = 'linear-gradient(90deg, #161142 0%, #5d1a1b 60%, #cc2936 100%)'
 
   return (
     // Clicking empty background area in full sidebar collapses it

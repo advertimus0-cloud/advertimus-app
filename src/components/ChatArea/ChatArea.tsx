@@ -425,7 +425,13 @@ export function ChatArea({
     ].join(' ')
 
   const iconBadge = (children: React.ReactNode) => (
-    <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      borderRadius: '6px', padding: '4px',
+      background: 'rgba(22,17,66,0.55)',
+      color: 'rgba(140,160,255,0.9)',
+      boxShadow: '0 0 10px rgba(22,17,66,0.6)',
+    }}>
       {children}
     </span>
   )
@@ -487,8 +493,8 @@ export function ChatArea({
   )
 
   const disclaimer = (
-    <p className="text-center mt-10 mb-3 text-[11px] select-none tracking-wide"
-       style={{ color: 'rgba(130,130,130,0.7)' }}>
+    <p className="text-center mt-16 mb-2 text-[10px] select-none tracking-wide"
+       style={{ color: 'rgba(100,100,110,0.6)' }}>
       Advertimus is AI and may make mistakes
     </p>
   )
@@ -505,7 +511,8 @@ export function ChatArea({
           style={{ border: '1px solid rgba(93,26,27,0.3)' }}
         >
           <span
-            className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_12px_rgba(220,38,38,0.12)] p-1 flex-shrink-0"
+            className="inline-flex items-center justify-center rounded-md p-1 flex-shrink-0"
+            style={{ background: 'rgba(22,17,66,0.55)', color: 'rgba(140,160,255,0.9)', boxShadow: '0 0 10px rgba(22,17,66,0.6)' }}
             aria-hidden="true"
           >
             {icon}
