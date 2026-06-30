@@ -678,10 +678,10 @@ p {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   CHAT TEXT BOX — single spotlight that travels around the border edges
-   .chat-border-chase : idle/waiting — a single light point orbits the box
-   The ::before creates a 300% conic-gradient that rotates, and the parent's
-   overflow:hidden clips it to just the 1.5px padding "border" gap.
+   CHAT TEXT BOX — glowing orb of light that travels around the border edges
+   .chat-border-chase : idle/waiting — a soft glowing light orbits the box
+   The ::before creates a conic-gradient orb that rotates. The heavy blur
+   turns it into a smooth luminous glow instead of a hard line.
 ───────────────────────────────────────────────────────────────────────────── */
 
 @keyframes chaseSpin {
@@ -692,28 +692,30 @@ p {
 .chat-border-chase {
   position: relative;
   border-radius: 22px;   /* rounded-2xl (16px) + 6px padding = 22px */
-  padding: 6px;
+  padding: 1.5px;
   overflow: hidden;
+  background: rgba(93,26,27,0.25);
 }
 
 .chat-border-chase::before {
   content: '';
   position: absolute;
-  width: 300%;
-  height: 300%;
+  width: 200%;
+  height: 200%;
   top: 50%;
   left: 50%;
-  /* tight ~13° arc — blur turns it into a soft glowing orb */
+  /* wide ~60° arc with heavy blur = soft glowing orb of light */
   background: conic-gradient(
     from 0deg,
-    transparent          0deg,
-    transparent          347deg,
-    rgba(93,26,27,0.9)   352deg,
-    rgba(204,41,54,1.0)  356deg,
-    rgba(93,26,27,0.9)   360deg
+    transparent           0deg,
+    transparent           300deg,
+    rgba(93,26,27,0.0)    300deg,
+    rgba(180,30,42,0.55)  320deg,
+    rgba(204,41,54,1.0)   360deg,
+    rgba(204,41,54,1.0)   360deg
   );
-  animation: chaseSpin 4s linear infinite;
-  filter: blur(8px);
+  animation: chaseSpin 3.5s linear infinite;
+  filter: blur(16px);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

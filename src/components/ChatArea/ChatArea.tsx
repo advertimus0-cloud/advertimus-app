@@ -420,7 +420,7 @@ export function ChatArea({
       'w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-150',
       'disabled:opacity-35 disabled:cursor-not-allowed',
       active
-        ? 'text-purple-400/80 hover:text-purple-300 hover:bg-white/[0.08]'
+        ? 'text-red-500/80 hover:text-red-400 hover:bg-white/[0.08]'
         : 'text-white/30 hover:text-white/60 hover:bg-white/[0.08]',
     ].join(' ')
 
@@ -620,7 +620,7 @@ export function ChatArea({
               {/* Spotlight chases border when agent is typing; plain border otherwise */}
               <div
                 className={isTyping ? 'chat-border-chase w-full' : 'w-full'}
-                style={!isTyping ? { borderRadius: 16, border: `1px solid ${attachedFiles.length > 0 ? 'rgba(168,85,247,0.4)' : 'rgba(93,26,27,0.4)'}` } : undefined}
+                style={!isTyping ? { borderRadius: 16, border: `1px solid ${attachedFiles.length > 0 ? 'rgba(204,41,54,0.4)' : 'rgba(93,26,27,0.4)'}` } : undefined}
               >
                 <div
                   className="w-full rounded-2xl overflow-hidden transition-all duration-200"
