@@ -555,12 +555,16 @@ export function ChatArea({
               disabled={isBlocked}
             />
 
-            {/* Text box — revolving glow when idle (no messages yet) */}
+            {/* Spotlight border — single light chases around the edge when idle */}
+            <div className={!isBlocked ? 'chat-border-chase' : ''}
+              style={isBlocked ? { borderRadius: 16, border: `1.5px solid rgba(93,26,27,0.3)` } : undefined}
+            >
             <div
-              className={`rounded-2xl overflow-hidden transition-all duration-200 chat-box-revolve`}
+              className="rounded-2xl overflow-hidden transition-all duration-200"
               style={{
+                position: 'relative', zIndex: 1,
                 background: '#252525',
-                border: `1.5px solid ${attachedFiles.length > 0 ? 'rgba(168,85,247,0.5)' : 'rgba(93,26,27,0.55)'}`,
+                boxShadow: '0 8px 40px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.05) inset',
               }}
             >
               <div className="px-5 pt-5 pb-2">
@@ -584,6 +588,7 @@ export function ChatArea({
                 {toolbarRight}
               </div>
             </div>
+            </div>{/* /chat-border-chase */}
 
             {quickChips}
             {disclaimer}
@@ -612,35 +617,37 @@ export function ChatArea({
                 disabled={isBlocked}
               />
 
-              {/* Active-state text box — revolves when agent is typing (user is waiting) */}
+              {/* Spotlight chases border when agent is typing; plain border otherwise */}
               <div
-                className={`w-full rounded-2xl overflow-hidden transition-all duration-200 ${isTyping ? 'chat-box-revolve-active' : 'chat-box-base'}`}
-                style={{
-                  background: '#252525',
-                  border: `1px solid ${attachedFiles.length > 0 ? 'rgba(168,85,247,0.4)' : 'rgba(93,26,27,0.4)'}`,
-                }}
+                className={isTyping ? 'chat-border-chase w-full' : 'w-full'}
+                style={!isTyping ? { borderRadius: 16, border: `1px solid ${attachedFiles.length > 0 ? 'rgba(168,85,247,0.4)' : 'rgba(93,26,27,0.4)'}` } : undefined}
               >
-                <div className="px-4 pt-3.5 pb-1">
-                  <textarea
-                    ref={textareaRef}
-                    value={inputValue}
-                    onChange={handleInputChange}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Assign a task or ask anything..."
-                    rows={1}
-                    disabled={isBlocked}
-                    className="w-full bg-transparent text-white text-[15px] leading-relaxed
-                               placeholder-white/30 resize-none outline-none"
-                    style={{ maxHeight: '120px' }}
-                    aria-label="Message input"
-                    aria-multiline="true"
-                  />
+                <div
+                  className="w-full rounded-2xl overflow-hidden transition-all duration-200"
+                  style={{ position: 'relative', zIndex: 1, background: '#252525', boxShadow: '0 4px 24px rgba(0,0,0,0.45)' }}
+                >
+                  <div className="px-4 pt-3.5 pb-1">
+                    <textarea
+                      ref={textareaRef}
+                      value={inputValue}
+                      onChange={handleInputChange}
+                      onKeyDown={handleKeyDown}
+                      placeholder="Assign a task or ask anything..."
+                      rows={1}
+                      disabled={isBlocked}
+                      className="w-full bg-transparent text-white text-[15px] leading-relaxed
+                                 placeholder-white/30 resize-none outline-none"
+                      style={{ maxHeight: '120px' }}
+                      aria-label="Message input"
+                      aria-multiline="true"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between px-3 pb-3 pt-1">
+                    {toolbarLeft}
+                    {toolbarRight}
+                  </div>
                 </div>
-                <div className="flex items-center justify-between px-3 pb-3 pt-1">
-                  {toolbarLeft}
-                  {toolbarRight}
-                </div>
-              </div>
+              </div>{/* /chat-border-chase */}
 
               {disclaimer}
             </div>

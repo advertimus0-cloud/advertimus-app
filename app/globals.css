@@ -685,37 +685,46 @@ p {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   CHAT TEXT BOX — revolving glow that orbits the box edges
-   .chat-box-revolve  : idle/waiting state — show revolving glow
-   .chat-box-base     : active chat state — subtle base shadow only
+   CHAT TEXT BOX — single spotlight that travels around the border edges
+   .chat-border-chase : idle/waiting — a single light point orbits the box
+   The ::before creates a 300% conic-gradient that rotates, and the parent's
+   overflow:hidden clips it to just the 1.5px padding "border" gap.
 ───────────────────────────────────────────────────────────────────────────── */
 
-@keyframes revolveGlow {
-  0%   { box-shadow: 0 8px 40px rgba(0,0,0,0.55), 14px  0px 35px rgba(22,17,66,0.85), -6px  0px 14px rgba(22,17,66,0.25), 0 1px 0 rgba(255,255,255,0.05) inset; }
-  25%  { box-shadow: 0 8px 40px rgba(0,0,0,0.55),  0px 14px 35px rgba(22,17,66,0.85),  0px -6px 14px rgba(22,17,66,0.25), 0 1px 0 rgba(255,255,255,0.05) inset; }
-  50%  { box-shadow: 0 8px 40px rgba(0,0,0,0.55), -14px  0px 35px rgba(22,17,66,0.85), 6px  0px 14px rgba(22,17,66,0.25), 0 1px 0 rgba(255,255,255,0.05) inset; }
-  75%  { box-shadow: 0 8px 40px rgba(0,0,0,0.55),  0px -14px 35px rgba(22,17,66,0.85), 0px  6px 14px rgba(22,17,66,0.25), 0 1px 0 rgba(255,255,255,0.05) inset; }
-  100% { box-shadow: 0 8px 40px rgba(0,0,0,0.55), 14px  0px 35px rgba(22,17,66,0.85), -6px  0px 14px rgba(22,17,66,0.25), 0 1px 0 rgba(255,255,255,0.05) inset; }
+@keyframes chaseSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
-@keyframes revolveGlowActive {
-  0%   { box-shadow: 0 4px 24px rgba(0,0,0,0.45), 10px  0px 25px rgba(22,17,66,0.75), -4px  0px 10px rgba(22,17,66,0.2); }
-  25%  { box-shadow: 0 4px 24px rgba(0,0,0,0.45),  0px 10px 25px rgba(22,17,66,0.75),  0px -4px 10px rgba(22,17,66,0.2); }
-  50%  { box-shadow: 0 4px 24px rgba(0,0,0,0.45), -10px  0px 25px rgba(22,17,66,0.75), 4px  0px 10px rgba(22,17,66,0.2); }
-  75%  { box-shadow: 0 4px 24px rgba(0,0,0,0.45),  0px -10px 25px rgba(22,17,66,0.75), 0px  4px 10px rgba(22,17,66,0.2); }
-  100% { box-shadow: 0 4px 24px rgba(0,0,0,0.45), 10px  0px 25px rgba(22,17,66,0.75), -4px  0px 10px rgba(22,17,66,0.2); }
+.chat-border-chase {
+  position: relative;
+  border-radius: 18px;   /* rounded-2xl (16px) + 1.5px padding ≈ 18px */
+  padding: 1.5px;
+  overflow: hidden;
 }
 
-.chat-box-revolve {
-  animation: revolveGlow 5s ease-in-out infinite;
-}
-
-.chat-box-revolve-active {
-  animation: revolveGlowActive 3.5s ease-in-out infinite;
-}
-
-.chat-box-base {
-  box-shadow: 0 4px 24px rgba(0,0,0,0.45);
+.chat-border-chase::before {
+  content: '';
+  position: absolute;
+  width: 300%;
+  height: 300%;
+  top: 50%;
+  left: 50%;
+  /* spotlight arc: ~80° bright section, rest transparent */
+  background: conic-gradient(
+    from 0deg,
+    transparent          0deg,
+    transparent          265deg,
+    rgba(22,17,66,0.35)  280deg,
+    rgba(22,17,66,0.9)   305deg,
+    rgba(93,26,27,0.85)  317deg,
+    rgba(204,41,54,0.8)  323deg,
+    rgba(93,26,27,0.85)  330deg,
+    rgba(22,17,66,0.9)   348deg,
+    rgba(22,17,66,0.35)  358deg,
+    transparent          360deg
+  );
+  animation: chaseSpin 4s linear infinite;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
