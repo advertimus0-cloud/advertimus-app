@@ -51,8 +51,8 @@ export default function ForgotPasswordPage() {
       <div style={{ position: "relative", zIndex: 1, width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={cardStyle}>
           {/* Logo */}
-          <div style={{ textAlign: "center", marginBottom: 32 }}>
-            <img src="/advertimus-logo.PNG" alt="Advertimus" style={{ height: 34, objectFit: "contain" }} />
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 32 }}>
+            <img src="/advertimus-logo.PNG" alt="Advertimus" style={{ height: 36, objectFit: "contain", display: "block" }} />
           </div>
 
           {sent ? (
@@ -142,14 +142,15 @@ export default function ForgotPasswordPage() {
                 <button
                   type="submit"
                   disabled={!email || isPending}
+                  className={email && !isPending ? "adv-animated-btn" : ""}
                   style={{
-                    padding: 15, borderRadius: 12, border: "none",
-                    background: email && !isPending ? "#cc2936" : "rgba(255,255,255,0.06)",
+                    padding: 15, borderRadius: 12,
+                    background: email && !isPending ? undefined : "rgba(255,255,255,0.06)",
+                    border: email && !isPending ? undefined : "none",
                     color: email && !isPending ? "#fff" : "#4a4a62",
                     fontSize: 15, fontWeight: 700, cursor: email && !isPending ? "pointer" : "default",
-                    boxShadow: email && !isPending ? "0 0 24px rgba(204,41,54,0.4), 0 4px 16px rgba(204,41,54,0.25)" : "none",
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                    transition: "all 0.2s",
+                    width: "100%",
                   }}
                 >
                   {isPending ? <><i className="bx bx-loader-alt bx-spin" style={{ fontSize: 18 }} /> Sending…</> : "Send reset link"}

@@ -214,7 +214,8 @@ export default function MainLayout({
                   className="flex-shrink-0 h-full hidden md:block overflow-hidden"
                   style={{
                     width: RESULTS_WIDTH,
-                    borderLeft: "1px solid rgba(93,26,27,0.14)",
+                    borderLeft: "1px solid rgba(22,17,66,0.7)",
+                    boxShadow: "-2px 0 16px rgba(22,17,66,0.3)",
                   }}
                 >
                   <ResultsPanel

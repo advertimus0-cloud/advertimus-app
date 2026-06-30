@@ -53,8 +53,8 @@ function VerifyEmailContent() {
       <div style={{ position: "relative", zIndex: 1, width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={cardStyle}>
           {/* Logo */}
-          <div style={{ textAlign: "center", marginBottom: 36 }}>
-            <img src="/advertimus-logo.PNG" alt="Advertimus" style={{ height: 34, objectFit: "contain" }} />
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 36 }}>
+            <img src="/advertimus-logo.PNG" alt="Advertimus" style={{ height: 36, objectFit: "contain", display: "block" }} />
           </div>
 
           {/* Envelope icon */}
@@ -107,14 +107,14 @@ function VerifyEmailContent() {
           <button
             onClick={handleResend}
             disabled={isPending || !email}
+            className={!(isPending || !email) ? "adv-animated-btn" : ""}
             style={{
-              width: "100%", padding: 15, borderRadius: 12, border: "none",
-              background: isPending ? "rgba(255,255,255,0.06)" : "#cc2936",
-              color: isPending ? "#4a4a62" : "#fff",
-              fontSize: 15, fontWeight: 700, cursor: isPending ? "default" : "pointer",
-              boxShadow: isPending ? "none" : "0 0 24px rgba(204,41,54,0.4), 0 4px 16px rgba(204,41,54,0.25)",
+              width: "100%", padding: 15, borderRadius: 12,
+              background: isPending || !email ? "rgba(255,255,255,0.06)" : undefined,
+              border: isPending || !email ? "none" : undefined,
+              color: isPending || !email ? "#4a4a62" : "#fff",
+              fontSize: 15, fontWeight: 700, cursor: isPending || !email ? "default" : "pointer",
               display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-              transition: "all 0.2s",
             }}
           >
             {isPending ? <><i className="bx bx-loader-alt bx-spin" style={{ fontSize: 18 }} /> Sending…</> : "Resend verification email"}

@@ -198,7 +198,8 @@ export function Sidebar({
     onMobileClose?.()
   }
 
-  const BORDER = '1px solid rgba(93,26,27,0.14)'
+  const BORDER = '1px solid rgba(22,17,66,0.7)'
+  const BORDER_SHADOW = '2px 0 16px rgba(22,17,66,0.35), 1px 0 0 rgba(93,26,27,0.12)'
 
   // ── MINI SIDEBAR (64px, icon-only) ────────────────────────────────────────
   if (isCollapsed) {
@@ -206,7 +207,7 @@ export function Sidebar({
       // Clicking anywhere on the mini sidebar expands it
       <div
         className="h-full flex flex-col items-center py-3 gap-1 cursor-pointer"
-        style={{ width: 64, borderRight: BORDER, background: '#252525' }}
+        style={{ width: 64, borderRight: BORDER, boxShadow: BORDER_SHADOW, background: '#252525' }}
         onClick={onToggle}
         role="button"
         aria-label="Expand sidebar"
@@ -287,7 +288,7 @@ export function Sidebar({
     // Clicking empty background area in full sidebar collapses it
     <aside
       className="h-full w-full flex flex-col overflow-hidden"
-      style={{ borderRight: BORDER, background: '#252525' }}
+      style={{ borderRight: BORDER, boxShadow: BORDER_SHADOW, background: '#252525' }}
       aria-label="Sidebar navigation"
       onClick={onToggle}
     >

@@ -211,16 +211,16 @@ p {
 }
 
 .adv-btn-primary {
-  background: #cc2936;
-  border: 1px solid transparent;
+  background: linear-gradient(135deg, #cc2936 0%, #5d1a1b 30%, #161142 55%, #5d1a1b 75%, #cc2936 100%);
+  background-size: 300% 300%;
+  border: 1px solid rgba(204, 41, 54, 0.3);
   color: #ffffff;
-  box-shadow: 0 0 20px rgba(204, 41, 54, 0.3), 0 4px 12px rgba(204, 41, 54, 0.2);
+  animation: gradientShift 5s ease infinite, btnGlow 3s ease-in-out infinite;
 }
 
 .adv-btn-primary:hover {
-  background: #e0303e;
+  opacity: 0.9;
   transform: translateY(-1px);
-  box-shadow: 0 0 30px rgba(204, 41, 54, 0.5), 0 6px 20px rgba(204, 41, 54, 0.35);
 }
 
 .adv-btn-full {
@@ -547,65 +547,127 @@ p {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   AUTH PAGE — animated gradient blob background
+   AUTH PAGE — wind-flow gradient background
    Classes used by: app/(auth)/*/page.tsx
 ───────────────────────────────────────────────────────────────────────────── */
 
-@keyframes authBlob1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25%      { transform: translate(-50px, 70px) scale(1.12); }
-  50%      { transform: translate(70px, -40px) scale(0.92); }
-  75%      { transform: translate(-25px, -60px) scale(1.06); }
+@keyframes windRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
-@keyframes authBlob2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25%      { transform: translate(60px, 50px) scale(0.88); }
-  50%      { transform: translate(-70px, 70px) scale(1.14); }
-  75%      { transform: translate(40px, -50px) scale(1.0); }
+@keyframes windRotateReverse {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
 }
 
-@keyframes authBlob3 {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); }
-  33%      { transform: translate(-50%, -50%) translate(50px, -70px) scale(1.08); }
-  66%      { transform: translate(-50%, -50%) translate(-60px, 50px) scale(0.88); }
+@keyframes windPulse {
+  0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(1); }
+  33%      { opacity: 0.75; transform: translate(-50%, -50%) scale(1.2) translateX(40px); }
+  66%      { opacity: 0.45; transform: translate(-50%, -50%) scale(0.85) translateX(-30px); }
 }
 
-.auth-blob {
+/* Layer 1 — large rotating conic sweep (deep purple + dark red) */
+.auth-blob-1 {
   position: absolute;
+  width: 160%;
+  height: 160%;
+  top: -30%;
+  left: -30%;
   border-radius: 50%;
   pointer-events: none;
   will-change: transform;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    transparent        0deg,
+    rgba(22,17,66,0.7) 50deg,
+    transparent        110deg,
+    rgba(93,26,27,0.5) 170deg,
+    transparent        230deg,
+    rgba(22,17,66,0.4) 290deg,
+    transparent        360deg
+  );
+  filter: blur(70px);
+  animation: windRotate 28s linear infinite;
 }
 
-.auth-blob-1 {
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(93,26,27,0.45) 0%, transparent 70%);
-  top: -200px;
-  left: -150px;
-  filter: blur(60px);
-  animation: authBlob1 14s ease-in-out infinite;
-}
-
+/* Layer 2 — counter-rotating conic (different phase) */
 .auth-blob-2 {
-  width: 550px;
-  height: 550px;
-  background: radial-gradient(circle, rgba(22,17,66,0.55) 0%, transparent 70%);
-  bottom: -180px;
-  right: -150px;
-  filter: blur(60px);
-  animation: authBlob2 18s ease-in-out infinite;
+  position: absolute;
+  width: 130%;
+  height: 130%;
+  top: -15%;
+  left: -15%;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+  background: conic-gradient(
+    from 180deg at 50% 50%,
+    transparent        0deg,
+    rgba(93,26,27,0.6) 70deg,
+    transparent        130deg,
+    rgba(22,17,66,0.5) 200deg,
+    transparent        270deg,
+    rgba(93,26,27,0.3) 330deg,
+    transparent        360deg
+  );
+  filter: blur(80px);
+  animation: windRotateReverse 38s linear infinite;
 }
 
+/* Layer 3 — soft pulsing core */
 .auth-blob-3 {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(93,26,27,0.25) 0%, transparent 70%);
+  position: absolute;
+  width: 500px;
+  height: 500px;
   top: 50%;
   left: 50%;
-  filter: blur(70px);
-  animation: authBlob3 11s ease-in-out infinite;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(22,17,66,0.6)  0%,
+    rgba(93,26,27,0.35) 40%,
+    transparent         70%
+  );
+  filter: blur(60px);
+  animation: windPulse 12s ease-in-out infinite;
+}
+
+/* ─── Animated gradient primary button ──────────────────────────────────────
+   Add className="adv-animated-btn" to primary buttons in auth pages.
+   Disable state overrides via inline background only.
+───────────────────────────────────────────────────────────────────────────── */
+
+@keyframes gradientShift {
+  0%   { background-position: 0%   50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0%   50%; }
+}
+
+@keyframes btnGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(93,26,27,0.45), 0 0 40px rgba(22,17,66,0.25), 0 4px 16px rgba(0,0,0,0.4); }
+  50%       { box-shadow: 0 0 35px rgba(204,41,54,0.55), 0 0 60px rgba(22,17,66,0.4), 0 4px 24px rgba(0,0,0,0.5); }
+}
+
+.adv-animated-btn {
+  background: linear-gradient(
+    135deg,
+    #cc2936 0%,
+    #5d1a1b 30%,
+    #161142 55%,
+    #5d1a1b 75%,
+    #cc2936 100%
+  ) !important;
+  background-size: 300% 300% !important;
+  animation: gradientShift 5s ease infinite, btnGlow 3s ease-in-out infinite;
+  border: 1px solid rgba(204,41,54,0.3) !important;
+  transition: opacity 0.2s !important;
+}
+
+.adv-animated-btn:hover {
+  opacity: 0.92;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
