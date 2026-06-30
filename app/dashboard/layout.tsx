@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import type { User } from "@supabase/supabase-js";
 
 export const metadata: Metadata = {
   title: "Advertimus — Dashboard",
@@ -9,7 +10,8 @@ export const metadata: Metadata = {
 
 /**
  * Dashboard Layout — server-side auth guard (defense-in-depth alongside middleware).
- * Any unauthenticated request that somehow bypasses middleware is caught here.
+ * This is the true enforcement point: middleware fails open on errors, so any
+ * unauthenticated or unverifiable request must be rejected here.
  *
  * Security: uses getUser() which validates with the Supabase auth server.
  * Never use getSession() for auth checks (only reads JWT locally).
@@ -19,16 +21,22 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Guard: if Supabase is not configured, skip auth check
-  if (process.env.SUPABASE_URL && process.env.SUPABASE_PUBLISHABLE_KEY) {
+  let user: User | null = null;
+
+  try {
     const supabase = createClient();
     const {
-      data: { user },
+      data: { user: fetchedUser },
     } = await supabase.auth.getUser();
+    user = fetchedUser;
+  } catch (err) {
+    console.error("[dashboard/layout] auth check failed:", err);
+  }
 
-    if (!user) {
-      redirect("/login");
-    }
+  // redirect() throws internally — must run outside the try/catch above
+  // so it isn't swallowed and re-triggered by our own catch block.
+  if (!user) {
+    redirect("/login");
   }
 
   return (
