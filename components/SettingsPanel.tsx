@@ -86,10 +86,10 @@ const PrimaryBtn = ({ children, onClick, disabled, type = "button" }: {
     disabled={disabled}
     style={{
       padding: "11px 22px", borderRadius: 10, border: "none",
-      background: disabled ? "rgba(255,255,255,0.06)" : "linear-gradient(135deg,#5d1a1b,#161142)",
+      background: disabled ? "rgba(255,255,255,0.06)" : "#cc2936",
       color: disabled ? "#4a4a62" : "#fff",
       fontSize: 13.5, fontWeight: 600, cursor: disabled ? "default" : "pointer",
-      boxShadow: disabled ? "none" : "0 4px 16px rgba(93,26,27,0.3)",
+      boxShadow: disabled ? "none" : "0 0 20px rgba(204,41,54,0.35), 0 4px 12px rgba(204,41,54,0.2)",
     }}
   >
     {children}
@@ -117,7 +117,7 @@ const OutlineBtn = ({ children, onClick, disabled, style: extra }: {
 
 // ─── Tabs ────────────────────────────────────────────────────────────────────
 
-function AccountTab({ email, credits, initials, onClose }: { email: string; credits: number; initials: string; onClose: () => void }) {
+function AccountTab({ email, credits, initials }: { email: string; credits: number; initials: string }) {
   const [isPending, startTransition] = useTransition();
   const handleLogout = () => startTransition(() => logout());
 
@@ -423,7 +423,7 @@ export default function SettingsPanel({ email, company, credits, initials, onClo
 
       {/* Scrollable content */}
       <div style={{ flex: 1, overflowY: "auto", padding: "28px", maxWidth: 560 }}>
-        {activeTab === "account" && <AccountTab email={email} credits={credits} initials={initials} onClose={onClose} />}
+        {activeTab === "account" && <AccountTab email={email} credits={credits} initials={initials} />}
         {activeTab === "profile" && <ProfileTab initialCompany={company} />}
         {activeTab === "security" && <SecurityTab />}
       </div>

@@ -444,8 +444,8 @@ export function ChatArea({
       style={
         canSend
           ? {
-              background: '#5d1a1b',
-              boxShadow: '0 2px 12px rgba(93,26,27,0.5)',
+              background: '#cc2936',
+              boxShadow: '0 0 18px rgba(204,41,54,0.45), 0 2px 8px rgba(204,41,54,0.3)',
             }
           : { background: 'rgba(255,255,255,0.06)' }
       }
@@ -561,7 +561,7 @@ export function ChatArea({
               style={{
                 background: '#252525',
                 border: `1.5px solid ${attachedFiles.length > 0 ? 'rgba(168,85,247,0.5)' : 'rgba(93,26,27,0.55)'}`,
-                boxShadow: '0 8px 40px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.05) inset',
+                boxShadow: '0 8px 40px rgba(0,0,0,0.55), 0 0 40px rgba(22,17,66,0.5), 0 0 80px rgba(22,17,66,0.25), 0 1px 0 rgba(255,255,255,0.05) inset',
               }}
             >
               <div className="px-5 pt-5 pb-2">
@@ -618,7 +618,7 @@ export function ChatArea({
                 style={{
                   background: '#252525',
                   border: `1px solid ${attachedFiles.length > 0 ? 'rgba(168,85,247,0.4)' : 'rgba(93,26,27,0.4)'}`,
-                  boxShadow: '0 4px 24px rgba(0,0,0,0.45)',
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.45), 0 0 30px rgba(22,17,66,0.45), 0 0 60px rgba(22,17,66,0.2)',
                 }}
               >
                 <div className="px-4 pt-3.5 pb-1">

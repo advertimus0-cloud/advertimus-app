@@ -56,7 +56,7 @@ export function OptionButton({
       }
 
   const badgeStyle: React.CSSProperties = isSelected
-    ? { background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)', color: '#fff' }
+    ? { background: '#cc2936', color: '#fff', boxShadow: '0 0 16px rgba(204,41,54,0.35)' }
     : isLocked
     ? { background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.3)' }
     : { background: 'rgba(93,26,27,0.45)', color: 'rgba(255,255,255,0.7)' }

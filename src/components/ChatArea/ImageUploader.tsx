@@ -117,7 +117,7 @@ function Thumbnail({ file, onRemove }: { file: UploadedFile; onRemove: (id: stri
         className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center
                    justify-center text-white opacity-0 group-hover:opacity-100
                    transition-all duration-150 hover:scale-110 shadow-lg"
-        style={{ background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }}
+        style={{ background: '#cc2936' }}
         aria-label={`Remove ${file.name}`}
       >
         <X size={10} />

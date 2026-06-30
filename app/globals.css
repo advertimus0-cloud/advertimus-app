@@ -211,15 +211,16 @@ p {
 }
 
 .adv-btn-primary {
-  background: linear-gradient(135deg, #5d1a1b 0%, #161142 100%);
+  background: #cc2936;
   border: 1px solid transparent;
   color: #ffffff;
+  box-shadow: 0 0 20px rgba(204, 41, 54, 0.3), 0 4px 12px rgba(204, 41, 54, 0.2);
 }
 
 .adv-btn-primary:hover {
-  opacity: 0.88;
+  background: #e0303e;
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(93, 26, 27, 0.45);
+  box-shadow: 0 0 30px rgba(204, 41, 54, 0.5), 0 6px 20px rgba(204, 41, 54, 0.35);
 }
 
 .adv-btn-full {
@@ -543,6 +544,68 @@ p {
   .adv-footer-shell {
     grid-template-columns: 1fr;
   }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   AUTH PAGE — animated gradient blob background
+   Classes used by: app/(auth)/*/page.tsx
+───────────────────────────────────────────────────────────────────────────── */
+
+@keyframes authBlob1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25%      { transform: translate(-50px, 70px) scale(1.12); }
+  50%      { transform: translate(70px, -40px) scale(0.92); }
+  75%      { transform: translate(-25px, -60px) scale(1.06); }
+}
+
+@keyframes authBlob2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25%      { transform: translate(60px, 50px) scale(0.88); }
+  50%      { transform: translate(-70px, 70px) scale(1.14); }
+  75%      { transform: translate(40px, -50px) scale(1.0); }
+}
+
+@keyframes authBlob3 {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  33%      { transform: translate(-50%, -50%) translate(50px, -70px) scale(1.08); }
+  66%      { transform: translate(-50%, -50%) translate(-60px, 50px) scale(0.88); }
+}
+
+.auth-blob {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.auth-blob-1 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(93,26,27,0.45) 0%, transparent 70%);
+  top: -200px;
+  left: -150px;
+  filter: blur(60px);
+  animation: authBlob1 14s ease-in-out infinite;
+}
+
+.auth-blob-2 {
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(22,17,66,0.55) 0%, transparent 70%);
+  bottom: -180px;
+  right: -150px;
+  filter: blur(60px);
+  animation: authBlob2 18s ease-in-out infinite;
+}
+
+.auth-blob-3 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(93,26,27,0.25) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  filter: blur(70px);
+  animation: authBlob3 11s ease-in-out infinite;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

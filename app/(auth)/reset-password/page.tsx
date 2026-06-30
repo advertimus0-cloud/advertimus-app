@@ -5,16 +5,6 @@ import Link from "next/link";
 import { Lock, Eye, EyeOff } from "lucide-react";
 import { updatePassword } from "./actions";
 
-const pageStyle: React.CSSProperties = {
-  minHeight: "100vh",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  background: "radial-gradient(ellipse at 50% 0%, rgba(93,26,27,0.08) 0%, transparent 60%), #0a0a0f",
-  fontFamily: "Inter, sans-serif",
-  padding: "16px",
-};
-
 const cardStyle: React.CSSProperties = {
   width: "100%",
   maxWidth: 420,
@@ -92,83 +82,95 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div style={pageStyle}>
-      <div style={cardStyle}>
-        {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 32 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 14, overflow: "hidden", boxShadow: "0 0 20px rgba(93,26,27,0.4)", flexShrink: 0 }}>
-            <img src="/advernewicon.jpg" alt="Advertimus" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+    <div style={{
+      position: "relative",
+      overflow: "hidden",
+      background: "#0a0a0f",
+      minHeight: "100vh",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontFamily: "Inter, sans-serif",
+      padding: "16px",
+    }}>
+      <div className="auth-blob auth-blob-1" />
+      <div className="auth-blob auth-blob-2" />
+      <div className="auth-blob auth-blob-3" />
+      <div style={{ position: "relative", zIndex: 1, width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={cardStyle}>
+          {/* Logo */}
+          <div style={{ textAlign: "center", marginBottom: 32 }}>
+            <img src="/advertimus-logo.PNG" alt="Advertimus" style={{ height: 34, objectFit: "contain" }} />
           </div>
-          <span style={{ fontSize: 20, fontWeight: 800, color: "#fff", letterSpacing: "-0.03em" }}>Advertimus</span>
-        </div>
 
-        {/* Lock icon */}
-        <div style={{
-          width: 64, height: 64, borderRadius: "50%",
-          background: "rgba(93,26,27,0.15)", border: "1px solid rgba(93,26,27,0.3)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          margin: "0 auto 24px",
-        }}>
-          <Lock size={26} color="#cc2936" />
-        </div>
-
-        <h1 style={{ margin: "0 0 8px", fontSize: 26, fontWeight: 700, color: "#fff", textAlign: "center", letterSpacing: "-0.02em" }}>
-          Set new password
-        </h1>
-        <p style={{ margin: "0 0 28px", fontSize: 15, color: "#6b6b82", textAlign: "center" }}>
-          Choose a strong password for your account.
-        </p>
-
-        {error && (
+          {/* Lock icon */}
           <div style={{
-            marginBottom: 20, padding: "11px 14px", borderRadius: 10,
-            background: "rgba(204,41,54,0.12)", border: "1px solid rgba(204,41,54,0.3)",
-            color: "#ff7875", fontSize: 13.5,
+            width: 64, height: 64, borderRadius: "50%",
+            background: "rgba(93,26,27,0.15)", border: "1px solid rgba(93,26,27,0.3)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            margin: "0 auto 24px",
           }}>
-            {error}
+            <Lock size={26} color="#cc2936" />
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <PasswordInput
-            value={password} onChange={setPassword}
-            show={showPassword} onToggle={() => setShowPassword(v => !v)}
-            placeholder="At least 8 characters" disabled={isPending}
-          />
-          <div>
+          <h1 style={{ margin: "0 0 8px", fontSize: 26, fontWeight: 700, color: "#fff", textAlign: "center", letterSpacing: "-0.02em" }}>
+            Set new password
+          </h1>
+          <p style={{ margin: "0 0 28px", fontSize: 15, color: "#6b6b82", textAlign: "center" }}>
+            Choose a strong password for your account.
+          </p>
+
+          {error && (
+            <div style={{
+              marginBottom: 20, padding: "11px 14px", borderRadius: 10,
+              background: "rgba(204,41,54,0.12)", border: "1px solid rgba(204,41,54,0.3)",
+              color: "#ff7875", fontSize: 13.5,
+            }}>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <PasswordInput
-              value={confirmPassword} onChange={setConfirmPassword}
-              show={showConfirm} onToggle={() => setShowConfirm(v => !v)}
-              placeholder="Re-enter your new password" disabled={isPending}
-              borderOverride={passwordMismatch ? "1px solid rgba(204,41,54,0.6)" : undefined}
+              value={password} onChange={setPassword}
+              show={showPassword} onToggle={() => setShowPassword(v => !v)}
+              placeholder="At least 8 characters" disabled={isPending}
             />
-            {passwordMismatch && (
-              <p style={{ margin: "6px 0 0", fontSize: 12, color: "#ff7875" }}>Passwords do not match.</p>
-            )}
-          </div>
+            <div>
+              <PasswordInput
+                value={confirmPassword} onChange={setConfirmPassword}
+                show={showConfirm} onToggle={() => setShowConfirm(v => !v)}
+                placeholder="Re-enter your new password" disabled={isPending}
+                borderOverride={passwordMismatch ? "1px solid rgba(204,41,54,0.6)" : undefined}
+              />
+              {passwordMismatch && (
+                <p style={{ margin: "6px 0 0", fontSize: 12, color: "#ff7875" }}>Passwords do not match.</p>
+              )}
+            </div>
 
-          <button
-            type="submit"
-            disabled={!isReady}
-            style={{
-              marginTop: 4, padding: 15, borderRadius: 12, border: "none",
-              background: isReady ? "linear-gradient(135deg,#5d1a1b,#161142)" : "rgba(255,255,255,0.06)",
-              color: isReady ? "#fff" : "#4a4a62",
-              fontSize: 15, fontWeight: 700, cursor: isReady ? "pointer" : "default",
-              boxShadow: isReady ? "0 4px 20px rgba(93,26,27,0.35)" : "none",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-              transition: "all 0.2s",
-            }}
-          >
-            {isPending ? <><i className="bx bx-loader-alt bx-spin" style={{ fontSize: 18 }} /> Updating…</> : "Update password"}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={!isReady}
+              style={{
+                marginTop: 4, padding: 15, borderRadius: 12, border: "none",
+                background: isReady ? "#cc2936" : "rgba(255,255,255,0.06)",
+                color: isReady ? "#fff" : "#4a4a62",
+                fontSize: 15, fontWeight: 700, cursor: isReady ? "pointer" : "default",
+                boxShadow: isReady ? "0 0 24px rgba(204,41,54,0.4), 0 4px 16px rgba(204,41,54,0.25)" : "none",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                transition: "all 0.2s",
+              }}
+            >
+              {isPending ? <><i className="bx bx-loader-alt bx-spin" style={{ fontSize: 18 }} /> Updating…</> : "Update password"}
+            </button>
+          </form>
 
-        <p style={{ margin: "24px 0 0", textAlign: "center", fontSize: 14, color: "#6b6b82" }}>
-          <Link href="/login" style={{ color: "#cc2936", textDecoration: "none", fontWeight: 500 }}>
-            ← Back to Sign in
-          </Link>
-        </p>
+          <p style={{ margin: "24px 0 0", textAlign: "center", fontSize: 14, color: "#6b6b82" }}>
+            <Link href="/login" style={{ color: "#cc2936", textDecoration: "none", fontWeight: 500 }}>
+              ← Back to Sign in
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

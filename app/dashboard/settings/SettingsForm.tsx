@@ -26,9 +26,10 @@ const label: React.CSSProperties = {
 
 const primaryBtn = (disabled: boolean): React.CSSProperties => ({
   padding: "11px 20px", borderRadius: 10, border: "none",
-  background: disabled ? "rgba(255,255,255,0.05)" : "linear-gradient(135deg,#5d1a1b,#161142)",
+  background: disabled ? "rgba(255,255,255,0.05)" : "#cc2936",
   color: disabled ? "#5a5a72" : "#fff", fontSize: 14, fontWeight: 600,
   cursor: disabled ? "default" : "pointer",
+  boxShadow: disabled ? "none" : "0 0 20px rgba(204,41,54,0.35), 0 4px 12px rgba(204,41,54,0.2)",
 });
 
 function Banner({ kind, text }: { kind: "error" | "success"; text: string }) {

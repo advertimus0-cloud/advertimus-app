@@ -192,7 +192,7 @@ function ConceptApprovalCard({
         onClick={() => onConceptApproval?.(messageId, 'approve')}
         className="flex-1 py-2 rounded-xl text-xs font-semibold text-white
                    transition-all duration-150 hover:opacity-90 active:scale-[0.98]"
-        style={{ background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }}
+        style={{ background: '#cc2936' }}
       >
         Yes, looks great
       </button>
@@ -276,7 +276,7 @@ function CampaignSummaryCard({
           onClick={() => onSummaryAction?.(messageId, 'start')}
           className="w-full py-2.5 rounded-xl text-sm font-semibold text-white
                      transition-all duration-150 hover:opacity-90 active:scale-[0.98]"
-          style={{ background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }}
+          style={{ background: '#cc2936' }}
         >
           Start Generation
         </button>

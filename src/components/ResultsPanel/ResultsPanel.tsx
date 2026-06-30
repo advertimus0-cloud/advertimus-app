@@ -289,7 +289,7 @@ function VideoCard({ video }: { video: VideoCardData }) {
                 className="flex-1 flex items-center justify-center gap-1 py-1 rounded-lg
                            text-[10px] font-semibold text-white
                            transition-all duration-150 hover:opacity-90"
-                style={{ background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }}
+                style={{ background: '#cc2936' }}
                 aria-label={`Download ${video.title}`}
               >
                 <Download size={10} />
@@ -451,7 +451,7 @@ function ActionButtons({ isGenerating }: { isGenerating: boolean }) {
           'transition-all duration-200',
           isGenerating ? 'opacity-30 cursor-not-allowed' : 'hover:opacity-90 active:scale-[0.99]',
         ].join(' ')}
-        style={{ background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }}
+        style={{ background: '#cc2936' }}
       >
         <Download size={13} />
         Download All

@@ -220,7 +220,7 @@ export function VideoPlayer({
         >
           <div
             className="w-14 h-14 rounded-full flex items-center justify-center opacity-90"
-            style={{ background: 'linear-gradient(135deg, #5d1a1b 0%, #161142 100%)' }}
+            style={{ background: '#cc2936' }}
           >
             <Play size={20} fill="white" color="white" />
           </div>
