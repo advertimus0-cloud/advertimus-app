@@ -535,7 +535,7 @@ export function ChatArea({
   )
 
   const disclaimer = (
-    <p className="text-center mt-4 mb-2 text-[9px] sm:text-[10px] select-none"
+    <p className="text-center mt-2 mb-1 sm:mt-3 sm:mb-2 text-[8px] sm:text-[10px] select-none leading-tight"
        style={{ color: 'rgba(150,150,165,0.5)', letterSpacing: '0.01em' }}>
       Advertimus is AI and can make mistakes. Please double-check responses.
     </p>
@@ -641,7 +641,7 @@ export function ChatArea({
             onSummaryAction={handleSummaryAction}
           />
 
-          <div className="flex-shrink-0 px-6 pb-5 pt-0">
+          <div className="flex-shrink-0 px-4 sm:px-6 pb-2 sm:pb-5 pt-0">
             <div className="max-w-2xl mx-auto">
               <ImageUploader
                 ref={uploaderRef}
