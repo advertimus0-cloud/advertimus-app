@@ -137,7 +137,7 @@ function LoginContent() {
               background: "rgba(204,41,54,0.12)", border: "1px solid rgba(204,41,54,0.3)",
               color: "#ff7875", fontSize: 13.5,
             }}>
-              {error}
+              {typeof error === "string" ? error : "Something went wrong. Please try again."}
             </div>
           )}
 
