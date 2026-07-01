@@ -17,6 +17,9 @@ export async function getGoogleOAuthUrl() {
       provider: 'google',
       options: {
         redirectTo: `${process.env.APP_URL ?? process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+        // Force Google's account chooser on every sign-in instead of silently
+        // reusing the last-used Google session.
+        queryParams: { prompt: 'select_account' },
       },
     })
     if (error || !data.url) return { error: error?.message ?? 'OAuth unavailable' }
