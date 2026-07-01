@@ -701,7 +701,7 @@ p {
   overflow: hidden;
   /* faint static blue frame sits under the moving light so the full border
      is always visible and the light reads as travelling all the way around */
-  background: rgba(74,104,230,0.25);
+  background: rgba(40,54,140,0.28);
 }
 
 .chat-border-chase::before {
@@ -716,11 +716,11 @@ p {
      it a crisp light riding the border edge (no bleed into text). */
   background: conic-gradient(
     from 0deg,
-    transparent            0deg,
-    rgba(74,104,230,0)     235deg,
-    rgba(74,104,230,0.55)  310deg,
-    rgba(74,104,230,1)     356deg,
-    rgba(74,104,230,1)     360deg
+    transparent           0deg,
+    rgba(40,54,140,0)     235deg,
+    rgba(40,54,140,0.55)  310deg,
+    rgba(40,54,140,1)     356deg,
+    rgba(40,54,140,1)     360deg
   );
   animation: chaseSpin 3.6s linear infinite;
   filter: blur(4px);

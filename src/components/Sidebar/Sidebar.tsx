@@ -72,10 +72,10 @@ const NAV_ITEMS: Array<{
   href: string
   description: string
 }> = [
-  { id: 'projects', label: 'Projects',  icon: <Layers        size={15} />, href: '/projects', description: 'Manage ad campaigns'    },
-  { id: 'assets',   label: 'Assets',    icon: <ImageIcon     size={15} />, href: '/assets',   description: 'Creative assets & uploads' },
-  { id: 'chat',     label: 'Chat',      icon: <MessageSquare size={15} />, href: '/',         description: 'AI campaign builder'      },
-  { id: 'history',  label: 'History',   icon: <History       size={15} />, href: '/history',  description: 'Past conversations'       },
+  { id: 'projects', label: 'Projects',  icon: <Layers        size={17} />, href: '/projects', description: 'Manage ad campaigns'    },
+  { id: 'assets',   label: 'Assets',    icon: <ImageIcon     size={17} />, href: '/assets',   description: 'Creative assets & uploads' },
+  { id: 'chat',     label: 'Chat',      icon: <MessageSquare size={17} />, href: '/',         description: 'AI campaign builder'      },
+  { id: 'history',  label: 'History',   icon: <History       size={17} />, href: '/history',  description: 'Past conversations'       },
 ]
 
 // ─── Bot avatar (shared between mini + full) ──────────────────────────────────
@@ -105,7 +105,7 @@ function BotAvatar({ size = 40 }: { size?: number }) {
 
 function IconBadge({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1 flex-shrink-0">
+    <span className="inline-flex items-center justify-center rounded-lg bg-red-500/[0.14] text-red-500 shadow-[0_0_15px_rgba(220,38,38,0.2)] p-1.5 flex-shrink-0">
       {children}
     </span>
   )
@@ -321,9 +321,9 @@ export function Sidebar({
               onClick={() => handleNav(item)}
               title={item.description}
               className={[
-                'w-full flex items-center gap-3 py-2.5 rounded-xl text-sm font-medium',
+                'w-full flex items-center gap-3 py-3 rounded-xl text-[15px] font-medium',
                 'transition-all duration-200 text-left',
-                isActive ? 'text-white' : 'text-white/40 hover:text-white/80 hover:bg-white/[0.04]',
+                isActive ? 'text-white' : 'text-white/65 hover:text-white hover:bg-white/[0.04]',
               ].join(' ')}
               style={
                 isActive

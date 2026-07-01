@@ -473,14 +473,7 @@ export function ChatArea({
     ].join(' ')
 
   const iconBadge = (children: React.ReactNode) => (
-    <span
-      className="inline-flex items-center justify-center rounded-md p-1.5"
-      style={{
-        background: 'rgba(93,26,27,0.16)',
-        color: 'rgba(93,26,27,0.95)',
-        boxShadow: '0 0 14px rgba(93,26,27,0.28)',
-      }}
-    >
+    <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
       {children}
     </span>
   )

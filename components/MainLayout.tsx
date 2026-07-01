@@ -499,29 +499,25 @@ export default function MainLayout({
             <div
               className="absolute top-3 sm:top-3.5 z-30 flex items-center gap-2 sm:gap-2.5"
               style={{
-                right: isResultsOpen ? RESULTS_WIDTH + 16 : 14,
+                right: PANEL_ENABLED && isResultsOpen ? RESULTS_WIDTH + 16 : 14,
                 transition: "right 300ms ease-in-out",
               }}
             >
-              {/* Panel toggle — disabled until backend is wired up; hidden on mobile */}
-              {PANEL_ENABLED && !isMobile && (
+              {/* Panel button — present on desktop, hidden on mobile. Inert for
+                  now (results panel is gated behind PANEL_ENABLED until the
+                  backend is wired up). */}
+              {!isMobile && (
                 <button
                   onClick={() => setIsResultsOpen((o) => !o)}
                   className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-[13px] font-semibold
                              text-white/70 hover:text-white backdrop-blur-md transition-all duration-150"
                   style={{
-                    border: isResultsOpen
-                      ? "1px solid rgba(93,26,27,0.6)"
-                      : "1px solid rgba(93,26,27,0.35)",
-                    background: isResultsOpen
-                      ? "rgba(93,26,27,0.3)"
-                      : "rgba(26,26,26,0.75)",
+                    border: "1px solid rgba(93,26,27,0.35)",
+                    background: "rgba(26,26,26,0.75)",
                   }}
-                  aria-label={isResultsOpen ? "Close results panel" : "Open results panel"}
-                  aria-pressed={isResultsOpen}
+                  aria-label="Panel"
                 >
-                  <span className="inline-flex items-center justify-center rounded-md p-1"
-                    style={{ background: "rgba(93,26,27,0.16)", color: "rgba(93,26,27,0.95)" }}>
+                  <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
                     <PanelRight size={14} />
                   </span>
                   Panel
@@ -538,7 +534,9 @@ export default function MainLayout({
                 }}
                 aria-label="Pricing"
               >
-                <Crown size={14} style={{ color: "rgba(93,26,27,0.95)" }} />
+                <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+                  <Crown size={14} />
+                </span>
                 Pricing
               </button>
 
