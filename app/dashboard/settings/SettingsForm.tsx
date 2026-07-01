@@ -26,10 +26,10 @@ const label: React.CSSProperties = {
 
 const primaryBtn = (disabled: boolean): React.CSSProperties => ({
   padding: "11px 20px", borderRadius: 10, border: "none",
-  background: disabled ? "rgba(255,255,255,0.05)" : "#cc2936",
+  background: disabled ? "rgba(255,255,255,0.05)" : "rgba(93,26,27,0.9)",
   color: disabled ? "#5a5a72" : "#fff", fontSize: 14, fontWeight: 600,
   cursor: disabled ? "default" : "pointer",
-  boxShadow: disabled ? "none" : "0 0 20px rgba(204,41,54,0.35), 0 4px 12px rgba(204,41,54,0.2)",
+  boxShadow: disabled ? "none" : "0 0 20px rgba(93,26,27,0.5), 0 4px 12px rgba(93,26,27,0.3)",
 });
 
 function Banner({ kind, text }: { kind: "error" | "success"; text: string }) {
@@ -294,7 +294,7 @@ function DangerCard() {
               disabled={!password || isPending}
               style={{
                 padding: "10px 18px", borderRadius: 10, fontSize: 13, fontWeight: 600,
-                background: password && !isPending ? "#cc2936" : "rgba(255,255,255,0.05)",
+                background: password && !isPending ? "rgba(93,26,27,0.9)" : "rgba(255,255,255,0.05)",
                 color: password && !isPending ? "#fff" : "#5a5a72",
                 border: "none", cursor: password && !isPending ? "pointer" : "default",
               }}

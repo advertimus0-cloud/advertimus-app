@@ -86,10 +86,10 @@ const PrimaryBtn = ({ children, onClick, disabled, type = "button" }: {
     disabled={disabled}
     style={{
       padding: "11px 22px", borderRadius: 10, border: "none",
-      background: disabled ? "rgba(255,255,255,0.06)" : "#cc2936",
+      background: disabled ? "rgba(255,255,255,0.06)" : "rgba(93,26,27,0.9)",
       color: disabled ? "#4a4a62" : "#fff",
       fontSize: 13.5, fontWeight: 600, cursor: disabled ? "default" : "pointer",
-      boxShadow: disabled ? "none" : "0 0 20px rgba(204,41,54,0.35), 0 4px 12px rgba(204,41,54,0.2)",
+      boxShadow: disabled ? "none" : "0 0 20px rgba(93,26,27,0.5), 0 4px 12px rgba(93,26,27,0.3)",
     }}
   >
     {children}
@@ -333,7 +333,7 @@ function SecurityTab() {
               <div style={{ display: "flex", gap: 10, paddingTop: 2 }}>
                 <button type="submit" disabled={!deletePassword || deletePending} style={{
                   padding: "9px 16px", borderRadius: 10, fontSize: 13, fontWeight: 600,
-                  background: deletePassword && !deletePending ? "#cc2936" : "rgba(255,255,255,0.06)",
+                  background: deletePassword && !deletePending ? "rgba(93,26,27,0.9)" : "rgba(255,255,255,0.06)",
                   color: deletePassword && !deletePending ? "#fff" : "#4a4a62",
                   border: "none", cursor: deletePassword && !deletePending ? "pointer" : "default",
                 }}>

@@ -220,7 +220,7 @@ export function VideoPlayer({
         >
           <div
             className="w-14 h-14 rounded-full flex items-center justify-center opacity-90"
-            style={{ background: '#cc2936' }}
+            style={{ background: 'rgba(93,26,27,0.9)' }}
           >
             <Play size={20} fill="white" color="white" />
           </div>

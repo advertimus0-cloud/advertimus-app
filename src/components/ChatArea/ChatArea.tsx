@@ -444,8 +444,8 @@ export function ChatArea({
       style={
         canSend
           ? {
-              background: '#cc2936',
-              boxShadow: '0 0 18px rgba(204,41,54,0.45), 0 2px 8px rgba(204,41,54,0.3)',
+              background: 'rgba(93,26,27,0.9)',
+              boxShadow: '0 0 18px rgba(93,26,27,0.6), 0 2px 8px rgba(93,26,27,0.4)',
             }
           : { background: 'rgba(255,255,255,0.06)' }
       }
