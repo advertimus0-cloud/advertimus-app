@@ -456,55 +456,81 @@ export default function MainLayout({
 
   return (
     <ChatProvider>
-      <div
-        className="flex flex-col w-full h-screen bg-background text-white overflow-hidden"
-      >
-        {/* ── Top header bar ──────────────────────────────────────────────── */}
-        <header
-          className="flex-shrink-0 flex items-center justify-between px-3"
-          style={{
-            height: 48,
-            borderBottom: "1px solid rgba(93,26,27,0.15)",
-            background: "#1a1a1a",
-            zIndex: 20,
-            position: "relative",
-          }}
-        >
-          {/* Left: sidebar toggle */}
+      <div className="flex w-full h-screen bg-background text-white overflow-hidden">
+
+        {/* Mobile overlay backdrop */}
+        {isMobile && isSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/60 z-20"
+            onClick={() => setIsSidebarOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
+        {/* Mobile-only floating sidebar toggle */}
+        {isMobile && !isSidebarOpen && (
           <button
             onClick={toggleSidebar}
+            style={{ position: "fixed", top: 14, left: 14, zIndex: 50 }}
             className="w-8 h-8 flex items-center justify-center rounded-lg
-                       text-white/40 hover:text-white/75 hover:bg-white/[0.05]
+                       bg-background border border-white/10
+                       text-white/40 hover:text-white/72 hover:bg-white/[0.06]
                        transition-all duration-150"
-            aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
+            aria-label="Open sidebar"
           >
             <Menu size={16} />
           </button>
+        )}
 
-          {/* Right: Panel + Pricing + UserMenu */}
-          <div className="flex items-center gap-2">
+        {/* Sidebar */}
+        <aside
+          style={sidebarStyle}
+          aria-label="Sidebar navigation"
+          aria-hidden={isMobile && !isSidebarOpen}
+        >
+          <Sidebar
+            isCollapsed={isCollapsed}
+            onToggle={toggleSidebar}
+            onMobileClose={isMobile ? () => setIsSidebarOpen(false) : undefined}
+            user={user}
+            tokenUsed={tokenUsed}
+            tokenMax={tokenMax}
+            tokenRemaining={tokenRemaining}
+            onSettings={() => setIsSettingsOpen(true)}
+          />
+        </aside>
+
+        {/* Main content area */}
+        <div className="flex flex-1 min-w-0 overflow-hidden relative">
+
+          {/* ── Floating top-right toolbar (no header bar) ─────────────────── */}
+          <div
+            className="absolute top-3 z-30 flex items-center gap-2"
+            style={{
+              right: isResultsOpen && !isSettingsOpen ? RESULTS_WIDTH + 14 : 14,
+              transition: "right 300ms ease-in-out",
+            }}
+          >
             {/* Panel toggle (hidden when settings open) */}
             {!isSettingsOpen && (
               <button
                 onClick={() => setIsResultsOpen((o) => !o)}
                 className={[
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium",
-                  "transition-all duration-150",
+                  "backdrop-blur-md transition-all duration-150",
                   isResultsOpen
                     ? "text-white"
-                    : "text-white/50 hover:text-white/80 hover:bg-white/[0.05]",
+                    : "text-white/55 hover:text-white/85",
                 ].join(" ")}
                 style={{
                   border: isResultsOpen
                     ? "1px solid rgba(93,26,27,0.5)"
                     : "1px solid rgba(93,26,27,0.28)",
                   background: isResultsOpen
-                    ? "rgba(93,26,27,0.22)"
-                    : undefined,
+                    ? "rgba(93,26,27,0.25)"
+                    : "rgba(26,26,26,0.7)",
                 }}
-                aria-label={
-                  isResultsOpen ? "Close results panel" : "Open results panel"
-                }
+                aria-label={isResultsOpen ? "Close results panel" : "Open results panel"}
                 aria-pressed={isResultsOpen}
               >
                 <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
@@ -517,16 +543,18 @@ export default function MainLayout({
             {/* Pricing button */}
             <button
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
-                         text-white/55 hover:text-white/85 hover:bg-white/[0.04]
-                         transition-all duration-150"
-              style={{ border: "1px solid rgba(93,26,27,0.22)" }}
+                         text-white/55 hover:text-white/85 backdrop-blur-md transition-all duration-150"
+              style={{
+                border: "1px solid rgba(93,26,27,0.22)",
+                background: "rgba(26,26,26,0.7)",
+              }}
               aria-label="Pricing"
             >
-              <Crown size={12} style={{ color: "rgba(204,41,54,0.8)" }} />
+              <Crown size={12} style={{ color: "rgba(204,41,54,0.85)" }} />
               Pricing
             </button>
 
-            {/* User account dropdown */}
+            {/* User account dropdown with credit ring */}
             <UserMenu
               user={user}
               tokenRemaining={tokenRemaining ?? 0}
@@ -534,81 +562,46 @@ export default function MainLayout({
               onOpenSettings={() => setIsSettingsOpen(true)}
             />
           </div>
-        </header>
-
-        {/* ── Main area ───────────────────────────────────────────────────── */}
-        <div className="flex flex-1 min-w-0 overflow-hidden relative">
-
-          {/* Mobile overlay backdrop */}
-          {isMobile && isSidebarOpen && (
-            <div
-              className="fixed inset-0 bg-black/60 z-20"
-              onClick={() => setIsSidebarOpen(false)}
-              aria-hidden="true"
-            />
-          )}
-
-          {/* Sidebar */}
-          <aside
-            style={sidebarStyle}
-            aria-label="Sidebar navigation"
-            aria-hidden={isMobile && !isSidebarOpen}
-          >
-            <Sidebar
-              isCollapsed={isCollapsed}
-              onToggle={toggleSidebar}
-              onMobileClose={
-                isMobile ? () => setIsSidebarOpen(false) : undefined
-              }
-              user={user}
-              tokenUsed={tokenUsed}
-              tokenMax={tokenMax}
-              tokenRemaining={tokenRemaining}
-              onSettings={() => setIsSettingsOpen(true)}
-            />
-          </aside>
 
           {/* Content: settings OR chat + results */}
-          <div className="flex flex-1 min-w-0 overflow-hidden relative">
-            {isSettingsOpen ? (
-              <SettingsPanel
-                email={userEmail}
-                company={userCompany}
-                credits={tokenRemaining ?? 0}
-                initials={user?.initials ?? "?"}
-                onClose={() => setIsSettingsOpen(false)}
-              />
-            ) : (
-              <>
-                {/* Chat column */}
-                <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-                  <ChatArea
-                    projectName="New conversation"
-                    onSendMessage={handleSendMessage}
-                  />
-                </main>
+          {isSettingsOpen ? (
+            <SettingsPanel
+              email={userEmail}
+              company={userCompany}
+              credits={tokenRemaining ?? 0}
+              initials={user?.initials ?? "?"}
+              onClose={() => setIsSettingsOpen(false)}
+            />
+          ) : (
+            <>
+              {/* Chat column */}
+              <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+                <ChatArea
+                  projectName="New conversation"
+                  onSendMessage={handleSendMessage}
+                />
+              </main>
 
-                {/* Results panel */}
-                {isResultsOpen && (
-                  <aside
-                    className="flex-shrink-0 h-full hidden md:block overflow-hidden"
-                    style={{
-                      width: RESULTS_WIDTH,
-                      borderLeft: "1px solid rgba(93,26,27,0.2)",
-                      boxShadow: "-2px 0 16px rgba(0,0,0,0.3)",
-                    }}
-                  >
-                    <ResultsPanel
-                      showResults={isResultsOpen}
-                      isGenerating={isGenerating}
-                      progress={generationProgress}
-                      currentPhase={currentPhase}
-                    />
-                  </aside>
-                )}
-              </>
-            )}
-          </div>
+              {/* Results panel */}
+              {isResultsOpen && (
+                <aside
+                  className="flex-shrink-0 h-full hidden md:block overflow-hidden"
+                  style={{
+                    width: RESULTS_WIDTH,
+                    borderLeft: "1px solid rgba(93,26,27,0.2)",
+                    boxShadow: "-2px 0 16px rgba(0,0,0,0.3)",
+                  }}
+                >
+                  <ResultsPanel
+                    showResults={isResultsOpen}
+                    isGenerating={isGenerating}
+                    progress={generationProgress}
+                    currentPhase={currentPhase}
+                  />
+                </aside>
+              )}
+            </>
+          )}
         </div>
       </div>
     </ChatProvider>
