@@ -4,6 +4,7 @@ import React, { useState, useTransition } from "react";
 import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff, Building2 } from "lucide-react";
 import { signUp, getGoogleOAuthUrl } from "./actions";
+import { isValidEmail } from "@/lib/validation";
 
 const cardStyle: React.CSSProperties = {
   width: "100%",
@@ -78,10 +79,12 @@ export default function SignupPage() {
   const [isPending, startTransition] = useTransition();
 
   const passwordMismatch = confirmPassword.length > 0 && password !== confirmPassword;
-  const isReady = email && password.length >= 8 && password === confirmPassword && agreed && !isPending;
+  const emailInvalid = email.length > 0 && !isValidEmail(email);
+  const isReady = isValidEmail(email) && password.length >= 8 && password === confirmPassword && agreed && !isPending;
 
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isValidEmail(email)) { setError("Please enter a valid email address."); return; }
     if (password !== confirmPassword) { setError("Passwords do not match."); return; }
     setError(null);
     startTransition(async () => {
@@ -172,8 +175,16 @@ export default function SignupPage() {
           </div>
 
           <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <InputField type="email" value={email} onChange={setEmail}
-              placeholder="email@company.com" disabled={isPending} icon={<Mail size={16} />} />
+            <div>
+              <InputField type="email" value={email} onChange={setEmail}
+                placeholder="email@company.com" disabled={isPending} icon={<Mail size={16} />}
+                borderOverride={emailInvalid ? "1px solid rgba(204,41,54,0.6)" : undefined} />
+              {emailInvalid && (
+                <p style={{ margin: "6px 0 0", fontSize: 12, color: "#ff7875" }}>
+                  Enter a valid email address (e.g. you@company.com).
+                </p>
+              )}
+            </div>
 
             <InputField type="text" value={company} onChange={setCompany}
               placeholder="Company name (optional)" disabled={isPending} icon={<Building2 size={16} />} />

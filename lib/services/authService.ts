@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { isValidEmail, normalizeEmail } from '@/lib/validation'
 
 export interface AuthResult<T = void> {
   data?: T
@@ -9,9 +10,13 @@ export async function login(
   email: string,
   password: string
 ): Promise<AuthResult<{ userId: string }>> {
+  if (!isValidEmail(email)) return { error: 'Please enter a valid email address.' }
   try {
     const supabase = createClient()
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: normalizeEmail(email),
+      password,
+    })
     if (error) return { error: error.message }
     return { data: { userId: data.user.id } }
   } catch (err) {
@@ -25,10 +30,13 @@ export async function signup(
   password: string,
   companyName?: string
 ): Promise<AuthResult> {
+  // Reject malformed addresses BEFORE they reach Supabase — an invalid address
+  // that gets a confirmation email will bounce and hurt sending reputation.
+  if (!isValidEmail(email)) return { error: 'Please enter a valid email address.' }
   try {
     const supabase = createClient()
     const { error } = await supabase.auth.signUp({
-      email,
+      email: normalizeEmail(email),
       password,
       options: {
         data: { company: companyName ?? null },
@@ -88,9 +96,10 @@ export async function getCurrentUser(): Promise<
 }
 
 export async function resetPassword(email: string): Promise<AuthResult> {
+  if (!isValidEmail(email)) return { error: 'Please enter a valid email address.' }
   try {
     const supabase = createClient()
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await supabase.auth.resetPasswordForEmail(normalizeEmail(email), {
       redirectTo: `${process.env.APP_URL ?? process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/reset-password`,
     })
     if (error) return { error: error.message }
@@ -114,9 +123,10 @@ export async function verifyEmail(email: string, token: string): Promise<AuthRes
 }
 
 export async function resendVerification(email: string): Promise<AuthResult> {
+  if (!isValidEmail(email)) return { error: 'Please enter a valid email address.' }
   try {
     const supabase = createClient()
-    const { error } = await supabase.auth.resend({ type: 'signup', email })
+    const { error } = await supabase.auth.resend({ type: 'signup', email: normalizeEmail(email) })
     if (error) return { error: error.message }
     return {}
   } catch (err) {
