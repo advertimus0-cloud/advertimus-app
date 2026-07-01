@@ -9,9 +9,35 @@ export interface SettingsResult<T = void> {
   error?: string
 }
 
-export async function updateProfile(company: string): Promise<SettingsResult> {
-  if (typeof company !== 'string' || company.length > 100) {
-    return { error: 'Company name must be 100 characters or fewer.' }
+export interface ProfileFields {
+  company?: string
+  fullName?: string
+  phone?: string
+  website?: string
+}
+
+// Accepts either the legacy single-string (company only) or a full fields object.
+export async function updateProfile(
+  input: string | ProfileFields
+): Promise<SettingsResult> {
+  const fields: ProfileFields =
+    typeof input === 'string' ? { company: input } : input
+
+  // ── Server-side validation (§5 — never trust the client) ──
+  const limits: Record<keyof ProfileFields, number> = {
+    company: 100,
+    fullName: 80,
+    phone: 30,
+    website: 200,
+  }
+  for (const [key, max] of Object.entries(limits) as [keyof ProfileFields, number][]) {
+    const val = fields[key]
+    if (val !== undefined && (typeof val !== 'string' || val.length > max)) {
+      return { error: `${key} must be ${max} characters or fewer.` }
+    }
+  }
+  if (fields.phone && !/^[+\d\s().-]*$/.test(fields.phone)) {
+    return { error: 'Phone number contains invalid characters.' }
   }
 
   try {
@@ -21,9 +47,13 @@ export async function updateProfile(company: string): Promise<SettingsResult> {
     } = await supabase.auth.getUser()
     if (!user) return { error: 'Not authenticated.' }
 
-    const { error } = await supabase.auth.updateUser({
-      data: { company: company.trim() || null },
-    })
+    const data: Record<string, string | null> = {}
+    if (fields.company !== undefined) data.company = fields.company.trim() || null
+    if (fields.fullName !== undefined) data.full_name = fields.fullName.trim() || null
+    if (fields.phone !== undefined) data.phone = fields.phone.trim() || null
+    if (fields.website !== undefined) data.website = fields.website.trim() || null
+
+    const { error } = await supabase.auth.updateUser({ data })
     if (error) return { error: error.message }
     return {}
   } catch (err) {

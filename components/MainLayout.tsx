@@ -32,6 +32,9 @@ export interface MainLayoutProps {
   user?: MainLayoutUser;
   userEmail?: string;
   userCompany?: string;
+  userFullName?: string;
+  userPhone?: string;
+  userWebsite?: string;
   tokenUsed?: number;
   tokenMax?: number;
   tokenRemaining?: number;
@@ -382,6 +385,9 @@ export default function MainLayout({
   user,
   userEmail = "",
   userCompany = "",
+  userFullName = "",
+  userPhone = "",
+  userWebsite = "",
   tokenUsed,
   tokenMax,
   tokenRemaining,
@@ -504,16 +510,18 @@ export default function MainLayout({
         {/* Main content area */}
         <div className="flex flex-1 min-w-0 overflow-hidden relative">
 
-          {/* ── Floating top-right toolbar (no header bar) ─────────────────── */}
-          <div
-            className="absolute top-3.5 z-30 flex items-center gap-2.5"
-            style={{
-              right: isResultsOpen && !isSettingsOpen ? RESULTS_WIDTH + 16 : 16,
-              transition: "right 300ms ease-in-out",
-            }}
-          >
-            {/* Panel toggle (hidden when settings open) */}
-            {!isSettingsOpen && (
+          {/* ── Floating top-right toolbar (no header bar) ──────────────────
+              Hidden entirely while Settings is open so it never overlaps the
+              Settings panel's own close button. */}
+          {!isSettingsOpen && (
+            <div
+              className="absolute top-3.5 z-30 flex items-center gap-2.5"
+              style={{
+                right: isResultsOpen ? RESULTS_WIDTH + 16 : 16,
+                transition: "right 300ms ease-in-out",
+              }}
+            >
+              {/* Panel toggle */}
               <button
                 onClick={() => setIsResultsOpen((o) => !o)}
                 className={[
@@ -539,36 +547,39 @@ export default function MainLayout({
                 </span>
                 Panel
               </button>
-            )}
 
-            {/* Pricing button */}
-            <button
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-[13px] font-semibold
-                         text-white/70 hover:text-white backdrop-blur-md transition-all duration-150"
-              style={{
-                border: "1px solid rgba(93,26,27,0.35)",
-                background: "rgba(26,26,26,0.75)",
-              }}
-              aria-label="Pricing"
-            >
-              <Crown size={14} style={{ color: "rgba(204,41,54,0.95)" }} />
-              Pricing
-            </button>
+              {/* Pricing button */}
+              <button
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-[13px] font-semibold
+                           text-white/70 hover:text-white backdrop-blur-md transition-all duration-150"
+                style={{
+                  border: "1px solid rgba(93,26,27,0.35)",
+                  background: "rgba(26,26,26,0.75)",
+                }}
+                aria-label="Pricing"
+              >
+                <Crown size={14} style={{ color: "rgba(204,41,54,0.95)" }} />
+                Pricing
+              </button>
 
-            {/* User account dropdown with credit ring */}
-            <UserMenu
-              user={user}
-              tokenRemaining={tokenRemaining ?? 0}
-              tokenMax={tokenMax ?? 400}
-              onOpenSettings={() => setIsSettingsOpen(true)}
-            />
-          </div>
+              {/* User account dropdown with credit ring */}
+              <UserMenu
+                user={user}
+                tokenRemaining={tokenRemaining ?? 0}
+                tokenMax={tokenMax ?? 400}
+                onOpenSettings={() => setIsSettingsOpen(true)}
+              />
+            </div>
+          )}
 
           {/* Content: settings OR chat + results */}
           {isSettingsOpen ? (
             <SettingsPanel
               email={userEmail}
               company={userCompany}
+              fullName={userFullName}
+              phone={userPhone}
+              website={userWebsite}
               credits={tokenRemaining ?? 0}
               initials={user?.initials ?? "?"}
               onClose={() => setIsSettingsOpen(false)}

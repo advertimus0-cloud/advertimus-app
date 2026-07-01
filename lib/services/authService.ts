@@ -56,20 +56,29 @@ export async function logout(): Promise<AuthResult> {
 }
 
 export async function getCurrentUser(): Promise<
-  AuthResult<{ id: string; email?: string; company?: string }>
+  AuthResult<{
+    id: string
+    email?: string
+    company?: string
+    fullName?: string
+    phone?: string
+    website?: string
+  }>
 > {
   try {
     const supabase = createClient()
     const { data, error } = await supabase.auth.getUser()
     if (error || !data.user) return { error: error?.message ?? 'Not authenticated' }
+    const meta = data.user.user_metadata ?? {}
+    const str = (v: unknown) => (typeof v === 'string' ? v : undefined)
     return {
       data: {
         id: data.user.id,
         email: data.user.email,
-        company:
-          typeof data.user.user_metadata?.company === 'string'
-            ? data.user.user_metadata.company
-            : undefined,
+        company: str(meta.company),
+        fullName: str(meta.full_name),
+        phone: str(meta.phone),
+        website: str(meta.website),
       },
     }
   } catch (err) {

@@ -711,15 +711,16 @@ p {
   height: 200%;
   top: 50%;
   left: 50%;
-  /* blue comet — bright leading tip fading into the requested navy tail.
-     Low blur keeps it a crisp light riding the border edge (no bleed into text). */
+  /* SOLID single-hue blue comet (rgba(22,17,66)) — only the alpha changes to
+     fade the tail; no other colours mixed in. Low blur keeps it a crisp light
+     riding the border edge (no bleed into text). */
   background: conic-gradient(
     from 0deg,
-    transparent            0deg,
-    rgba(22,17,66,0.0)     180deg,
-    rgba(22,17,66,0.45)    290deg,
-    rgba(70,90,210,0.85)   345deg,
-    rgba(150,170,255,1.0)  360deg
+    transparent          0deg,
+    rgba(22,17,66,0)     240deg,
+    rgba(22,17,66,0.55)  315deg,
+    rgba(22,17,66,1)     358deg,
+    rgba(22,17,66,1)     360deg
   );
   animation: chaseSpin 3.8s linear infinite;
   filter: blur(4px);

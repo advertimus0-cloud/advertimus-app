@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import { X, User, Shield, LogOut, Trash2, Eye, EyeOff, Check, AlertTriangle } from "lucide-react";
+import { X, User, Shield, LogOut, Trash2, Eye, EyeOff, Check, AlertTriangle, Search, UserCircle } from "lucide-react";
 import { updateProfile, changePassword, deleteAccount } from "@/app/dashboard/settings/actions";
 import { logout } from "@/app/dashboard/actions";
 
@@ -10,6 +10,9 @@ import { logout } from "@/app/dashboard/actions";
 interface Props {
   email: string;
   company: string;
+  fullName?: string;
+  phone?: string;
+  website?: string;
   credits: number;
   initials: string;
   onClose: () => void;
@@ -188,17 +191,27 @@ function AccountTab({ email, credits, initials }: { email: string; credits: numb
   );
 }
 
-function ProfileTab({ initialCompany }: { initialCompany: string }) {
+function ProfileTab({
+  initialFullName, initialCompany, initialPhone, initialWebsite, email, initials,
+}: {
+  initialFullName: string; initialCompany: string; initialPhone: string; initialWebsite: string;
+  email: string; initials: string;
+}) {
+  const [fullName, setFullName] = useState(initialFullName);
   const [company, setCompany] = useState(initialCompany);
+  const [phone, setPhone] = useState(initialPhone);
+  const [website, setWebsite] = useState(initialWebsite);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  const clearStatus = () => setSuccess(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null); setSuccess(false);
     startTransition(async () => {
-      const res = await updateProfile(company);
+      const res = await updateProfile({ fullName, company, phone, website });
       if (res?.error) setError(res.error);
       else setSuccess(true);
     });
@@ -206,16 +219,66 @@ function ProfileTab({ initialCompany }: { initialCompany: string }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+      {/* Avatar / identity block */}
+      <div style={{
+        display: "flex", alignItems: "center", gap: 16, padding: "18px 20px",
+        background: "rgba(255,255,255,0.02)", borderRadius: 14,
+        border: "1px solid rgba(255,255,255,0.06)",
+      }}>
+        <div style={{
+          width: 58, height: 58, borderRadius: "50%",
+          background: "linear-gradient(135deg,#5d1a1b,#161142)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 19, fontWeight: 700, color: "#fff", flexShrink: 0,
+        }}>
+          {initials}
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ margin: 0, fontSize: 15, fontWeight: 600, color: "#fff" }}>
+            {fullName || company || email.split("@")[0]}
+          </p>
+          <p style={{ margin: "2px 0 0", fontSize: 12.5, color: "rgba(255,255,255,0.4)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {email}
+          </p>
+        </div>
+        <span style={{
+          fontSize: 10, fontWeight: 700, padding: "4px 10px", borderRadius: 6,
+          background: "rgba(93,26,27,0.22)", color: "rgba(204,41,54,0.95)",
+          letterSpacing: "0.06em", textTransform: "uppercase", flexShrink: 0,
+        }}>
+          Free Plan
+        </span>
+      </div>
+
       <div>
-        <SectionTitle>Company information</SectionTitle>
+        <SectionTitle>Personal information</SectionTitle>
         {error && <Banner kind="error" text={error} />}
         {success && <Banner kind="success" text="Profile saved successfully." />}
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div>
-            <FieldLabel>Company name</FieldLabel>
-            <Input value={company} onChange={v => { setCompany(v); setSuccess(false); }} placeholder="Your company" disabled={isPending} />
+            <FieldLabel>Full name</FieldLabel>
+            <Input value={fullName} onChange={v => { setFullName(v); clearStatus(); }} placeholder="e.g. Alex Jackson" disabled={isPending} />
           </div>
           <div>
+            <FieldLabel>Company name</FieldLabel>
+            <Input value={company} onChange={v => { setCompany(v); clearStatus(); }} placeholder="Your company" disabled={isPending} />
+          </div>
+          <div>
+            <FieldLabel>Phone number</FieldLabel>
+            <Input value={phone} onChange={v => { setPhone(v); clearStatus(); }} placeholder="+1 234 567 8900" disabled={isPending} />
+          </div>
+          <div>
+            <FieldLabel>Website</FieldLabel>
+            <Input value={website} onChange={v => { setWebsite(v); clearStatus(); }} placeholder="https://yourcompany.com" disabled={isPending} />
+          </div>
+          <div>
+            <FieldLabel>Email</FieldLabel>
+            <Input value={email} onChange={() => {}} disabled style={{ opacity: 0.7, cursor: "not-allowed" }} />
+            <p style={{ margin: "6px 0 0", fontSize: 11.5, color: "rgba(255,255,255,0.3)" }}>
+              Your email is used for sign-in and can’t be changed here.
+            </p>
+          </div>
+          <div style={{ paddingTop: 2 }}>
             <PrimaryBtn type="submit" disabled={isPending}>{isPending ? "Saving…" : "Save changes"}</PrimaryBtn>
           </div>
         </form>
@@ -353,16 +416,23 @@ function SecurityTab() {
 
 // ─── SettingsPanel ────────────────────────────────────────────────────────────
 
-const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
-  { id: "account", label: "Account", icon: <User size={15} /> },
-  { id: "profile", label: "Profile", icon: <User size={15} /> },
-  { id: "security", label: "Security", icon: <Shield size={15} /> },
+const TABS: { id: Tab; label: string; icon: React.ReactNode; keywords: string }[] = [
+  { id: "account", label: "Account", icon: <UserCircle size={16} />, keywords: "email credits balance plan billing sign out logout session" },
+  { id: "profile", label: "Profile", icon: <User size={16} />, keywords: "name full company phone website avatar personal information details" },
+  { id: "security", label: "Security", icon: <Shield size={16} />, keywords: "password change delete account danger zone privacy" },
 ];
 
-export default function SettingsPanel({ email, company, credits, initials, onClose }: Props) {
+export default function SettingsPanel({
+  email, company, fullName = "", phone = "", website = "", credits, initials, onClose,
+}: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("account");
+  const [search, setSearch] = useState("");
 
   const activeMeta = TABS.find(t => t.id === activeTab);
+  const q = search.trim().toLowerCase();
+  const visibleTabs = q
+    ? TABS.filter(t => t.label.toLowerCase().includes(q) || t.keywords.includes(q))
+    : TABS;
 
   return (
     <div
@@ -399,12 +469,32 @@ export default function SettingsPanel({ email, company, credits, initials, onClo
 
         {/* Left vertical nav */}
         <nav style={{
-          width: 214, flexShrink: 0, padding: "18px 14px",
+          width: 224, flexShrink: 0, padding: "18px 14px",
           borderRight: "1px solid rgba(255,255,255,0.06)",
           display: "flex", flexDirection: "column", gap: 4,
           overflowY: "auto",
         }}>
-          {TABS.map(tab => {
+          {/* Search */}
+          <div style={{ position: "relative", marginBottom: 10 }}>
+            <Search size={14} style={{
+              position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
+              color: "rgba(255,255,255,0.3)",
+            }} />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search settings…"
+              style={{
+                width: "100%", boxSizing: "border-box",
+                padding: "9px 12px 9px 34px", borderRadius: 10, outline: "none",
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.09)",
+                color: "#fff", fontSize: 13,
+              }}
+            />
+          </div>
+
+          {visibleTabs.map(tab => {
             const active = activeTab === tab.id;
             return (
               <button
@@ -430,6 +520,11 @@ export default function SettingsPanel({ email, company, credits, initials, onClo
               </button>
             );
           })}
+          {visibleTabs.length === 0 && (
+            <p style={{ padding: "10px 14px", fontSize: 12.5, color: "rgba(255,255,255,0.3)" }}>
+              No settings match “{search}”.
+            </p>
+          )}
         </nav>
 
         {/* Right content */}
@@ -439,7 +534,16 @@ export default function SettingsPanel({ email, company, credits, initials, onClo
               {activeMeta?.label}
             </h3>
             {activeTab === "account" && <AccountTab email={email} credits={credits} initials={initials} />}
-            {activeTab === "profile" && <ProfileTab initialCompany={company} />}
+            {activeTab === "profile" && (
+              <ProfileTab
+                initialFullName={fullName}
+                initialCompany={company}
+                initialPhone={phone}
+                initialWebsite={website}
+                email={email}
+                initials={initials}
+              />
+            )}
             {activeTab === "security" && <SecurityTab />}
           </div>
         </div>
