@@ -11,6 +11,9 @@ const nextConfig = {
   // Enable React strict mode for catching common bugs early
   reactStrictMode: true,
 
+  // Strip the verbose `X-Powered-By: Next.js` header (§13 — don't leak stack details)
+  poweredByHeader: false,
+
   // Image optimization via sharp
   images: {
     // Allow images from these external domains (add more as needed)
@@ -36,6 +39,11 @@ const nextConfig = {
           { key: 'X-Frame-Options', value: 'DENY' },
           // Prevent MIME sniffing
           { key: 'X-Content-Type-Options', value: 'nosniff' },
+          // Force HTTPS for 2 years incl. subdomains (§10 — mandatory)
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
           // Control referrer info
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           // Permissions policy — disable unused browser features

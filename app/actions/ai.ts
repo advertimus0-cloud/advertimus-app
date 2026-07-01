@@ -19,6 +19,14 @@ export interface CallAIOptions {
 export async function callAI(options: CallAIOptions) {
   const supabase = createClient()
 
+  // Defense-in-depth (§2, §16): verify the session server-side before spending
+  // any AI budget. The Edge Function re-validates the JWT, but we must never rely
+  // on the client to be authenticated — reject unauthenticated calls up front.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated.' }
+
   const { data, error } = await supabase.functions.invoke('call-ai', {
     body: options,
   })
