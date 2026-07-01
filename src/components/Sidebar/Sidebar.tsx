@@ -198,8 +198,8 @@ export function Sidebar({
     onMobileClose?.()
   }
 
-  const BORDER = '1px solid rgba(22,17,66,0.7)'
-  const BORDER_SHADOW = '2px 0 16px rgba(22,17,66,0.35), 1px 0 0 rgba(93,26,27,0.12)'
+  const BORDER = '1px solid rgba(93,26,27,0.18)'
+  const BORDER_SHADOW = '2px 0 16px rgba(0,0,0,0.3), 1px 0 0 rgba(93,26,27,0.1)'
 
   // ── MINI SIDEBAR (64px, icon-only) ────────────────────────────────────────
   if (isCollapsed) {
