@@ -1,9 +1,22 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useEffect, useTransition } from "react";
 import { X, User, Shield, LogOut, Trash2, Eye, EyeOff, Check, AlertTriangle, Search, UserCircle } from "lucide-react";
 import { updateProfile, changePassword, deleteAccount } from "@/app/dashboard/settings/actions";
 import { logout } from "@/app/dashboard/actions";
+
+// ─── Hooks ────────────────────────────────────────────────────────────────────
+
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < breakpoint);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, [breakpoint]);
+  return isMobile;
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -427,6 +440,7 @@ export default function SettingsPanel({
 }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("account");
   const [search, setSearch] = useState("");
+  const isMobile = useIsMobile();
 
   const activeMeta = TABS.find(t => t.id === activeTab);
   const q = search.trim().toLowerCase();
@@ -444,11 +458,12 @@ export default function SettingsPanel({
       {/* Header */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "20px 28px", borderBottom: "1px solid rgba(255,255,255,0.06)",
+        padding: isMobile ? "16px 16px 16px 18px" : "20px 28px",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
         flexShrink: 0,
       }}>
-        <div>
-          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>Settings</h2>
+        <div style={{ minWidth: 0 }}>
+          <h2 style={{ margin: 0, fontSize: isMobile ? 16 : 18, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>Settings</h2>
           <p style={{ margin: "3px 0 0", fontSize: 12.5, color: "rgba(255,255,255,0.35)" }}>Manage your account and preferences</p>
         </div>
         <button
@@ -458,41 +473,52 @@ export default function SettingsPanel({
             width: 36, height: 36, borderRadius: 10, border: "1px solid rgba(255,255,255,0.09)",
             background: "rgba(255,255,255,0.03)", color: "rgba(255,255,255,0.5)",
             cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+            flexShrink: 0, marginLeft: 12,
           }}
         >
           <X size={17} />
         </button>
       </div>
 
-      {/* Body: left nav rail + right content */}
-      <div style={{ flex: 1, display: "flex", overflow: "hidden", minHeight: 0 }}>
+      {/* Body: left rail on desktop, stacked (nav on top) on mobile */}
+      <div style={{
+        flex: 1, display: "flex", flexDirection: isMobile ? "column" : "row",
+        overflow: "hidden", minHeight: 0,
+      }}>
 
-        {/* Left vertical nav */}
+        {/* Nav */}
         <nav style={{
-          width: 224, flexShrink: 0, padding: "18px 14px",
-          borderRight: "1px solid rgba(255,255,255,0.06)",
-          display: "flex", flexDirection: "column", gap: 4,
-          overflowY: "auto",
+          width: isMobile ? "100%" : 224, flexShrink: 0,
+          padding: isMobile ? "12px 14px" : "18px 14px",
+          borderRight: isMobile ? "none" : "1px solid rgba(255,255,255,0.06)",
+          borderBottom: isMobile ? "1px solid rgba(255,255,255,0.06)" : "none",
+          display: "flex", flexDirection: isMobile ? "row" : "column",
+          gap: isMobile ? 8 : 4,
+          overflowX: isMobile ? "auto" : "visible",
+          overflowY: isMobile ? "visible" : "auto",
+          alignItems: isMobile ? "center" : "stretch",
         }}>
-          {/* Search */}
-          <div style={{ position: "relative", marginBottom: 10 }}>
-            <Search size={14} style={{
-              position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
-              color: "rgba(255,255,255,0.3)",
-            }} />
-            <input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search settings…"
-              style={{
-                width: "100%", boxSizing: "border-box",
-                padding: "9px 12px 9px 34px", borderRadius: 10, outline: "none",
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.09)",
-                color: "#fff", fontSize: 13,
-              }}
-            />
-          </div>
+          {/* Search — desktop only (mobile keeps the nav row compact) */}
+          {!isMobile && (
+            <div style={{ position: "relative", marginBottom: 10 }}>
+              <Search size={14} style={{
+                position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
+                color: "rgba(255,255,255,0.3)",
+              }} />
+              <input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search settings…"
+                style={{
+                  width: "100%", boxSizing: "border-box",
+                  padding: "9px 12px 9px 34px", borderRadius: 10, outline: "none",
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.09)",
+                  color: "#fff", fontSize: 13,
+                }}
+              />
+            </div>
+          )}
 
           {visibleTabs.map(tab => {
             const active = activeTab === tab.id;
@@ -501,17 +527,18 @@ export default function SettingsPanel({
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 style={{
-                  display: "flex", alignItems: "center", gap: 11,
-                  padding: "11px 14px", borderRadius: 11, border: "none",
+                  display: "flex", alignItems: "center", gap: isMobile ? 8 : 11,
+                  padding: isMobile ? "9px 14px" : "11px 14px", borderRadius: 11, border: "none",
                   background: active ? "rgba(93,26,27,0.22)" : "transparent",
                   color: active ? "#fff" : "rgba(255,255,255,0.5)",
                   fontSize: 14, fontWeight: active ? 600 : 500,
-                  cursor: "pointer", textAlign: "left", width: "100%",
-                  borderLeft: active ? "2px solid rgba(204,41,54,0.9)" : "2px solid transparent",
+                  cursor: "pointer", textAlign: "left",
+                  width: isMobile ? "auto" : "100%", flexShrink: 0, whiteSpace: "nowrap",
+                  borderLeft: !isMobile && active ? "2px solid rgba(204,41,54,0.9)" : "2px solid transparent",
                   transition: "all 0.15s",
                 }}
                 onMouseEnter={e => { if (!active) (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.03)"; }}
-                onMouseLeave={e => { if (!active) (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+                onMouseLeave={e => { if (!active) (e.currentTarget as HTMLButtonElement).style.background = active ? "rgba(93,26,27,0.22)" : "transparent"; }}
               >
                 <span style={{ color: active ? "rgba(204,41,54,0.95)" : "rgba(255,255,255,0.35)", display: "flex" }}>
                   {tab.icon}
@@ -529,7 +556,7 @@ export default function SettingsPanel({
 
         {/* Right content */}
         <div style={{ flex: 1, overflowY: "auto", minWidth: 0 }}>
-          <div style={{ maxWidth: 620, padding: "30px 34px 60px" }}>
+          <div style={{ maxWidth: 620, padding: isMobile ? "22px 18px 60px" : "30px 34px 60px" }}>
             <h3 style={{ margin: "0 0 22px", fontSize: 16, fontWeight: 700, color: "#fff" }}>
               {activeMeta?.label}
             </h3>

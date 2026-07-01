@@ -535,8 +535,8 @@ export function ChatArea({
   )
 
   const disclaimer = (
-    <p className="text-center mt-4 mb-2 text-[11px] select-none"
-       style={{ color: 'rgba(150,150,165,0.55)', letterSpacing: '0.01em' }}>
+    <p className="text-center mt-4 mb-2 text-[9px] sm:text-[10px] select-none"
+       style={{ color: 'rgba(150,150,165,0.5)', letterSpacing: '0.01em' }}>
       Advertimus is AI and can make mistakes. Please double-check responses.
     </p>
   )
@@ -571,16 +571,13 @@ export function ChatArea({
 
       {isEmpty ? (
 
-        // ── EMPTY STATE: centered on desktop, top-aligned (below toolbar) on mobile ─
-        <div className="flex-1 flex flex-col items-center justify-start sm:justify-center overflow-y-auto px-4 pt-20 sm:pt-0">
-          <div className="w-full max-w-2xl py-4 sm:py-8">
+        // ── EMPTY STATE: vertically centered (clears the top toolbar) ─────
+        <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto px-4 py-10 sm:py-8">
+          <div className="w-full max-w-2xl">
 
             {/* Headline — rotates through campaign taglines */}
             <div className="text-center mb-8 sm:mb-10 select-none">
               <RotatingHeadline />
-              <p className="mt-4 text-[13px] sm:text-sm px-4" style={{ color: 'rgba(255,255,255,0.36)' }}>
-                Describe your product or idea to get started
-              </p>
             </div>
 
             {/* Image uploader */}

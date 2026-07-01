@@ -456,8 +456,9 @@ export default function MainLayout({
           />
         )}
 
-        {/* Mobile-only floating sidebar toggle */}
-        {isMobile && !isSidebarOpen && (
+        {/* Mobile-only floating sidebar toggle — hidden while Settings is open
+            so it never overlaps the Settings panel's close button. */}
+        {isMobile && !isSidebarOpen && !isSettingsOpen && (
           <button
             onClick={toggleSidebar}
             style={{ position: "fixed", top: 14, left: 14, zIndex: 50 }}
