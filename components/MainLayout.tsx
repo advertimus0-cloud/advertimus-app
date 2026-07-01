@@ -395,10 +395,10 @@ export default function MainLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generationProgress, setGenerationProgress] = useState(0);
-  const [currentPhase, setCurrentPhase] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Panel/results feature is not wired to a backend yet — kept off for now.
+  const PANEL_ENABLED = false;
 
   useEffect(() => {
     function check() {
@@ -414,28 +414,10 @@ export default function MainLayout({
 
   const toggleSidebar = () => setIsSidebarOpen((o) => !o);
 
+  // Results panel is disabled for now (backend not connected yet). Results will
+  // be shown inline in the chat later, so sending a message must NOT open it.
   function handleSendMessage(_content: string) {
-    setIsResultsOpen(true);
-    setIsGenerating(true);
-    setGenerationProgress(0);
-    setCurrentPhase(1);
-
-    let phase = 1;
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 3;
-      if (progress >= 100) {
-        progress = 100;
-        clearInterval(interval);
-        setIsGenerating(false);
-      }
-      const newPhase = Math.min(7, Math.ceil((progress / 100) * 7));
-      if (newPhase !== phase) {
-        phase = newPhase;
-        setCurrentPhase(newPhase);
-      }
-      setGenerationProgress(progress);
-    }, 300);
+    /* no-op until the generation backend is wired up */
   }
 
   const isCollapsed = !isMobile && !isSidebarOpen;
@@ -511,46 +493,44 @@ export default function MainLayout({
         <div className="flex flex-1 min-w-0 overflow-hidden relative">
 
           {/* ── Floating top-right toolbar (no header bar) ──────────────────
-              Hidden entirely while Settings is open so it never overlaps the
-              Settings panel's own close button. */}
-          {!isSettingsOpen && (
+              Hidden while Settings is open (would overlap its close button) and
+              while the mobile sidebar overlay is open (would sit on top of it). */}
+          {!isSettingsOpen && !(isMobile && isSidebarOpen) && (
             <div
-              className="absolute top-3.5 z-30 flex items-center gap-2.5"
+              className="absolute top-3 sm:top-3.5 z-30 flex items-center gap-2 sm:gap-2.5"
               style={{
-                right: isResultsOpen ? RESULTS_WIDTH + 16 : 16,
+                right: isResultsOpen ? RESULTS_WIDTH + 16 : 14,
                 transition: "right 300ms ease-in-out",
               }}
             >
-              {/* Panel toggle */}
-              <button
-                onClick={() => setIsResultsOpen((o) => !o)}
-                className={[
-                  "flex items-center gap-2 px-3.5 py-2 rounded-xl text-[13px] font-semibold",
-                  "backdrop-blur-md transition-all duration-150",
-                  isResultsOpen
-                    ? "text-white"
-                    : "text-white/70 hover:text-white",
-                ].join(" ")}
-                style={{
-                  border: isResultsOpen
-                    ? "1px solid rgba(93,26,27,0.6)"
-                    : "1px solid rgba(93,26,27,0.35)",
-                  background: isResultsOpen
-                    ? "rgba(93,26,27,0.3)"
-                    : "rgba(26,26,26,0.75)",
-                }}
-                aria-label={isResultsOpen ? "Close results panel" : "Open results panel"}
-                aria-pressed={isResultsOpen}
-              >
-                <span className="inline-flex items-center justify-center rounded-md bg-red-500/[0.18] text-red-500 shadow-[0_0_15px_rgba(220,38,38,0.22)] p-1">
-                  <PanelRight size={14} />
-                </span>
-                Panel
-              </button>
+              {/* Panel toggle — disabled until backend is wired up; hidden on mobile */}
+              {PANEL_ENABLED && !isMobile && (
+                <button
+                  onClick={() => setIsResultsOpen((o) => !o)}
+                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-[13px] font-semibold
+                             text-white/70 hover:text-white backdrop-blur-md transition-all duration-150"
+                  style={{
+                    border: isResultsOpen
+                      ? "1px solid rgba(93,26,27,0.6)"
+                      : "1px solid rgba(93,26,27,0.35)",
+                    background: isResultsOpen
+                      ? "rgba(93,26,27,0.3)"
+                      : "rgba(26,26,26,0.75)",
+                  }}
+                  aria-label={isResultsOpen ? "Close results panel" : "Open results panel"}
+                  aria-pressed={isResultsOpen}
+                >
+                  <span className="inline-flex items-center justify-center rounded-md p-1"
+                    style={{ background: "rgba(93,26,27,0.16)", color: "rgba(93,26,27,0.95)" }}>
+                    <PanelRight size={14} />
+                  </span>
+                  Panel
+                </button>
+              )}
 
               {/* Pricing button */}
               <button
-                className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-[13px] font-semibold
+                className="flex items-center gap-2 px-3 sm:px-3.5 py-2 rounded-xl text-[13px] font-semibold
                            text-white/70 hover:text-white backdrop-blur-md transition-all duration-150"
                 style={{
                   border: "1px solid rgba(93,26,27,0.35)",
@@ -558,7 +538,7 @@ export default function MainLayout({
                 }}
                 aria-label="Pricing"
               >
-                <Crown size={14} style={{ color: "rgba(204,41,54,0.95)" }} />
+                <Crown size={14} style={{ color: "rgba(93,26,27,0.95)" }} />
                 Pricing
               </button>
 
@@ -594,8 +574,8 @@ export default function MainLayout({
                 />
               </main>
 
-              {/* Results panel */}
-              {isResultsOpen && (
+              {/* Results panel — disabled for now (PANEL_ENABLED === false) */}
+              {PANEL_ENABLED && isResultsOpen && (
                 <aside
                   className="flex-shrink-0 h-full hidden md:block overflow-hidden"
                   style={{
@@ -606,9 +586,9 @@ export default function MainLayout({
                 >
                   <ResultsPanel
                     showResults={isResultsOpen}
-                    isGenerating={isGenerating}
-                    progress={generationProgress}
-                    currentPhase={currentPhase}
+                    isGenerating={false}
+                    progress={0}
+                    currentPhase={1}
                   />
                 </aside>
               )}

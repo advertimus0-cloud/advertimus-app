@@ -473,7 +473,14 @@ export function ChatArea({
     ].join(' ')
 
   const iconBadge = (children: React.ReactNode) => (
-    <span className="inline-flex items-center justify-center rounded-md bg-red-500/[0.18] text-red-500 shadow-[0_0_16px_rgba(220,38,38,0.25)] p-1.5">
+    <span
+      className="inline-flex items-center justify-center rounded-md p-1.5"
+      style={{
+        background: 'rgba(93,26,27,0.16)',
+        color: 'rgba(93,26,27,0.95)',
+        boxShadow: '0 0 14px rgba(93,26,27,0.28)',
+      }}
+    >
       {children}
     </span>
   )
@@ -571,14 +578,14 @@ export function ChatArea({
 
       {isEmpty ? (
 
-        // ── EMPTY STATE: entire block centered vertically ─────────────────
-        <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto px-4">
-          <div className="w-full max-w-2xl py-8">
+        // ── EMPTY STATE: centered on desktop, top-aligned (below toolbar) on mobile ─
+        <div className="flex-1 flex flex-col items-center justify-start sm:justify-center overflow-y-auto px-4 pt-20 sm:pt-0">
+          <div className="w-full max-w-2xl py-4 sm:py-8">
 
             {/* Headline — rotates through campaign taglines */}
-            <div className="text-center mb-10 select-none">
+            <div className="text-center mb-8 sm:mb-10 select-none">
               <RotatingHeadline />
-              <p className="mt-1 text-sm" style={{ color: 'rgba(255,255,255,0.36)' }}>
+              <p className="mt-4 text-[13px] sm:text-sm px-4" style={{ color: 'rgba(255,255,255,0.36)' }}>
                 Describe your product or idea to get started
               </p>
             </div>

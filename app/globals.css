@@ -701,7 +701,7 @@ p {
   overflow: hidden;
   /* faint static blue frame sits under the moving light so the full border
      is always visible and the light reads as travelling all the way around */
-  background: rgba(22,17,66,0.35);
+  background: rgba(74,104,230,0.25);
 }
 
 .chat-border-chase::before {
@@ -711,18 +711,18 @@ p {
   height: 200%;
   top: 50%;
   left: 50%;
-  /* SOLID single-hue blue comet (rgba(22,17,66)) — only the alpha changes to
-     fade the tail; no other colours mixed in. Low blur keeps it a crisp light
-     riding the border edge (no bleed into text). */
+  /* SOLID single-hue blue comet — brighter, clearly visible blue. Only the
+     alpha changes to fade the tail; no other colours mixed in. Low blur keeps
+     it a crisp light riding the border edge (no bleed into text). */
   background: conic-gradient(
     from 0deg,
-    transparent          0deg,
-    rgba(22,17,66,0)     240deg,
-    rgba(22,17,66,0.55)  315deg,
-    rgba(22,17,66,1)     358deg,
-    rgba(22,17,66,1)     360deg
+    transparent            0deg,
+    rgba(74,104,230,0)     235deg,
+    rgba(74,104,230,0.55)  310deg,
+    rgba(74,104,230,1)     356deg,
+    rgba(74,104,230,1)     360deg
   );
-  animation: chaseSpin 3.8s linear infinite;
+  animation: chaseSpin 3.6s linear infinite;
   filter: blur(4px);
   z-index: 0;
 }
