@@ -362,6 +362,8 @@ const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
 export default function SettingsPanel({ email, company, credits, initials, onClose }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("account");
 
+  const activeMeta = TABS.find(t => t.id === activeTab);
+
   return (
     <div
       style={{
@@ -376,56 +378,71 @@ export default function SettingsPanel({ email, company, credits, initials, onClo
         flexShrink: 0,
       }}>
         <div>
-          <h2 style={{ margin: 0, fontSize: 17, fontWeight: 700, color: "#fff" }}>Settings</h2>
-          <p style={{ margin: "2px 0 0", fontSize: 12.5, color: "rgba(255,255,255,0.35)" }}>Manage your account and preferences</p>
+          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>Settings</h2>
+          <p style={{ margin: "3px 0 0", fontSize: 12.5, color: "rgba(255,255,255,0.35)" }}>Manage your account and preferences</p>
         </div>
         <button
           onClick={onClose}
           aria-label="Close settings"
           style={{
-            width: 34, height: 34, borderRadius: 10, border: "1px solid rgba(255,255,255,0.09)",
+            width: 36, height: 36, borderRadius: 10, border: "1px solid rgba(255,255,255,0.09)",
             background: "rgba(255,255,255,0.03)", color: "rgba(255,255,255,0.5)",
             cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
           }}
         >
-          <X size={16} />
+          <X size={17} />
         </button>
       </div>
 
-      {/* Tab bar */}
-      <div style={{
-        display: "flex", gap: 4, padding: "12px 28px",
-        borderBottom: "1px solid rgba(255,255,255,0.05)", flexShrink: 0,
-        overflowX: "auto",
-      }}>
-        {TABS.map(tab => {
-          const active = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              style={{
-                display: "flex", alignItems: "center", gap: 7,
-                padding: "8px 14px", borderRadius: 9, border: "none",
-                background: active ? "rgba(93,26,27,0.25)" : "transparent",
-                color: active ? "#fff" : "rgba(255,255,255,0.4)",
-                fontSize: 13.5, fontWeight: active ? 600 : 500,
-                cursor: "pointer", whiteSpace: "nowrap",
-                boxShadow: active ? "inset 0 0 0 1px rgba(93,26,27,0.5)" : "none",
-                transition: "all 0.15s",
-              }}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
+      {/* Body: left nav rail + right content */}
+      <div style={{ flex: 1, display: "flex", overflow: "hidden", minHeight: 0 }}>
 
-      {/* Scrollable content */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "28px", maxWidth: 560 }}>
-        {activeTab === "account" && <AccountTab email={email} credits={credits} initials={initials} />}
-        {activeTab === "profile" && <ProfileTab initialCompany={company} />}
-        {activeTab === "security" && <SecurityTab />}
+        {/* Left vertical nav */}
+        <nav style={{
+          width: 214, flexShrink: 0, padding: "18px 14px",
+          borderRight: "1px solid rgba(255,255,255,0.06)",
+          display: "flex", flexDirection: "column", gap: 4,
+          overflowY: "auto",
+        }}>
+          {TABS.map(tab => {
+            const active = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 11,
+                  padding: "11px 14px", borderRadius: 11, border: "none",
+                  background: active ? "rgba(93,26,27,0.22)" : "transparent",
+                  color: active ? "#fff" : "rgba(255,255,255,0.5)",
+                  fontSize: 14, fontWeight: active ? 600 : 500,
+                  cursor: "pointer", textAlign: "left", width: "100%",
+                  borderLeft: active ? "2px solid rgba(204,41,54,0.9)" : "2px solid transparent",
+                  transition: "all 0.15s",
+                }}
+                onMouseEnter={e => { if (!active) (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.03)"; }}
+                onMouseLeave={e => { if (!active) (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+              >
+                <span style={{ color: active ? "rgba(204,41,54,0.95)" : "rgba(255,255,255,0.35)", display: "flex" }}>
+                  {tab.icon}
+                </span>
+                {tab.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Right content */}
+        <div style={{ flex: 1, overflowY: "auto", minWidth: 0 }}>
+          <div style={{ maxWidth: 620, padding: "30px 34px 60px" }}>
+            <h3 style={{ margin: "0 0 22px", fontSize: 16, fontWeight: 700, color: "#fff" }}>
+              {activeMeta?.label}
+            </h3>
+            {activeTab === "account" && <AccountTab email={email} credits={credits} initials={initials} />}
+            {activeTab === "profile" && <ProfileTab initialCompany={company} />}
+            {activeTab === "security" && <SecurityTab />}
+          </div>
+        </div>
       </div>
     </div>
   );

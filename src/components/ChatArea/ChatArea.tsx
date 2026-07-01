@@ -136,11 +136,59 @@ function createGreeting(): ChatMessage {
   )
 }
 
+// ─── Rotating headline ──────────────────────────────────────────────────────────
+
+const HEADLINES = [
+  "Let's make the best marketing campaign.",
+  'Turn conversations into conversions.',
+  'One chat. Complete campaign.',
+  'Your AI marketing strategist.',
+]
+
+function RotatingHeadline() {
+  const [idx, setIdx] = useState(0)
+  const [visible, setVisible] = useState(true)
+
+  useEffect(() => {
+    let swapTimer: ReturnType<typeof setTimeout>
+    const cycle = setInterval(() => {
+      setVisible(false)
+      swapTimer = setTimeout(() => {
+        setIdx(i => (i + 1) % HEADLINES.length)
+        setVisible(true)
+      }, 650)
+    }, 4200)
+    return () => { clearInterval(cycle); clearTimeout(swapTimer) }
+  }, [])
+
+  return (
+    <h1
+      className="leading-tight"
+      style={{
+        fontFamily: 'var(--font-heading, Georgia, "Times New Roman", serif)',
+        fontSize: 'clamp(27px, 3.6vw, 46px)',
+        color: 'rgba(255,255,255,0.95)',
+        letterSpacing: '-0.005em',
+        fontWeight: 600,
+        margin: 0,
+        minHeight: '2.4em',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(10px)',
+        transition: 'opacity 0.65s ease, transform 0.65s ease',
+      }}
+    >
+      {HEADLINES[idx]}
+    </h1>
+  )
+}
+
 // ─── ChatArea ─────────────────────────────────────────────────────────────────
 
 export function ChatArea({
   projectName: _projectName = 'New Chat',
-  headline = "Let's make the best marketing campaign",
   creditsAvailable = 0,
   onGenerationStart,
   onSendMessage,
@@ -425,7 +473,7 @@ export function ChatArea({
     ].join(' ')
 
   const iconBadge = (children: React.ReactNode) => (
-    <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
+    <span className="inline-flex items-center justify-center rounded-md bg-red-500/[0.18] text-red-500 shadow-[0_0_16px_rgba(220,38,38,0.25)] p-1.5">
       {children}
     </span>
   )
@@ -487,9 +535,9 @@ export function ChatArea({
   )
 
   const disclaimer = (
-    <p className="text-center mt-16 mb-2 text-[10px] select-none tracking-wide"
-       style={{ color: 'rgba(100,100,110,0.6)' }}>
-      Advertimus is AI and may make mistakes
+    <p className="text-center mt-4 mb-2 text-[11px] select-none"
+       style={{ color: 'rgba(150,150,165,0.55)', letterSpacing: '0.01em' }}>
+      Advertimus is AI and can make mistakes. Please double-check responses.
     </p>
   )
 
@@ -527,21 +575,10 @@ export function ChatArea({
         <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto px-4">
           <div className="w-full max-w-2xl py-8">
 
-            {/* Headline */}
+            {/* Headline — rotates through campaign taglines */}
             <div className="text-center mb-10 select-none">
-              <h1
-                className="font-bold leading-tight"
-                style={{
-                  fontFamily: 'var(--font-display, inherit)',
-                  fontSize: 'clamp(24px, 3.2vw, 40px)',
-                  color: 'rgba(255,255,255,0.92)',
-                  letterSpacing: '-0.01em',
-                  fontWeight: 700,
-                }}
-              >
-                {headline}
-              </h1>
-              <p className="mt-3 text-sm" style={{ color: 'rgba(255,255,255,0.36)' }}>
+              <RotatingHeadline />
+              <p className="mt-1 text-sm" style={{ color: 'rgba(255,255,255,0.36)' }}>
                 Describe your product or idea to get started
               </p>
             </div>

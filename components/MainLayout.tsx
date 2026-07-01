@@ -80,16 +80,17 @@ function UserMenu({
       >
         <div
           style={{
-            width: 34,
-            height: 34,
+            width: 40,
+            height: 40,
             borderRadius: "50%",
             background: `conic-gradient(
-              rgba(93,26,27,0.9) 0deg,
-              rgba(93,26,27,0.9) ${ringDeg}deg,
-              rgba(255,255,255,0.1) ${ringDeg}deg,
-              rgba(255,255,255,0.1) 360deg
+              rgba(204,41,54,0.95) 0deg,
+              rgba(204,41,54,0.95) ${ringDeg}deg,
+              rgba(255,255,255,0.12) ${ringDeg}deg,
+              rgba(255,255,255,0.12) 360deg
             )`,
-            padding: 2.5,
+            padding: 3,
+            boxShadow: "0 0 0 1px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.35)",
           }}
         >
           <div
@@ -101,7 +102,7 @@ function UserMenu({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: 700,
               color: "#fff",
               letterSpacing: "-0.02em",
@@ -505,9 +506,9 @@ export default function MainLayout({
 
           {/* ── Floating top-right toolbar (no header bar) ─────────────────── */}
           <div
-            className="absolute top-3 z-30 flex items-center gap-2"
+            className="absolute top-3.5 z-30 flex items-center gap-2.5"
             style={{
-              right: isResultsOpen && !isSettingsOpen ? RESULTS_WIDTH + 14 : 14,
+              right: isResultsOpen && !isSettingsOpen ? RESULTS_WIDTH + 16 : 16,
               transition: "right 300ms ease-in-out",
             }}
           >
@@ -516,25 +517,25 @@ export default function MainLayout({
               <button
                 onClick={() => setIsResultsOpen((o) => !o)}
                 className={[
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium",
+                  "flex items-center gap-2 px-3.5 py-2 rounded-xl text-[13px] font-semibold",
                   "backdrop-blur-md transition-all duration-150",
                   isResultsOpen
                     ? "text-white"
-                    : "text-white/55 hover:text-white/85",
+                    : "text-white/70 hover:text-white",
                 ].join(" ")}
                 style={{
                   border: isResultsOpen
-                    ? "1px solid rgba(93,26,27,0.5)"
-                    : "1px solid rgba(93,26,27,0.28)",
+                    ? "1px solid rgba(93,26,27,0.6)"
+                    : "1px solid rgba(93,26,27,0.35)",
                   background: isResultsOpen
-                    ? "rgba(93,26,27,0.25)"
-                    : "rgba(26,26,26,0.7)",
+                    ? "rgba(93,26,27,0.3)"
+                    : "rgba(26,26,26,0.75)",
                 }}
                 aria-label={isResultsOpen ? "Close results panel" : "Open results panel"}
                 aria-pressed={isResultsOpen}
               >
-                <span className="inline-flex items-center justify-center rounded-md bg-red-500/10 text-red-600 shadow-[0_0_15px_rgba(220,38,38,0.15)] p-1">
-                  <PanelRight size={13} />
+                <span className="inline-flex items-center justify-center rounded-md bg-red-500/[0.18] text-red-500 shadow-[0_0_15px_rgba(220,38,38,0.22)] p-1">
+                  <PanelRight size={14} />
                 </span>
                 Panel
               </button>
@@ -542,15 +543,15 @@ export default function MainLayout({
 
             {/* Pricing button */}
             <button
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
-                         text-white/55 hover:text-white/85 backdrop-blur-md transition-all duration-150"
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-[13px] font-semibold
+                         text-white/70 hover:text-white backdrop-blur-md transition-all duration-150"
               style={{
-                border: "1px solid rgba(93,26,27,0.22)",
-                background: "rgba(26,26,26,0.7)",
+                border: "1px solid rgba(93,26,27,0.35)",
+                background: "rgba(26,26,26,0.75)",
               }}
               aria-label="Pricing"
             >
-              <Crown size={12} style={{ color: "rgba(204,41,54,0.85)" }} />
+              <Crown size={14} style={{ color: "rgba(204,41,54,0.95)" }} />
               Pricing
             </button>
 

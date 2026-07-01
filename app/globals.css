@@ -561,9 +561,15 @@ p {
 }
 
 @keyframes windPulse {
-  0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(1); }
-  33%      { opacity: 0.75; transform: translate(-50%, -50%) scale(1.2) translateX(40px); }
-  66%      { opacity: 0.45; transform: translate(-50%, -50%) scale(0.85) translateX(-30px); }
+  0%, 100% { opacity: 0.45; transform: translate(-50%, -50%) scale(1) translate(0, 0); }
+  25%      { opacity: 0.6;  transform: translate(-50%, -50%) scale(1.12) translate(30px, -20px); }
+  50%      { opacity: 0.5;  transform: translate(-50%, -50%) scale(1) translate(0, 20px); }
+  75%      { opacity: 0.4;  transform: translate(-50%, -50%) scale(0.92) translate(-30px, -10px); }
+}
+
+@keyframes windDrift {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50%      { transform: rotate(180deg) scale(1.08); }
 }
 
 /* Layer 1 — large rotating conic sweep (deep purple + dark red) */
@@ -586,8 +592,8 @@ p {
     rgba(22,17,66,0.4) 290deg,
     transparent        360deg
   );
-  filter: blur(70px);
-  animation: windRotate 28s linear infinite;
+  filter: blur(90px);
+  animation: windRotate 45s linear infinite;
 }
 
 /* Layer 2 — counter-rotating conic (different phase) */
@@ -610,8 +616,8 @@ p {
     rgba(93,26,27,0.3) 330deg,
     transparent        360deg
   );
-  filter: blur(80px);
-  animation: windRotateReverse 38s linear infinite;
+  filter: blur(100px);
+  animation: windRotateReverse 60s linear infinite;
 }
 
 /* Layer 3 — soft pulsing core */
@@ -630,8 +636,8 @@ p {
     rgba(93,26,27,0.35) 40%,
     transparent         70%
   );
-  filter: blur(60px);
-  animation: windPulse 12s ease-in-out infinite;
+  filter: blur(80px);
+  animation: windPulse 18s ease-in-out infinite;
 }
 
 /* ─── Animated gradient primary button ──────────────────────────────────────
@@ -690,10 +696,12 @@ p {
 
 .chat-border-chase {
   position: relative;
-  border-radius: 22px;   /* rounded-2xl (16px) + 6px padding = 22px */
-  padding: 1.5px;
+  border-radius: 18px;   /* inner rounded-2xl (16px) + 2px padding */
+  padding: 2px;
   overflow: hidden;
-  background: rgba(93,26,27,0.25);
+  /* faint static blue frame sits under the moving light so the full border
+     is always visible and the light reads as travelling all the way around */
+  background: rgba(22,17,66,0.35);
 }
 
 .chat-border-chase::before {
@@ -703,18 +711,19 @@ p {
   height: 200%;
   top: 50%;
   left: 50%;
-  /* wide ~60° arc with heavy blur = soft glowing orb of light */
+  /* blue comet — bright leading tip fading into the requested navy tail.
+     Low blur keeps it a crisp light riding the border edge (no bleed into text). */
   background: conic-gradient(
     from 0deg,
-    transparent           0deg,
-    transparent           300deg,
-    rgba(93,26,27,0.0)    300deg,
-    rgba(180,30,42,0.55)  320deg,
-    rgba(204,41,54,1.0)   360deg,
-    rgba(204,41,54,1.0)   360deg
+    transparent            0deg,
+    rgba(22,17,66,0.0)     180deg,
+    rgba(22,17,66,0.45)    290deg,
+    rgba(70,90,210,0.85)   345deg,
+    rgba(150,170,255,1.0)  360deg
   );
-  animation: chaseSpin 3.5s linear infinite;
-  filter: blur(16px);
+  animation: chaseSpin 3.8s linear infinite;
+  filter: blur(4px);
+  z-index: 0;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
