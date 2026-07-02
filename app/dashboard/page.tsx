@@ -23,6 +23,7 @@ export default async function DashboardPage() {
       userFullName={user?.fullName ?? ""}
       userPhone={user?.phone ?? ""}
       userWebsite={user?.website ?? ""}
+      userId={user?.id ?? ""}
       tokenUsed={Math.max(0, TRIAL_CREDIT_LIMIT - balance)}
       tokenMax={TRIAL_CREDIT_LIMIT}
       tokenRemaining={balance}

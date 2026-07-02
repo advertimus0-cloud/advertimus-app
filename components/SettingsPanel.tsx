@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useTransition } from "react";
-import { X, User, Shield, LogOut, Trash2, Eye, EyeOff, Check, AlertTriangle, Search, UserCircle } from "lucide-react";
+import { X, User, Shield, LogOut, Trash2, Eye, EyeOff, Check, AlertTriangle, Search, UserCircle, CreditCard, Copy, Sparkles, Crown, CalendarClock } from "lucide-react";
 import { updateProfile, changePassword, deleteAccount } from "@/app/dashboard/settings/actions";
 import { logout } from "@/app/dashboard/actions";
 
@@ -28,10 +28,13 @@ interface Props {
   website?: string;
   credits: number;
   initials: string;
+  userId?: string;
   onClose: () => void;
 }
 
-type Tab = "account" | "profile" | "security";
+type Tab = "account" | "profile" | "usage" | "security";
+
+const TRIAL_MAX = 400;
 
 // ─── Shared mini-components ───────────────────────────────────────────────────
 
@@ -133,72 +136,239 @@ const OutlineBtn = ({ children, onClick, disabled, style: extra }: {
 
 // ─── Tabs ────────────────────────────────────────────────────────────────────
 
-function AccountTab({ email, credits, initials }: { email: string; credits: number; initials: string }) {
+/* Manus-style row: label + value on the left, action on the right */
+function InfoRow({ label, value, action }: { label: string; value: string; action?: React.ReactNode }) {
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
+      padding: "16px 0", borderBottom: "1px solid rgba(255,255,255,0.05)",
+    }}>
+      <div style={{ minWidth: 0 }}>
+        <p style={{ margin: "0 0 3px", fontSize: 13.5, fontWeight: 600, color: "#fff" }}>{label}</p>
+        <p style={{ margin: 0, fontSize: 12.5, color: "rgba(255,255,255,0.4)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{value}</p>
+      </div>
+      {action && <div style={{ flexShrink: 0 }}>{action}</div>}
+    </div>
+  );
+}
+
+function AccountTab({
+  email, credits, initials, fullName, userId, onGoTo,
+}: {
+  email: string; credits: number; initials: string; fullName: string; userId: string;
+  onGoTo: (t: Tab) => void;
+}) {
   const [isPending, startTransition] = useTransition();
+  const [copied, setCopied] = useState(false);
   const handleLogout = () => startTransition(() => logout());
 
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(userId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    } catch { /* clipboard unavailable — ignore */ }
+  };
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-      {/* Avatar + identity */}
-      <div style={{
-        display: "flex", alignItems: "center", gap: 16, padding: "20px 24px",
-        background: "rgba(255,255,255,0.02)", borderRadius: 14,
-        border: "1px solid rgba(255,255,255,0.06)",
-      }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 26 }}>
+
+      {/* Identity row: avatar + full name + sign-out */}
+      <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
         <div style={{
-          width: 54, height: 54, borderRadius: "50%",
+          width: 60, height: 60, borderRadius: "50%",
           background: "linear-gradient(135deg,#5d1a1b,#161142)",
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 18, fontWeight: 700, color: "#fff", flexShrink: 0,
+          fontSize: 20, fontWeight: 700, color: "#fff", flexShrink: 0,
+          boxShadow: "0 0 24px rgba(93,26,27,0.35)",
         }}>
           {initials}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ margin: 0, fontSize: 15, fontWeight: 600, color: "#fff", marginBottom: 2 }}>{email}</p>
-          <p style={{ margin: 0, fontSize: 12.5, color: "rgba(255,255,255,0.4)" }}>Advertimus account</p>
+          <p style={{ margin: "0 0 5px", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.45)" }}>Full name</p>
+          <div style={{
+            padding: "10px 14px", borderRadius: 10, fontSize: 14, color: "#fff",
+            background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+          }}>
+            {fullName || email.split("@")[0]}
+          </div>
+        </div>
+        <button
+          onClick={handleLogout}
+          disabled={isPending}
+          title="Sign out"
+          aria-label="Sign out"
+          style={{
+            width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+            background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.09)",
+            color: "rgba(255,255,255,0.55)", cursor: isPending ? "default" : "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            opacity: isPending ? 0.5 : 1,
+          }}
+        >
+          <LogOut size={16} />
+        </button>
+      </div>
+
+      {/* Plan card — Free + Upgrade, credits inside */}
+      <div style={{
+        borderRadius: 16, border: "1px solid rgba(255,255,255,0.07)",
+        background: "linear-gradient(160deg, rgba(93,26,27,0.10) 0%, rgba(255,255,255,0.02) 45%)",
+        padding: "18px 22px",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingBottom: 14, borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <span style={{ fontSize: 20, fontWeight: 700, color: "#fff", fontFamily: "var(--font-heading, Georgia, serif)", fontStyle: "italic" }}>
+            Free
+          </span>
+          <button
+            onClick={() => onGoTo("usage")}
+            style={{
+              padding: "8px 18px", borderRadius: 10, border: "none",
+              background: "rgba(93,26,27,0.9)", color: "#fff", fontSize: 13, fontWeight: 700,
+              cursor: "pointer", boxShadow: "0 0 18px rgba(93,26,27,0.45)",
+            }}
+          >
+            Upgrade
+          </button>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 0 6px" }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13.5, fontWeight: 600, color: "#fff" }}>
+            <Sparkles size={15} style={{ color: "rgba(204,41,54,0.9)" }} /> Credits
+          </span>
+          <span style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>{credits.toLocaleString()}</span>
+        </div>
+        <div style={{ height: 6, background: "rgba(255,255,255,0.08)", borderRadius: 4, overflow: "hidden", margin: "6px 0 8px" }}>
+          <div style={{
+            height: "100%", borderRadius: 4,
+            width: `${Math.min(100, (credits / TRIAL_MAX) * 100)}%`,
+            background: "linear-gradient(90deg,#5d1a1b,#cc2936)",
+            transition: "width 0.5s",
+          }} />
+        </div>
+        <p style={{ margin: 0, display: "flex", alignItems: "center", gap: 7, fontSize: 12, color: "rgba(255,255,255,0.35)" }}>
+          <CalendarClock size={13} /> {credits} of {TRIAL_MAX} trial credits remaining
+        </p>
+      </div>
+
+      {/* Info rows */}
+      <div>
+        <InfoRow label="Email" value={email} />
+        <InfoRow
+          label="User ID"
+          value={userId || "—"}
+          action={
+            <button
+              onClick={handleCopy}
+              disabled={!userId}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "8px 14px", borderRadius: 9,
+                background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+                color: copied ? "#4ade80" : "rgba(255,255,255,0.75)", fontSize: 12.5, fontWeight: 600,
+                cursor: userId ? "pointer" : "default",
+              }}
+            >
+              {copied ? <Check size={13} /> : <Copy size={13} />}
+              {copied ? "Copied" : "Copy"}
+            </button>
+          }
+        />
+        <InfoRow
+          label="Manage sign-in & security"
+          value="Password, delete account"
+          action={
+            <button
+              onClick={() => onGoTo("security")}
+              style={{
+                padding: "8px 14px", borderRadius: 9,
+                background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+                color: "rgba(255,255,255,0.75)", fontSize: 12.5, fontWeight: 600, cursor: "pointer",
+              }}
+            >
+              Manage
+            </button>
+          }
+        />
+      </div>
+    </div>
+  );
+}
+
+function UsageTab({ credits }: { credits: number }) {
+  const used = Math.max(0, TRIAL_MAX - credits);
+  const usedPct = Math.min(100, (used / TRIAL_MAX) * 100);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+
+      {/* Current plan */}
+      <div>
+        <SectionTitle>Current plan</SectionTitle>
+        <div style={{
+          borderRadius: 16, border: "1px solid rgba(93,26,27,0.35)",
+          background: "linear-gradient(160deg, rgba(93,26,27,0.14) 0%, rgba(22,17,66,0.10) 100%)",
+          padding: "20px 24px",
+          display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap",
+        }}>
+          <div>
+            <p style={{ margin: "0 0 4px", display: "flex", alignItems: "center", gap: 8, fontSize: 17, fontWeight: 700, color: "#fff" }}>
+              <Crown size={16} style={{ color: "rgba(204,41,54,0.9)" }} /> Free Trial
+            </p>
+            <p style={{ margin: 0, fontSize: 12.5, color: "rgba(255,255,255,0.4)" }}>
+              {TRIAL_MAX} credits included · no payment method required
+            </p>
+          </div>
+          <button style={{
+            padding: "10px 22px", borderRadius: 10, border: "none",
+            background: "rgba(93,26,27,0.9)", color: "#fff", fontSize: 13.5, fontWeight: 700,
+            cursor: "pointer", boxShadow: "0 0 20px rgba(93,26,27,0.5)",
+          }}>
+            Upgrade to Pro
+          </button>
         </div>
       </div>
 
-      {/* Credits */}
+      {/* Usage */}
       <div>
-        <SectionTitle>Credits</SectionTitle>
+        <SectionTitle>Usage this trial</SectionTitle>
         <div style={{
           padding: "20px 24px", background: "rgba(255,255,255,0.02)", borderRadius: 14,
           border: "1px solid rgba(255,255,255,0.06)",
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
-            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>Available balance</span>
-            <span style={{ fontSize: 22, fontWeight: 700, color: "#fff" }}>{credits.toLocaleString()}</span>
+            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>Credits used</span>
+            <span style={{ fontSize: 20, fontWeight: 700, color: "#fff" }}>
+              {used.toLocaleString()}<span style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", fontWeight: 500 }}> / {TRIAL_MAX}</span>
+            </span>
           </div>
-          <div style={{ height: 6, background: "rgba(255,255,255,0.08)", borderRadius: 4, overflow: "hidden" }}>
+          <div style={{ height: 8, background: "rgba(255,255,255,0.08)", borderRadius: 5, overflow: "hidden" }}>
             <div style={{
-              height: "100%", borderRadius: 4,
-              width: `${Math.min(100, (credits / 400) * 100)}%`,
-              background: credits > 200 ? "linear-gradient(90deg,#22c55e,#16a34a)" : credits > 80 ? "linear-gradient(90deg,#eab308,#ca8a04)" : "linear-gradient(90deg,#ef4444,#dc2626)",
-              transition: "width 0.5s",
+              height: "100%", borderRadius: 5, width: `${usedPct}%`,
+              background: "linear-gradient(90deg,#5d1a1b,#cc2936)", transition: "width 0.5s",
             }} />
           </div>
-          <p style={{ margin: "8px 0 0", fontSize: 12, color: "rgba(255,255,255,0.25)" }}>{credits} / 400 trial credits remaining</p>
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8 }}>
+            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>{credits.toLocaleString()} remaining</span>
+            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>{Math.round(usedPct)}% used</span>
+          </div>
         </div>
       </div>
 
-      {/* Sign out */}
+      {/* Billing */}
       <div>
-        <SectionTitle>Session</SectionTitle>
-        <button
-          onClick={handleLogout}
-          disabled={isPending}
-          style={{
-            display: "flex", alignItems: "center", gap: 10, padding: "12px 16px",
-            background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)",
-            borderRadius: 12, color: "rgba(255,255,255,0.7)", fontSize: 14, fontWeight: 500,
-            cursor: isPending ? "default" : "pointer", opacity: isPending ? 0.6 : 1,
-            width: "100%",
-          }}
-        >
-          <LogOut size={16} />
-          {isPending ? "Signing out…" : "Sign out of Advertimus"}
-        </button>
+        <SectionTitle>Billing</SectionTitle>
+        <div style={{
+          padding: "26px 24px", background: "rgba(255,255,255,0.02)", borderRadius: 14,
+          border: "1px dashed rgba(255,255,255,0.12)", textAlign: "center",
+        }}>
+          <CreditCard size={22} style={{ color: "rgba(255,255,255,0.25)", marginBottom: 10 }} />
+          <p style={{ margin: "0 0 4px", fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.7)" }}>No payment method</p>
+          <p style={{ margin: 0, fontSize: 12.5, color: "rgba(255,255,255,0.35)" }}>
+            You're on the free trial. Add a payment method when you upgrade — invoices will appear here.
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -430,17 +600,25 @@ function SecurityTab() {
 // ─── SettingsPanel ────────────────────────────────────────────────────────────
 
 const TABS: { id: Tab; label: string; icon: React.ReactNode; keywords: string }[] = [
-  { id: "account", label: "Account", icon: <UserCircle size={16} />, keywords: "email credits balance plan billing sign out logout session" },
+  { id: "account", label: "Account", icon: <UserCircle size={16} />, keywords: "email credits balance plan sign out logout session user id copy" },
   { id: "profile", label: "Profile", icon: <User size={16} />, keywords: "name full company phone website avatar personal information details" },
+  { id: "usage", label: "Usage & Billing", icon: <CreditCard size={16} />, keywords: "usage billing plan upgrade credits invoice payment subscription pro trial" },
   { id: "security", label: "Security", icon: <Shield size={16} />, keywords: "password change delete account danger zone privacy" },
 ];
 
 export default function SettingsPanel({
-  email, company, fullName = "", phone = "", website = "", credits, initials, onClose,
+  email, company, fullName = "", phone = "", website = "", credits, initials, userId = "", onClose,
 }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("account");
   const [search, setSearch] = useState("");
   const isMobile = useIsMobile();
+
+  // Close on Escape
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
 
   const activeMeta = TABS.find(t => t.id === activeTab);
   const q = search.trim().toLowerCase();
@@ -449,34 +627,57 @@ export default function SettingsPanel({
     : TABS;
 
   return (
+    // Backdrop — click outside to close
     <div
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Settings"
       style={{
-        flex: 1, overflow: "hidden", display: "flex", flexDirection: "column",
-        background: "#0e0e12",
+        position: "fixed", inset: 0, zIndex: 60,
+        background: "rgba(0,0,0,0.65)",
+        backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: isMobile ? 0 : 28,
+        animation: "advDropIn 160ms ease",
       }}
     >
+      {/* Modal card */}
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          width: isMobile ? "100%" : "min(1000px, 100%)",
+          height: isMobile ? "100%" : "min(660px, 92vh)",
+          background: "#141418",
+          border: isMobile ? "none" : "1px solid rgba(255,255,255,0.08)",
+          borderRadius: isMobile ? 0 : 20,
+          boxShadow: "0 40px 90px rgba(0,0,0,0.6), 0 0 60px rgba(93,26,27,0.08)",
+          overflow: "hidden",
+          display: "flex", flexDirection: "column",
+        }}
+      >
+
       {/* Header */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: isMobile ? "16px 16px 16px 18px" : "20px 28px",
+        padding: isMobile ? "14px 14px 14px 18px" : "18px 24px",
         borderBottom: "1px solid rgba(255,255,255,0.06)",
         flexShrink: 0,
       }}>
-        <div style={{ minWidth: 0 }}>
-          <h2 style={{ margin: 0, fontSize: isMobile ? 16 : 18, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>Settings</h2>
-          <p style={{ margin: "3px 0 0", fontSize: 12.5, color: "rgba(255,255,255,0.35)" }}>Manage your account and preferences</p>
-        </div>
+        <h2 style={{ margin: 0, fontSize: isMobile ? 16 : 17, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>
+          {activeMeta?.label ?? "Settings"}
+        </h2>
         <button
           onClick={onClose}
           aria-label="Close settings"
           style={{
-            width: 36, height: 36, borderRadius: 10, border: "1px solid rgba(255,255,255,0.09)",
+            width: 34, height: 34, borderRadius: 10, border: "1px solid rgba(255,255,255,0.09)",
             background: "rgba(255,255,255,0.03)", color: "rgba(255,255,255,0.5)",
             cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
             flexShrink: 0, marginLeft: 12,
           }}
         >
-          <X size={17} />
+          <X size={16} />
         </button>
       </div>
 
@@ -498,6 +699,26 @@ export default function SettingsPanel({
           overflowY: isMobile ? "visible" : "auto",
           alignItems: isMobile ? "center" : "stretch",
         }}>
+          {/* Identity block — desktop rail only (Manus style) */}
+          {!isMobile && (
+            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 8px 14px" }}>
+              <div style={{
+                width: 34, height: 34, borderRadius: "50%", flexShrink: 0,
+                background: "linear-gradient(135deg,#5d1a1b,#161142)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 12, fontWeight: 700, color: "#fff",
+              }}>
+                {initials}
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {fullName || email.split("@")[0]}
+                </p>
+                <p style={{ margin: 0, fontSize: 11, color: "rgba(255,255,255,0.35)" }}>Free plan</p>
+              </div>
+            </div>
+          )}
+
           {/* Search — desktop only (mobile keeps the nav row compact) */}
           {!isMobile && (
             <div style={{ position: "relative", marginBottom: 10 }}>
@@ -556,11 +777,17 @@ export default function SettingsPanel({
 
         {/* Right content */}
         <div style={{ flex: 1, overflowY: "auto", minWidth: 0 }}>
-          <div style={{ maxWidth: 620, padding: isMobile ? "22px 18px 60px" : "30px 34px 60px" }}>
-            <h3 style={{ margin: "0 0 22px", fontSize: 16, fontWeight: 700, color: "#fff" }}>
-              {activeMeta?.label}
-            </h3>
-            {activeTab === "account" && <AccountTab email={email} credits={credits} initials={initials} />}
+          <div style={{ maxWidth: 640, padding: isMobile ? "22px 18px 48px" : "28px 32px 48px" }}>
+            {activeTab === "account" && (
+              <AccountTab
+                email={email}
+                credits={credits}
+                initials={initials}
+                fullName={fullName}
+                userId={userId}
+                onGoTo={setActiveTab}
+              />
+            )}
             {activeTab === "profile" && (
               <ProfileTab
                 initialFullName={fullName}
@@ -571,9 +798,11 @@ export default function SettingsPanel({
                 initials={initials}
               />
             )}
+            {activeTab === "usage" && <UsageTab credits={credits} />}
             {activeTab === "security" && <SecurityTab />}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

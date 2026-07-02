@@ -35,6 +35,7 @@ export interface MainLayoutProps {
   userFullName?: string;
   userPhone?: string;
   userWebsite?: string;
+  userId?: string;
   tokenUsed?: number;
   tokenMax?: number;
   tokenRemaining?: number;
@@ -388,6 +389,7 @@ export default function MainLayout({
   userFullName = "",
   userPhone = "",
   userWebsite = "",
+  userId = "",
   tokenUsed,
   tokenMax,
   tokenRemaining,
@@ -551,8 +553,35 @@ export default function MainLayout({
             </div>
           )}
 
-          {/* Content: settings OR chat + results */}
-          {isSettingsOpen ? (
+          {/* Chat column — always rendered; settings opens as a modal on top */}
+          <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <ChatArea
+              projectName="New conversation"
+              onSendMessage={handleSendMessage}
+            />
+          </main>
+
+          {/* Results panel — disabled for now (PANEL_ENABLED === false) */}
+          {PANEL_ENABLED && isResultsOpen && (
+            <aside
+              className="flex-shrink-0 h-full hidden md:block overflow-hidden"
+              style={{
+                width: RESULTS_WIDTH,
+                borderLeft: "1px solid rgba(93,26,27,0.2)",
+                boxShadow: "-2px 0 16px rgba(0,0,0,0.3)",
+              }}
+            >
+              <ResultsPanel
+                showResults={isResultsOpen}
+                isGenerating={false}
+                progress={0}
+                currentPhase={1}
+              />
+            </aside>
+          )}
+
+          {/* Settings — centered modal overlay */}
+          {isSettingsOpen && (
             <SettingsPanel
               email={userEmail}
               company={userCompany}
@@ -561,37 +590,9 @@ export default function MainLayout({
               website={userWebsite}
               credits={tokenRemaining ?? 0}
               initials={user?.initials ?? "?"}
+              userId={userId}
               onClose={() => setIsSettingsOpen(false)}
             />
-          ) : (
-            <>
-              {/* Chat column */}
-              <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-                <ChatArea
-                  projectName="New conversation"
-                  onSendMessage={handleSendMessage}
-                />
-              </main>
-
-              {/* Results panel — disabled for now (PANEL_ENABLED === false) */}
-              {PANEL_ENABLED && isResultsOpen && (
-                <aside
-                  className="flex-shrink-0 h-full hidden md:block overflow-hidden"
-                  style={{
-                    width: RESULTS_WIDTH,
-                    borderLeft: "1px solid rgba(93,26,27,0.2)",
-                    boxShadow: "-2px 0 16px rgba(0,0,0,0.3)",
-                  }}
-                >
-                  <ResultsPanel
-                    showResults={isResultsOpen}
-                    isGenerating={false}
-                    progress={0}
-                    currentPhase={1}
-                  />
-                </aside>
-              )}
-            </>
           )}
         </div>
       </div>

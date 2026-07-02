@@ -197,6 +197,12 @@ export function ChatArea({
   const [inputValue, setInputValue] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [attachedFiles, setAttachedFiles] = useState<UploadedFile[]>([])
+  const [isRecording, setIsRecording] = useState(false)
+  const [recordSecs, setRecordSecs] = useState(0)
+  const [micError, setMicError] = useState(false)
+
+  const recordTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const micStreamRef = useRef<MediaStream | null>(null)
 
   const messagesRef = useRef<ChatMessage[]>([])
   const stageRef = useRef<FlowStage>('idle')
@@ -221,7 +227,37 @@ export function ChatArea({
 
   useEffect(() => () => {
     if (timerRef.current) clearTimeout(timerRef.current)
+    if (recordTimerRef.current) clearInterval(recordTimerRef.current)
+    micStreamRef.current?.getTracks().forEach(t => t.stop())
   }, [])
+
+  // ─── Voice recording (UI + capture only — transcription backend wired later) ─
+
+  const stopRecording = useCallback(() => {
+    micStreamRef.current?.getTracks().forEach(t => t.stop())
+    micStreamRef.current = null
+    if (recordTimerRef.current) clearInterval(recordTimerRef.current)
+    recordTimerRef.current = null
+    setIsRecording(false)
+    setRecordSecs(0)
+    // TODO: hand the captured audio to the transcription backend once connected
+  }, [])
+
+  const toggleRecording = useCallback(async () => {
+    if (isRecording) { stopRecording(); return }
+    setMicError(false)
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      micStreamRef.current = stream
+      setIsRecording(true)
+      setRecordSecs(0)
+      recordTimerRef.current = setInterval(() => setRecordSecs(s => s + 1), 1000)
+    } catch {
+      // Permission denied or no mic — show a brief hint on the button
+      setMicError(true)
+      setTimeout(() => setMicError(false), 2500)
+    }
+  }, [isRecording, stopRecording])
 
   function appendMessages(newMsgs: ChatMessage[]) {
     setMessages(prev => [...prev, ...newMsgs])
@@ -522,14 +558,45 @@ export function ChatArea({
     </div>
   )
 
+  const recordTime = `${Math.floor(recordSecs / 60)}:${String(recordSecs % 60).padStart(2, '0')}`
+
   const toolbarRight = (
     <div className="flex items-center gap-0.5">
       <button disabled={isBlocked} className={toolbarIconClass()} aria-label="History (coming soon)">
         {iconBadge(<Clock size={14} />)}
       </button>
-      <button disabled={isBlocked} className={toolbarIconClass()} aria-label="Voice input (coming soon)">
-        {iconBadge(<Mic size={14} />)}
+
+      {/* Live recording timer */}
+      {isRecording && (
+        <span className="text-[11px] font-semibold tabular-nums select-none px-1"
+          style={{ color: '#ff6b6b' }}>
+          {recordTime}
+        </span>
+      )}
+
+      <button
+        onClick={toggleRecording}
+        disabled={isBlocked}
+        className={toolbarIconClass(isRecording)}
+        aria-label={isRecording ? 'Stop recording' : 'Start voice input'}
+        aria-pressed={isRecording}
+        title={micError ? 'Microphone unavailable — check permissions' : undefined}
+      >
+        {isRecording ? (
+          <span className="inline-flex items-center justify-center rounded-md p-1 animate-pulse"
+            style={{ background: 'rgba(220,38,38,0.3)', color: '#ff6b6b', boxShadow: '0 0 18px rgba(220,38,38,0.5)' }}>
+            <Mic size={14} />
+          </span>
+        ) : micError ? (
+          <span className="inline-flex items-center justify-center rounded-md p-1"
+            style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.35)' }}>
+            <Mic size={14} />
+          </span>
+        ) : (
+          iconBadge(<Mic size={14} />)
+        )}
       </button>
+
       {sendButton}
     </div>
   )
@@ -549,7 +616,8 @@ export function ChatArea({
           onClick={() => handleQuickAction(label)}
           className="flex items-center gap-2.5 px-5 py-2.5 rounded-full
                      text-sm font-medium text-white/55 hover:text-white/85
-                     transition-all duration-150 hover:bg-white/[0.05]"
+                     transition-all duration-200 hover:bg-white/[0.05]
+                     hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(93,26,27,0.25)]"
           style={{ border: '1px solid rgba(93,26,27,0.3)' }}
         >
           <span
